@@ -5,7 +5,7 @@ import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { UserAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const Signin = () => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -166,4 +166,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Login;

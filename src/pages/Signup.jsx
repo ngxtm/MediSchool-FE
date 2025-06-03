@@ -1,9 +1,9 @@
 import React from "react";
 import { useState } from "react";
-import { UserAuth } from "../../context/AuthContext";
+import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
-import LoginImage from "../../assets/login-image.png";
+import LoginImage from "../assets/login-image.png";
 
 const Signup = () => {
   const navigate = useNavigate();

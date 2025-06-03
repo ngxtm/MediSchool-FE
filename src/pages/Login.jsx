@@ -1,8 +1,8 @@
-import React, { useState } from "react";
 import "../styles/login.css";
-import LoginImage from "../../assets/login-image.png";
+import React, { useState } from "react";
+import LoginImage from "../assets/login-image.png";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
-import { UserAuth } from "../../context/AuthContext";
+import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {

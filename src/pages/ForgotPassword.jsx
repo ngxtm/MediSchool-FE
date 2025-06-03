@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { User } from "lucide-react";
-import { UserAuth } from "../../context/AuthContext";
+import { UserAuth } from "../context/AuthContext";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");

@@ -17,12 +17,15 @@ const UpdatePassword = () => {
     const { updatePassword } = UserAuth();
     
     useEffect(() => {
+        setLoading(true);
         const checkSession = async () => {
+            set
             const { data } = await supabase.auth.getSession();
             if (!data || !data.session) {
                 setError("Invalid or expired reset link. Please request a new password reset link.");
             }
         };
+        setLoading(false);
         checkSession();
     }, []);
     

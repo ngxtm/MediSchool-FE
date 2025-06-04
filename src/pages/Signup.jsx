@@ -31,6 +31,18 @@ const Signup = () => {
     navigate("/login");
   };
 
+  const handleSignUpWithGoogle = async () => {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+      setLoading(false);
+    } catch (error) {
+      console.error("Error starting Google OAuth:", error);
+      setError(error.message);
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen w-full bg-[#E8F4FB] relative overflow-hidden">
       <div className="absolute top-0 left-0 z-20 p-6 sm:p-8">
@@ -117,7 +129,7 @@ const Signup = () => {
               <div className="flex-1 h-[1px] bg-gray-300"></div>
             </div>
 
-            <button className="hover:cursor-pointer w-full bg-white border border-gray-300 text-base font-medium text-gray-700 py-2.5 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+            <button onClick={handleSignUpWithGoogle} className="hover:cursor-pointer w-full bg-white border border-gray-300 text-base font-medium text-gray-700 py-2.5 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
               <svg
                 width="20"
                 height="20"

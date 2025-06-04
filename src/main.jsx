@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '../src/styles/index.css';
 import { AuthContextProvider } from './context/AuthContext';
 import { RouterProvider } from 'react-router-dom';
-import router from './router';
+import router from './utils/router';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

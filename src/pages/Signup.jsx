@@ -7,7 +7,7 @@ import LoginImage from "../assets/login-image.png";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { signUpWithEmail } = UserAuth();
+  const { signUpWithEmail, signInWithGoogle } = UserAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");

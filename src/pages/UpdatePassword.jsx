@@ -15,25 +15,29 @@ const UpdatePassword = () => {
     const [isRecoverySession, setIsRecoverySession] = useState(false);
 
     const navigate = useNavigate();
-    const location = useLocation();
     const { updatePassword, signOut } = UserAuth();
 
     useEffect(() => {
         const checkSession = async () => {
-            const { data, error } = await supabase.auth.getSession();
-            if (!data || !data.session) {
-                setError("Invalid or expired reset link. Please request a new password reset link.");
+            const hash = window.location.hash;
+            const isRecovery = hash.includes("type=recovery");
+
+            if (isRecovery) {
+                // Cho phép truy cập trang update-password nếu đang trong recovery flow
+                setIsRecoverySession(true);
                 setLoading(false);
                 return;
             }
 
-            if (window.location.hash.includes("type=recovery")) {
-                setIsRecoverySession(true);
-            } else {
-                navigate("/login");
+            // Nếu không phải recovery thì kiểm tra session đăng nhập bình thường
+            const { data, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !data.session) {
+                setError("Bạn cần đăng nhập hoặc link reset đã hết hạn.");
             }
+
             setLoading(false);
         };
+
         checkSession();
     }, [navigate]);
 
@@ -43,12 +47,12 @@ const UpdatePassword = () => {
         setSuccess(false);
 
         if (newPassword.length < 6) {
-            setError("Password must be at least 6 characters long");
+            setError("Mật khẩu phải có ít nhất 6 ký tự");
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            setError("Passwords do not match");
+            setError("Mật khẩu mới và xác nhận mật khẩu không khớp");
             return;
         }
 
@@ -62,22 +66,18 @@ const UpdatePassword = () => {
 
                 await signOut();
                 localStorage.clear();
-                
-                setTimeout(() => {
-                    navigate("/login");
-                }, 3000);
+                sessionStorage.clear();
+                setTimeout(() => navigate("/login"), 3000);
             } else {
-                setError(result.error || "Failed to update password. Please try again.");
+                setError(result.error || "Không thể cập nhật mật khẩu. Vui lòng thử lại sau.");
             }
         } catch (err) {
-            setError("An error occurred. Please try again.");
+            setError("Có lỗi xảy ra. Vui lòng thử lại.");
             console.error(err);
         } finally {
             setLoading(false);
         }
     };
-    
-    if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
 
     return (
         <div className="min-h-screen w-full bg-[#E8F4FB] relative overflow-hidden">
@@ -118,6 +118,7 @@ const UpdatePassword = () => {
                                 <div className="flex relative items-center">
                                     <Lock className="absolute left-3 text-gray-500" size={24} />
                                     <input
+                                        disabled={!isRecoverySession}
                                         type={showNewPassword ? "text" : "password"}
                                         placeholder="Mật khẩu mới"
                                         value={newPassword}
@@ -142,6 +143,7 @@ const UpdatePassword = () => {
                                 <div className="flex relative items-center">
                                     <Lock className="absolute left-3 text-gray-500" size={24} />
                                     <input
+                                        disabled={!isRecoverySession}
                                         type={showConfirmPassword ? "text" : "password"}
                                         placeholder="Xác nhận mật khẩu mới"
                                         value={confirmPassword}
@@ -165,7 +167,7 @@ const UpdatePassword = () => {
                             <button
                                 className="w-full bg-[#0A3D62] text-base font-semibold text-white py-2.5 rounded-md hover:bg-[#093352] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 type="submit"
-                                disabled={loading}
+                                disabled={loading || !isRecoverySession}
                             >
                                 {loading ? "Đang cập nhật..." : "Cập nhật mật khẩu"}
                             </button>

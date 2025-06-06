@@ -5,15 +5,26 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [session, setSession] = useState(undefined);
 
-  const signInWithEmail = async (email, password) => {
+  const signInWithEmail = async (email, password, rememberMe = true) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
-      password: password,
+      password: password
     });
     if (error) {
       console.log("Error in signInWithEmail: ", error);
       return { success: false, error };
     }
+
+    if (!rememberMe) {
+      const session = data.session;
+      if (session) {
+        sessionStorage.setItem("supabase.session", JSON.stringify(session));
+        const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+        localStorage.removeItem(`sb-${projectRef}-auth-token`);
+      }
+    }
+
+
     return { success: true, data };
   };
 
@@ -29,11 +40,11 @@ export const AuthContextProvider = ({ children }) => {
     return { success: true, data };
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (rememberMe = true) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/nurse`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     if (error) {
@@ -89,9 +100,14 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+    const localSession = JSON.parse(sessionStorage.getItem("supabase.session"));
+    if (localSession) {
+      setSession(localSession);
+    } else {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+      });
+    }
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {

@@ -120,7 +120,7 @@ const Signup = () => {
               type="submit"
               disabled={loading}
               className="hover:cursor-pointer w-full bg-[#0A3D62] text-base font-semibold text-white py-2.5 rounded-md hover:bg-[#093352] transition-colors">
-              Register
+              Đăng ký
             </button>
 
             <div className="flex gap-3 items-center my-6 w-full">

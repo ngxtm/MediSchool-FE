@@ -4,6 +4,7 @@ import LoginImage from "../assets/login-image.png";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../utils/supabase";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,14 +12,20 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
-  const {session, signInWithEmail, signInWithGoogle} = UserAuth();
+  const { session, signInWithEmail, signInWithGoogle } = UserAuth();
+
+  const printSession = async () => {
+    const sessionData = await supabase.auth.getSession();
+    console.log("Current session:", sessionData.data.session.access_token);
+  }
 
   const handleSignInWithEmail = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const result = await signInWithEmail(email, password);
+    const result = await signInWithEmail(email, password, rememberMe);
     if (result.success) {
       navigate("/nurse");
     } else {
@@ -30,6 +37,9 @@ const Login = () => {
   const handleSignInWithGoogle = async () => {
     try {
       setLoading(true);
+      if (!rememberMe) {
+        sessionStorage.setItem("rememberMe", "false");
+      }
       await signInWithGoogle();
       setLoading(false);
     } catch (error) {
@@ -62,7 +72,7 @@ const Login = () => {
               <div className="flex relative items-center">
                 <User className="absolute left-3 text-gray-500" size={24} />
                 <input
-                  value = {email}
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
@@ -76,14 +86,14 @@ const Login = () => {
               <div className="flex relative items-center">
                 <Lock className="absolute left-3 text-gray-500" size={24} />
                 <input
-                  value = {password}
-                  onChange = {(e) => setPassword(e.target.value)}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
                   placeholder="Mật khẩu"
                   className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="absolute right-3 text-gray-500 hover:cursor-pointer hover:text-gray-700"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -96,7 +106,7 @@ const Login = () => {
 
             <div className="flex justify-between items-center mb-6">
               <label className="flex items-center text-sm text-gray-600">
-                <input type="checkbox" className="mr-2 w-4 h-4 text-blue-600" />
+                <input type="checkbox" className="mr-2 w-4 h-4 text-blue-600" onChange={() => setRememberMe(!rememberMe)} />
                 Ghi nhớ đăng nhập
               </label>
               <a

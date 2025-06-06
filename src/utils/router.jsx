@@ -6,6 +6,8 @@ import NurseDashboard from "../pages/NurseDashboard";
 import ForgotPassword from "../pages/ForgotPassword";
 import UpdatePassword from "../pages/UpdatePassword";
 import PrivateRouter from "./PrivateRouter";
+import NoRole from "../pages/NoRole";
+import AuthCallback from "../pages/AuthCallback";
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -13,7 +15,9 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/update-password", element: <UpdatePassword /> },
-  { path: "/nurse", element: <PrivateRouter><NurseDashboard /></PrivateRouter>}
+  { path: "/nurse", element: <PrivateRouter><NurseDashboard /></PrivateRouter> },
+  { path: "/no-role", element: <NoRole /> },
+  { path: "/auth/callback", element: <AuthCallback/> },
 ]);
 
 export default router;

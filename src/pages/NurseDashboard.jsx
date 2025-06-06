@@ -1,8 +1,6 @@
 import { UserAuth } from "../context/AuthContext";
 import { useNavigate, Outlet, Link } from "react-router-dom";
-import { useState } from "react";
 const NurseDashboard = () => {
-    const [error, setError] = useState("");
     const { signOut } = UserAuth();
     const navigate = useNavigate();
     
@@ -11,8 +9,7 @@ const NurseDashboard = () => {
         await signOut();
         navigate("/login");
       } catch (error) {
-        setError(error.message);
-        console.log(error);
+        console.error("Error signing out:", error);
       }
     }
     return (

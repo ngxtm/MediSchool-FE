@@ -17,11 +17,6 @@ const Login = () => {
 
   const { session, signInWithEmail, signInWithGoogle } = UserAuth();
 
-  const printSession = async () => {
-    const sessionData = await supabase.auth.getSession();
-    console.log("Current session:", sessionData.data.session.access_token);
-  }
-
   const handleSignInWithEmail = async (e) => {
     e.preventDefault();
     setLoading(true);

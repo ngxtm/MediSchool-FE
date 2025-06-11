@@ -10,14 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.6",
+    "@radix-ui/themes": "^3.2.1",
     "@supabase/supabase-js": "^2.49.9",
+    "axios": "^1.9.0",
+    "ldrs": "^1.1.7",
+    "lucide-react": "^0.513.0",
+    "radix-ui": "^1.4.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
-    "@radix-ui/themes": "^3.2.1",
     "@tailwindcss/vite": "^4.1.8",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -26,7 +31,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
-    "lucide-react": "^0.511.0",
     "tailwindcss": "^4.1.8",
     "vite": "^6.3.5"
   }

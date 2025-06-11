@@ -3,9 +3,10 @@ import { supabase } from "../utils/supabase";
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
-  const [session, setSession] = useState(undefined);
+  const [session, setSession] = useState(null);
 
   const signInWithEmail = async (email, password, rememberMe = true) => {
+    localStorage.setItem("rememberMePreference", rememberMe.toString());
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password
@@ -14,17 +15,20 @@ export const AuthContextProvider = ({ children }) => {
       console.log("Error in signInWithEmail: ", error);
       return { success: false, error };
     }
-
-    if (!rememberMe) {
-      const session = data.session;
-      if (session) {
-        sessionStorage.setItem("supabase.session", JSON.stringify(session));
+    if (!rememberMe && data.session) {
+      // Lưu session vào sessionStorage cho trường hợp không remember me
+      sessionStorage.setItem("tempSession", JSON.stringify(data.session));
+      // Xóa localStorage token để đảm bảo session chỉ tồn tại trong phiên hiện tại
+      setTimeout(() => {
         const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
-        localStorage.removeItem(`sb-${projectRef}-auth-token`);
-      }
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+          if (key.startsWith(`sb-${projectRef}-auth-token`)) {
+            localStorage.removeItem(key);
+          }
+        });
+      }, 100);
     }
-
-
     return { success: true, data };
   };
 
@@ -41,6 +45,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const signInWithGoogle = async (rememberMe = true) => {
+    localStorage.setItem("rememberMePreference", rememberMe.toString());
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -55,21 +60,28 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const signOut = async () => {
+    setSession(null);
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.log("Error in signOut: ", error);
     }
+    sessionStorage.removeItem("tempSession");
+    localStorage.removeItem("rememberMePreference");
+    const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith(`sb-${projectRef}-auth-token`)) {
+        localStorage.removeItem(key);
+      }
+    });
   };
 
   const resetPassword = async (email) => {
     try {
       const redirectUrl = `${window.location.origin}/update-password`;
-      console.log("Redirect URL:", redirectUrl);
-
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl,
       });
-
       if (error) {
         console.log("Error in resetPassword: ", error);
         return { success: false, error };
@@ -86,12 +98,10 @@ export const AuthContextProvider = ({ children }) => {
       const { data, error } = await supabase.auth.updateUser({
         password: newPassword,
       });
-
       if (error) {
         console.log("Error in updatePassword: ", error);
         return { success: false, error };
       }
-
       return { success: true, data };
     } catch (err) {
       console.error("Unexpected error in updatePassword:", err);
@@ -100,20 +110,45 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const localSession = JSON.parse(sessionStorage.getItem("supabase.session"));
-    if (localSession) {
-      setSession(localSession);
-    } else {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-      });
-    }
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-    return () => subscription.unsubscribe();
+    const checkSession = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (currentSession) {
+          setSession(currentSession);
+          return;
+        }
+        const tempSession = sessionStorage.getItem("tempSession");
+        if (tempSession) {
+          const parsedSession = JSON.parse(tempSession);
+          setSession(parsedSession);
+          return;
+        }
+        await signOut();
+      } catch (error) {
+        console.error("Error checking session:", error);
+        await signOut();
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        const rememberMe = localStorage.getItem("rememberMePreference") === "true";
+        if (event === "SIGNED_IN") {
+          if (!rememberMe) {
+            sessionStorage.setItem("tempSession", JSON.stringify(currentSession));
+          }
+          setSession(currentSession);
+        } else if (event === "SIGNED_OUT") {
+          setSession(null);
+          sessionStorage.removeItem("tempSession");
+        }
+      }
+    );
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   return (

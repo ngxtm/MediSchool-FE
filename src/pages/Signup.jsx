@@ -20,7 +20,7 @@ const Signup = () => {
     setLoading(true);
     const result = await signUpWithEmail(email, password);
     if (result.success) {
-      navigate("/nurse");
+      navigate(`${window.location.origin}/auth/callback`);
     } else {
       setError(result.error.message);
     }

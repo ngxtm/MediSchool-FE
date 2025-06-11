@@ -7,11 +7,11 @@ const AuthCallback = () => {
     const navigate = useNavigate();
     useEffect(() => {
         const handleRedirect = async () => {
-            const rememberMe = sessionStorage.getItem("rememberMe");
+            const rememberMePreference = localStorage.getItem("rememberMePreference");
 
             const { data, error } = await supabase.auth.getSession();
             if (error || !data.session) {
-                console.error("No session found in AuthCallback: " + error.message);
+                console.error("No session found in AuthCallback: " + error?.message);
                 navigate("/login");
                 return;
             }
@@ -31,6 +31,18 @@ const AuthCallback = () => {
 
             const role = profile.role;
 
+            // Handle session storage based on remember me preference
+            if (rememberMePreference === "false") {
+                sessionStorage.setItem("tempSession", JSON.stringify(data.session));
+                const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.startsWith(`sb-${projectRef}-auth-token`)) {
+                        localStorage.removeItem(key);
+                    }
+                });
+            }
+
             switch (role) {
                 case "NURSE":
                     navigate("/nurse");
@@ -39,20 +51,13 @@ const AuthCallback = () => {
                     navigate("/admin");
                     break;
                 case "PARENT":
-                    navigate("/parent");
+                    navigate("/parent/");
                     break;
                 case "MANAGER":
                     navigate("/manager");
                     break;
                 default:
                     navigate("/no-role");
-            }
-
-            if (rememberMe === "false") {
-                sessionStorage.setItem("supabase.session", JSON.stringify(data.session));
-                const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
-                localStorage.removeItem(`sb-${projectRef}-auth-token`);
-                sessionStorage.removeItem("rememberMe");
             }
         }
         handleRedirect();

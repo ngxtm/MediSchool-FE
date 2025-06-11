@@ -7,7 +7,9 @@ const PrivateRouter = ({children}) => {
     }
     const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
     const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
-    if (session === null) {
+    const tempSession = sessionStorage.getItem("tempSession");
+
+    if (!session && !tempSession) {
         return <Navigate to="/login" replace/>
     }
     return children;

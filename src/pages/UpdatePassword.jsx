@@ -23,13 +23,11 @@ const UpdatePassword = () => {
             const isRecovery = hash.includes("type=recovery");
 
             if (isRecovery) {
-                // Cho phép truy cập trang update-password nếu đang trong recovery flow
                 setIsRecoverySession(true);
                 setLoading(false);
                 return;
             }
 
-            // Nếu không phải recovery thì kiểm tra session đăng nhập bình thường
             const { data, error: sessionError } = await supabase.auth.getSession();
             if (sessionError || !data.session) {
                 setError("Bạn cần đăng nhập hoặc link reset đã hết hạn.");

@@ -12,7 +12,7 @@ import ParentDashboard from "../pages/parent/ParentDashboard";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import StudentInfo from "../pages/parent/StudentInfo";
-import MedicalEvent from "../pages/parent/MedicalEvent";
+import MedicalRecord from "../pages/parent/MedicalRecord";
 import Vaccination from "../pages/parent/Vaccination";
 import HealthCheck from "../pages/parent/HealthCheck";
 import Prescription from "../pages/parent/Prescription";
@@ -27,8 +27,8 @@ const router = createBrowserRouter([
   { path: "/parent", element: <PrivateRouter><ParentDashboard /></PrivateRouter>, children: [
     { index: true, element: <StudentInfo /> },
     { path: "info", element: <StudentInfo /> },
-    { path: "medical-event", element: <MedicalEvent /> },
-    { path: "vacinnation", element: <Vaccination /> },
+    { path: "medical-record", element: <MedicalRecord /> },
+    { path: "vaccination", element: <Vaccination /> },
     { path: "health-check", element: <HealthCheck /> },
     { path: "prescription", element: <Prescription /> },
   ]},

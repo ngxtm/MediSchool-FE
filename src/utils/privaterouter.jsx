@@ -9,6 +9,7 @@ const PrivateRouter = ({children}) => {
     const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
     const tempSession = sessionStorage.getItem("tempSession");
 
+    // Kiểm tra cả localStorage và sessionStorage
     if (!session && !tempSession) {
         return <Navigate to="/login" replace/>
     }

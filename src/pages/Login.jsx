@@ -15,7 +15,7 @@ const Login = () => {
 	const [rememberMe, setRememberMe] = useState(false);
 	const navigate = useNavigate();
 
-	const { session, signInWithEmail, signInWithGoogle } = UserAuth();
+	const { signInWithEmail, signInWithGoogle } = UserAuth();
 
 	const handleSignInWithEmail = async (e) => {
 		e.preventDefault();
@@ -26,15 +26,12 @@ const Login = () => {
 			console.log("Data: ", result.data);
 			if (result.success) {
 				const { user } = result.data;
-				const { data: userData, error } = await supabase
+				const { data: userData, error: roleError } = await supabase
 					.from("user_profile")
 					.select("role")
 					.eq("id", user.id)
 					.single();
-
-				console.log("USER DATA: ", userData);
-
-				// Nếu không remember me, đợi một chút để localStorage token được xóa
+				setError(roleError?.message);
 				if (!rememberMe) {
 					await new Promise(resolve => setTimeout(resolve, 150));
 				}

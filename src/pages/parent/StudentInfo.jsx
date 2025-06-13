@@ -23,7 +23,7 @@ const StudentInfo = () => {
 			}
 		}
 		fetchStudentData();
-	}, []);
+	}, [API_URL]);
 
 	if (loading) return <div className="flex justify-center items-start h-screen mt-40"><Cardio size="100" stroke="4" speed="2" color="#0A3D62"/></div>
 	if (error) return <p>{error.message}</p>
@@ -45,7 +45,7 @@ const StudentInfo = () => {
 				</div>
 				<div className={rowBlue}>
 					<p className="w-fit font-bold">Giới tính</p>
-					<p className="w-fit">{studentData?.gender === "MALE" ? "Nam" : "Nữ" || 'N/A'}</p>
+					<p className="w-fit">{(studentData?.gender === "MALE" ? "Nam" : studentData?.gender === "FEMALE" ? "Nữ" : 'N/A')}</p>
 				</div>
 				<div className={rowWhite}>
 					<p className="w-fit font-bold">Ngày sinh</p>

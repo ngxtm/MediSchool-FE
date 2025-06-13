@@ -27,9 +27,7 @@ const AuthCallback = () => {
 				if (!rememberMePreference) {
 					sessionStorage.setItem("tempSession", JSON.stringify(data.session));
 
-					const projectRef = supabase.supabaseUrl
-						.split("https://")[1]
-						.split(".")[0];
+					const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
 					localStorage.removeItem(`sb-${projectRef}-auth-token`);
 
 					const role = backendData.user.role;

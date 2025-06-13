@@ -80,7 +80,7 @@ export const AuthContextProvider = ({ children }) => {
 			localStorage.removeItem("rememberMePreference");
 
 			const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
-			localStorage.removeItemp(`sb-${projectRef}-auth-token`);
+			localStorage.removeItem(`sb-${projectRef}-auth-token`);
 		} catch (error) {
 			console.error("Error in signOut:", error);
 			return { success: false, error };

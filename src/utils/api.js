@@ -18,17 +18,16 @@ api.interceptors.request.use(
 					config.headers.Authorization = `Bearer ${parsedSession.access_token}`;
 				}
 			} catch (e) {
-				console.error('Error parsing tempSession:', e);
+				console.error("Error parsing tempSession:", e);
 			}
 			return config;
 		}
 
 		try {
 			if (supabase?.supabaseUrl) {
-				const url = supabase.supabaseUrl.startsWith('https://') 
-					? supabase.supabaseUrl.replace('https://', '') 
-					: supabase.supabaseUrl.replace('http://', '');
-				const projectRef = url.split('.')[0];
+				const projectRef = supabase.supabaseUrl
+					.split("https://")[1]
+					.split(".")[0];
 				const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
 				if (session) {
 					const parsedToken = JSON.parse(session);
@@ -38,7 +37,7 @@ api.interceptors.request.use(
 				}
 			}
 		} catch (e) {
-			console.error('Error setting up auth header:', e);
+			console.error("Error setting up auth header:", e);
 		}
 
 		return config;
@@ -55,14 +54,13 @@ api.interceptors.response.use(
 		if (error.response.status === 401 && !originalRequest._retry) {
 			originalRequest._retry = true;
 			try {
-				const { data } = await api.post("auth/refresh-token");
+				const { data } = await api.post("/auth/refresh-token");
 				const rememberMe =
 					localStorage.getItem("rememberMeReference") === "true";
 				if (rememberMe) {
-					const url = supabase.supabaseUrl.startsWith('https://') 
-					? supabase.supabaseUrl.replace('https://', '') 
-					: supabase.supabaseUrl.replace('http://', '');
-				const projectRef = url.split('.')[0];
+					const projectRef = supabase.supabaseUrl
+						.split("https://")[1]
+						.split(".")[0];
 					const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
 					if (session) {
 						const parsedToken = JSON.parse(session);

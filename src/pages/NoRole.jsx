@@ -8,7 +8,7 @@ const NoRole = () => {
 	useEffect(() => {
 		const fetchUserRole = async () => {
 			try {
-				const { data } = await api.get("/api/me");
+				const { data } = await api.get("/me");
 				setUserRole(data.role);
 			} catch (error) {
 				console.error("Error fetching user role:", error);

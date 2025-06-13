@@ -23,8 +23,8 @@ const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/update-password", element: <UpdatePassword /> },
-  { path: "/nurse", element: <PrivateRouter><NurseDashboard /></PrivateRouter> },
-  { path: "/parent", element: <PrivateRouter><ParentDashboard /></PrivateRouter>, children: [
+  { path: "/nurse", element: <PrivateRouter requiredRole="NURSE"><NurseDashboard /></PrivateRouter> },
+  { path: "/parent", element: <PrivateRouter requiredRole="PARENT"><ParentDashboard /></PrivateRouter>, children: [
     { index: true, element: <StudentInfo /> },
     { path: "info", element: <StudentInfo /> },
     { path: "medical-record", element: <MedicalRecord /> },
@@ -32,8 +32,8 @@ const router = createBrowserRouter([
     { path: "health-check", element: <HealthCheck /> },
     { path: "prescription", element: <Prescription /> },
   ]},
-  { path: "/manager", element: <PrivateRouter><ManagerDashboard /></PrivateRouter> },
-  { path: "/admin", element: <PrivateRouter><AdminDashboard /></PrivateRouter> },
+  { path: "/manager", element: <PrivateRouter requiredRole="MANAGER"><ManagerDashboard /></PrivateRouter> },
+  { path: "/admin", element: <PrivateRouter requiredRole="ADMIN"><AdminDashboard /></PrivateRouter> },
   { path: "/no-role", element: <NoRole /> },
   { path: "/auth/callback", element: <AuthCallback/> },
 ]);

@@ -1,4 +1,4 @@
-import TaskBar from "../../components/TaskBar";
+import ParentTaskBar from "../../components/ParentTaskBar";
 import StudentBox from "../../components/StudentBox";
 import NavToggle from "../../components/NavToggle";
 import { Outlet } from "react-router-dom";
@@ -31,7 +31,7 @@ const ParentDashboard = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 font-inter">
-            <TaskBar userData={user}/>
+            <ParentTaskBar userData={user}/>
             <div className="px-20 py-6">
                 <StudentBox />
                 <div className="mt-6">

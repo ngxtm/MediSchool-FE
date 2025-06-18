@@ -50,6 +50,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
 	(response) => response,
 	async (error) => {
+		console.log("Error in api:", error);
 		const originalRequest = error.config;
 		if (error.response.status === 401 && !originalRequest._retry) {
 			originalRequest._retry = true;
@@ -82,10 +83,12 @@ api.interceptors.response.use(
 				originalRequest.headers.Authorization = `Bearer ${data.token}`;
 				return axios(originalRequest);
 			} catch (refreshError) {
+				console.error("Token refresh failed:", refreshError);
 				window.location.href = "/login";
 				return Promise.reject(refreshError);
 			}
 		}
+		return Promise.reject(error);
 	}
 );
 

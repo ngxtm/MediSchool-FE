@@ -79,7 +79,9 @@ export const AuthContextProvider = ({ children }) => {
 			sessionStorage.removeItem("tempSession");
 			localStorage.removeItem("rememberMePreference");
 
-			const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+			const projectRef = supabase.supabaseUrl
+				.split("https://")[1]
+				.split(".")[0];
 			localStorage.removeItem(`sb-${projectRef}-auth-token`);
 		} catch (error) {
 			console.error("Error in signOut:", error);
@@ -89,8 +91,8 @@ export const AuthContextProvider = ({ children }) => {
 
 	const resetPassword = async (email) => {
 		try {
-			const { data, error } = await api.post("/auth/reset-password", {
-				email,
+			const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+				redirectTo: `${window.location.origin}/update-password`,
 			});
 
 			if (error) {

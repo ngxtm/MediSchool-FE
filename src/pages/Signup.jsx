@@ -4,6 +4,8 @@ import { UserAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 import LoginImage from "../assets/login-image.png";
+import { toast } from "react-toastify";
+import { Zoom } from "react-toastify";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -20,7 +22,18 @@ const Signup = () => {
     setLoading(true);
     const result = await signUpWithEmail(email, password);
     if (result.success) {
-      navigate(`${window.location.origin}/auth/callback`);
+      navigate('/login');
+      toast.success("User created successfully", {
+				position: "bottom-center",
+				autoClose: 2000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: "light",
+				transition: Zoom,
+			});
     } else {
       setError(result.error.message);
     }

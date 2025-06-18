@@ -2,7 +2,8 @@ import { ChevronDown, CircleUserRound, Settings, LogOut } from "lucide-react";
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import useSignOut from "../utils/signout";
 
-const TaskBar = () => {
+const TaskBar = ({userData}) => {
+    const username = userData?.fullName || "N/A";
     const signout = useSignOut();
     return (
         <div className="flex justify-between items-center bg-[#E8F4FB] p-4 shadow-md px-20 font-inter">
@@ -11,7 +12,7 @@ const TaskBar = () => {
                 <h1 className="font-bold">HỆ THỐNG QUẢN LÝ SỨC KHOẺ HỌC SINH</h1>
             </div>
             <div className="flex items-center gap-2">
-                <CircleUserRound color="#4d8ab3" size={28} className="mr-1.5" /><p>Hi, @username</p>
+                <CircleUserRound color="#4d8ab3" size={28} className="mr-1.5" /><p>Hi, {username}</p>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger asChild>
                         <button className="flex items-center">

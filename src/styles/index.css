@@ -3,5 +3,21 @@
 @import "@fontsource/inter/700.css";
 
 @theme {
-    --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+	--font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.custom-select .ant-select-selector {
+	border-radius: 16px;
+}
+
+.custom-picker {
+	border-radius: 16px;
+}
+
+.input-field {
+	@apply w-full h-[40px] mt-2 rounded-[8px] px-3 border border-gray-300 outline-none focus:border-[#1676fb] focus:border-2 placeholder:text-[#bfbfbf];
+}
+
+.textarea-field {
+	@apply w-full mt-2 rounded-[8px] px-3 py-2 border border-gray-300 outline-none focus:border-[#1676fb] focus:border-2 resize-none placeholder:text-[#bfbfbf];
 }

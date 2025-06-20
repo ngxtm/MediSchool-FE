@@ -19,18 +19,24 @@ const AuthCallback = () => {
 					return;
 				}
 
+				if (rememberMePreference) {
+					const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+					localStorage.setItem(`sb-${projectRef}-auth-token`, JSON.stringify(data.session));
+				} else {
+					sessionStorage.setItem("tempSession", JSON.stringify(data.session));
+				}
+
 				const { data: backendData } = await api.post("/auth/google-callback", {
 					supabaseSession: data.session,
 					rememberMe: rememberMePreference,
 				});
 
 				if (!rememberMePreference) {
-					sessionStorage.setItem("tempSession", JSON.stringify(data.session));
-
 					const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
 					localStorage.removeItem(`sb-${projectRef}-auth-token`);
+				}
 
-					const role = backendData.user.role;
+				const role = backendData.user.role;
 					switch (role) {
 						case "NURSE":
 							navigate("/nurse");
@@ -47,7 +53,6 @@ const AuthCallback = () => {
 						default:
 							navigate("/no-role");
 					}
-				}
 			} catch (error) {
 				console.error("Error in AuthCallback:", error);
 				navigate("/login");

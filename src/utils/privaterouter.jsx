@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import api from "../utils/api";
+import { Cardio } from "ldrs/react";
 
 const PrivateRouter = ({ children, requiredRole }) => {
 	const [loading, setLoading] = useState(true);
@@ -42,7 +43,7 @@ const PrivateRouter = ({ children, requiredRole }) => {
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
 			</div>
 		);
 	}

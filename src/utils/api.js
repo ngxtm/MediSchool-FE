@@ -25,9 +25,7 @@ api.interceptors.request.use(
 
 		try {
 			if (supabase?.supabaseUrl) {
-				const projectRef = supabase.supabaseUrl
-					.split("https://")[1]
-					.split(".")[0];
+				const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
 				const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
 				if (session) {
 					const parsedToken = JSON.parse(session);
@@ -50,38 +48,55 @@ api.interceptors.request.use(
 api.interceptors.response.use(
 	(response) => response,
 	async (error) => {
-		console.log("Error in api:", error);
-		const originalRequest = error.config;
-		if (error.response.status === 401 && !originalRequest._retry) {
-			originalRequest._retry = true;
+		if (error.response.status === 401 && !error.config._retry) {
+			error.config._retry = true;
 			try {
-				const { data } = await api.post("/auth/refresh-token");
-				const rememberMe =
-					localStorage.getItem("rememberMeReference") === "true";
-				if (rememberMe) {
-					const projectRef = supabase.supabaseUrl
-						.split("https://")[1]
-						.split(".")[0];
-					const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
-					if (session) {
-						const parsedToken = JSON.parse(session);
-						parsedToken.access_token = data.token;
-						localStorage.setItem(
-							`sb-${projectRef}-auth-token`,
-							JSON.stringify(parsedToken)
-						);
-					}
-				} else {
-					const tempSession = sessionStorage.getItem("tempSession");
-					if (tempSession) {
-						const parsedToken = JSON.parse(tempSession);
-						parsedToken.access_token = data.token;
-						sessionStorage.setItem("tempSession", JSON.stringify(parsedToken));
-					}
+				let currentToken;
+				const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+				const tempSession = sessionStorage.getItem("tempSession");
+				const localSession = localStorage.getItem(
+					`sb-${projectRef}-auth-token`
+				);
+
+				if (localSession) {
+					const parsedToken = JSON.parse(localSession);
+					currentToken = parsedToken.access_token;
+				} else if (tempSession) {
+					const parsedToken = JSON.parse(tempSession);
+					currentToken = parsedToken.access_token;
 				}
 
-				originalRequest.headers.Authorization = `Bearer ${data.token}`;
-				return axios(originalRequest);
+				if (!currentToken) {
+					throw new Error("No token available for refresh");
+				}
+
+				const config = {
+					headers: { Authorization: `Bearer ${currentToken}` },
+				};
+
+				const { data } = await axios.post(
+					"/api/auth/refresh-token",
+					{},
+					config
+				);
+
+				const rememberMe =
+					localStorage.setItem("rememberMePreference") === "true";
+				if (rememberMe && localSession) {
+					const parsedToken = JSON.parse(localSession);
+					parsedToken.access_token = data.token;
+					localStorage.setItem(
+						`sb-${projectRef}-auth-token`,
+						JSON.stringify(parsedToken)
+					);
+				} else if (tempSession) {
+					const parsedToken = JSON.parse(tempSession);
+					parsedToken.access_token = data.token;
+					sessionStorage.setItem("tempSession", JSON.stringify(parsedToken));
+				}
+
+				error.config.headers.Authorization = `Bearer ${data.token}`;
+				return axios(error.config);
 			} catch (refreshError) {
 				console.error("Token refresh failed:", refreshError);
 				window.location.href = "/login";

@@ -113,7 +113,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={onOpenChange}>
+		<Dialog.Root open={open} onOpenChange={onOpenChange} className="font-inter">
 			<Dialog.Trigger asChild>
 				<button className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95">
 					Tạo lịch tiêm chủng mới
@@ -409,7 +409,7 @@ const Vaccination = () => {
 	};
 
 	return (
-		<>
+		<div className="font-inter">
 			<div className="flex max-w-full justify-between mb-16">
 				<DetailBox
 					title="Đã gửi"
@@ -471,7 +471,7 @@ const Vaccination = () => {
 						return (
 							<div
 								key={event.id}
-								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6"
+								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
 							>
 								<div className="flex justify-center gap-10 items-center">
 									<Activity size={50} />
@@ -516,18 +516,23 @@ const Vaccination = () => {
 											</>
 										)}
 									</div>
-									<ChevronRight size={30} />
+									<button onClick={() => navigate(`/nurse/vaccine-event/${event.id}`)}>
+										<ChevronRight
+											size={30}
+											className="transition-transform duration-200 group-hover:translate-x-1 group-hover:scale-110 text-[#023E73]"
+										/>
+									</button>
 								</div>
 							</div>
 						);
 					})
 				) : (
-					<div className="text-center py-10">
+					<div className="text-center py-10 bg-[#DAEAF7] flex items-center justify-center mt-24 font-semibold">
 						Không có sự kiện tiêm chủng nào
 					</div>
 				)}
 			</div>
-		</>
+		</div>
 	);
 };
 

@@ -23,6 +23,7 @@ import {
   MedicalRequest as NurseMedicalRequest,
   Student as NurseStudent,
   VaccineList as NurseVaccineList,
+  VaccineEventDetail as NurseVaccineEventDetail,
 } from "../pages/nurse/sub-pages";
 
 const router = createBrowserRouter([
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
     { path: "medical-request", element: <NurseMedicalRequest /> },
     { path: "student", element: <NurseStudent /> },
     { path: "vaccine-list", element: <NurseVaccineList /> },
+    { path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
   ] },
   { path: "/parent", element: <PrivateRouter requiredRole="PARENT"><ParentDashboard /></PrivateRouter>, children: [
     { index: true, element: <StudentInfo /> },

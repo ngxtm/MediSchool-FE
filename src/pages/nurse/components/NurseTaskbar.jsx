@@ -33,7 +33,6 @@ const NurseTaskBar = ({ userData }) => {
 			"health-checkup",
 			"medical-request",
 			"medication-event",
-			"vaccine-list",
 		].includes(currentTab)
 	) {
 		currentTab = "student";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input, Table } from "antd";
-import { Search, Plus, X } from "lucide-react";
+import { Search, Plus, X, Pencil } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import api from "../../../utils/api";
 import ReturnButton from "../../../components/ReturnButton";
@@ -63,6 +63,12 @@ const VaccineList = () => {
 			dataIndex: "sideEffects",
 			key: "sideEffects",
 			onHeaderCell: () => ({ style: { textAlign: "center" } }),
+		},
+		{
+			title: "",
+			key: "action",
+			align: "center",
+			render: (_, record) => <DialogEdit vaccine={record} />, 
 		},
 	];
 
@@ -259,5 +265,113 @@ const VaccineList = () => {
 		</>
 	);
 };
+
+	const DialogEdit = ({ vaccine }) => {
+		const [formData, setFormData] = useState({
+			name: vaccine?.name || "",
+			manufacturer: vaccine?.manufacturer || "",
+			dosesRequired: vaccine?.dosesRequired || "",
+			description: vaccine?.description || "",
+			sideEffects: vaccine?.sideEffects || "",
+			storageTemperature: vaccine?.storageTemperature || "",
+		});
+
+		const queryClient = useQueryClient();
+
+		const toastPopup = (message) => {
+			toast.error(message, {
+				position: "bottom-center",
+				autoClose: 5000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+				theme: "light",
+				transition: Zoom,
+			});
+		};
+
+		const updateMutation = useMutation({
+			mutationFn: (updatedVac) => api.put(`/vaccines/${vaccine.vaccineId}`, updatedVac),
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ["vaccines"] });
+				toast.success("Cập nhật vaccine thành công!");
+			},
+			onError: (err) => toastPopup(err.message),
+		});
+
+		const handleChange = (field, value) => {
+			setFormData((prev) => ({ ...prev, [field]: value }));
+		};
+
+		const handleSubmit = () => {
+			updateMutation.mutate(formData);
+		};
+
+		return (
+			<Dialog.Root>
+				<Dialog.Trigger asChild>
+					<button type="button" className="group p-2 rounded-md hover:bg-gray-100 active:scale-95 transition-all">
+						<Pencil size={18} className="text-[#023E73]" />
+					</button>
+				</Dialog.Trigger>
+				<Dialog.Portal>
+					<Dialog.Overlay className="fixed inset-0 bg-black/60" />
+					<Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-10 px-8 shadow-lg focus:outline-none">
+						<Dialog.Title className="text-2xl font-extrabold text-center mb-6">CHỈNH SỬA THÔNG TIN VACCINE</Dialog.Title>
+
+						<div className="flex flex-col gap-6">
+							<div className="flex flex-col">
+								<label className="font-semibold" htmlFor={`name-${vaccine.vaccineId}`}>Tên Vaccine</label>
+								<input id={`name-${vaccine.vaccineId}`} className="input-field" value={formData.name} onChange={(e) => handleChange("name", e.target.value)} />
+							</div>
+
+							<div className="grid grid-cols-2 gap-4">
+								<div className="flex flex-col">
+									<label className="font-semibold" htmlFor={`manufacturer-${vaccine.vaccineId}`}>Nơi sản xuất</label>
+									<input id={`manufacturer-${vaccine.vaccineId}`} className="input-field" value={formData.manufacturer} onChange={(e) => handleChange("manufacturer", e.target.value)} />
+								</div>
+								<div>
+									<label className="font-semibold" htmlFor={`doses-${vaccine.vaccineId}`}>Số liều yêu cầu</label>
+									<input id={`doses-${vaccine.vaccineId}`} type="number" min="1" className="input-field" value={formData.dosesRequired} onChange={(e) => handleChange("dosesRequired", e.target.value)} />
+								</div>
+							</div>
+
+							<div>
+								<label className="font-semibold" htmlFor={`description-${vaccine.vaccineId}`}>Mô tả</label>
+								<textarea id={`description-${vaccine.vaccineId}`} rows={3} className="textarea-field" value={formData.description} onChange={(e) => handleChange("description", e.target.value)} />
+							</div>
+
+							<div>
+								<label className="font-semibold" htmlFor={`sideEffects-${vaccine.vaccineId}`}>Triệu chứng sau khi tiêm</label>
+								<textarea id={`sideEffects-${vaccine.vaccineId}`} rows={3} className="textarea-field" value={formData.sideEffects} onChange={(e) => handleChange("sideEffects", e.target.value)} />
+							</div>
+
+							<div>
+								<label className="font-semibold" htmlFor={`storage-${vaccine.vaccineId}`}>Nhiệt độ bảo quản</label>
+								<input id={`storage-${vaccine.vaccineId}`} className="input-field" value={formData.storageTemperature} onChange={(e) => handleChange("storageTemperature", e.target.value)} />
+							</div>
+						</div>
+
+						<div className="mt-10 flex justify-center gap-6">
+							<Dialog.Close asChild>
+								<button className="h-[45px] w-[160px] rounded-md bg-gray-100 text-black font-semibold hover:bg-gray-200 active:scale-95 transition-all">Hủy</button>
+							</Dialog.Close>
+							<button onClick={handleSubmit} disabled={updateMutation.isPending} className="h-[45px] w-[160px] rounded-md bg-[#023E73] text-white font-semibold hover:bg-[#01294d] active:scale-95 transition-all disabled:opacity-60">
+								{updateMutation.isPending ? "Đang cập nhật..." : "Xác nhận"}
+							</button>
+						</div>
+
+						<Dialog.Close asChild>
+							<button className="absolute top-3 right-3 text-gray-500 hover:text-gray-700" aria-label="Close">
+								<X size={20} />
+							</button>
+						</Dialog.Close>
+					</Dialog.Content>
+				</Dialog.Portal>
+			</Dialog.Root>
+		);
+	};
 
 export default VaccineList;

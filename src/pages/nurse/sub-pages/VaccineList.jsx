@@ -274,6 +274,13 @@ const VaccineList = () => {
 		);
 	};
 
+	const [pagination, setPagination] = useState({
+		current: 1,
+		pageSize: 10,
+		showSizeChanger: true,
+		showQuickJumper: true,
+	});
+
 	return (
 		<>
 			<ReturnButton linkNavigate="/nurse/vaccination" />
@@ -299,7 +306,8 @@ const VaccineList = () => {
 				columns={columns}
 				dataSource={filteredVaccines}
 				loading={isLoading}
-				pagination={false}
+				onChange={(pagination) => setPagination(pagination)}
+				pagination={pagination}
 				rowKey="vaccineId"
 			/>
 		</>

@@ -18,6 +18,8 @@ import { Dialog } from "radix-ui";
 import { Select } from "antd";
 import { Zoom, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { parseDate, formatDate } from "../../../utils/dateparse";
+import Loading from "../../../components/Loading";
 
 const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	const [formData, setFormData] = useState({
@@ -340,11 +342,7 @@ const Vaccination = () => {
 									`/vaccine-consents/event/${event.id}/results`
 								);
 								return { ...event, consentStats: statsResponse.data };
-							} catch (error) {
-								console.error(
-									`Error fetching stats for event ${event.id}:`,
-									error
-								);
+							} catch {
 								return { ...event, consentStats: null };
 							}
 						})
@@ -361,11 +359,7 @@ const Vaccination = () => {
 	const isError = results.some((result) => result.isError);
 
 	if (isLoading) {
-		return (
-			<div className="flex justify-center items-start h-screen mt-40">
-				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-			</div>
-		);
+		return <Loading />;
 	}
 
 	if (isError) {
@@ -374,19 +368,9 @@ const Vaccination = () => {
 
 	const [consentTotal, vaccineEvents] = results.map((result) => result.data);
 
-	const formatDate = (input) => {
-		if (!input) return "";
-
-		let date;
-		if (Array.isArray(input)) {
-			const [y, m, d, hh = 0, mm = 0, ss = 0] = input;
-			date = new Date(y, m - 1, d, hh, mm, ss);
-		} else {
-			date = new Date(input);
-		}
-
-		return date.toLocaleDateString("vi-VN");
-	};
+	const sortedEvents = [...(vaccineEvents || [])].sort(
+		(a, b) => parseDate(b.createdAt) - parseDate(a.createdAt)
+	);
 
 	const getStatusDisplay = (status, date) => {
 		if (!status) return { text: "Lỗi trạng thái", bgColor: "bg-[#DAEAF7]" };
@@ -458,7 +442,7 @@ const Vaccination = () => {
 			</div>
 			<div className="flex flex-col justify-center space-y-4 mt-8">
 				{vaccineEvents && vaccineEvents.length > 0 ? (
-					vaccineEvents.map((event) => {
+					sortedEvents.map((event) => {
 						const { text: statusText, bgColor } = getStatusDisplay(
 							event.status,
 							event.event_date

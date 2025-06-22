@@ -22,7 +22,7 @@ const NurseTaskBar = ({ userData }) => {
 	const pathParts = location.pathname.split("/");
 	let currentTab = pathParts[pathParts.length - 1];
 
-	if (currentTab === "vaccine-list") {
+	if (pathParts.includes("vaccine-event") || currentTab === "vaccine-list") {
 		currentTab = "vaccination";
 	}
 	if (
@@ -43,10 +43,10 @@ const NurseTaskBar = ({ userData }) => {
 		}
 	};
 	return (
-		<div className="flex justify-between items-center bg-[#E8F4FB] p-4 shadow-md px-20 font-inter">
+		<div className="flex justify-between items-center bg-white/80 backdrop-blur-xl px-4 md:px-20 py-3 shadow-lg rounded-b-xl font-inter sticky top-0 z-50">
 			<div className="flex items-center gap-2">
-				<img src={heartIcon} alt="Heart" />
-				<p className="font-extrabold text-xl">MediSchool</p>
+				<img src={heartIcon} alt="MediSchool Logo" />
+				<p className="font-extrabold text-xl text-[#023E73]">MediSchool</p>
 			</div>
 			<ToggleGroup.Root
 				className="inline-flex rounded-md justify-between"
@@ -71,7 +71,7 @@ const NurseTaskBar = ({ userData }) => {
 					return (
 						<ToggleGroup.Item
 							key={value}
-							className={`flex-1 max-w-fit text-center py-3 px-4 rounded-md transition-colors ${
+							className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
 								shouldShowActive
 									? "bg-[#023E73] text-white font-bold"
 									: isHovered
@@ -98,15 +98,15 @@ const NurseTaskBar = ({ userData }) => {
 						</button>
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Portal>
-						<DropdownMenu.Content className="bg-white rounded-md p-2 shadow-lg">
-							<DropdownMenu.Item className="px-4 py-2 hover:bg-gray-100 rounded cursor-pointer">
+						<DropdownMenu.Content className="bg-white rounded-md p-2 shadow-xl ring-1 ring-black/5 z-[60]">
+							<DropdownMenu.Item className="px-4 py-2 hover:bg-gray-100 rounded cursor-pointer transition-colors duration-200">
 								<div className="flex items-center">
 									<p className="pr-4">Cài đặt tài khoản</p>
 									<Settings size={16} />
 								</div>
 							</DropdownMenu.Item>
 							<DropdownMenu.Separator className="h-px bg-gray-200 my-1" />
-							<DropdownMenu.Item className="px-4 py-2 text-red-600 hover:bg-gray-100 rounded cursor-pointer">
+							<DropdownMenu.Item className="px-4 py-2 text-red-600 hover:bg-gray-100 rounded cursor-pointer transition-colors duration-200">
 								<button
 									onClick={signout}
 									className="flex items-center justify-between w-full"

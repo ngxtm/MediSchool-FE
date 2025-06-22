@@ -453,7 +453,7 @@ const Vaccination = () => {
 							event.consentStats?.respondedConsents || 0;
 
 						return (
-							<div
+							<button onClick={() => navigate(`/nurse/vaccine-event/${event.id}`)}
 								key={event.id}
 								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
 							>
@@ -507,7 +507,7 @@ const Vaccination = () => {
 										/>
 									</button>
 								</div>
-							</div>
+							</button>
 						);
 					})
 				) : (

@@ -7,7 +7,7 @@ import {
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import useSignOut from "../../../utils/signout";
 import { ToggleGroup } from "radix-ui";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import heartIcon from "../../../assets/heart.png";
 
@@ -69,7 +69,8 @@ const NurseTaskBar = ({ userData }) => {
 					const shouldShowActive = isActive && (!hoveredTab || isHovered);
 
 					return (
-						<ToggleGroup.Item
+						<Link to={`/nurse/${value}`}>
+							<ToggleGroup.Item
 							key={value}
 							className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
 								shouldShowActive
@@ -85,6 +86,7 @@ const NurseTaskBar = ({ userData }) => {
 						>
 							{label}
 						</ToggleGroup.Item>
+						</Link>
 					);
 				})}
 			</ToggleGroup.Root>

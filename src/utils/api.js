@@ -81,7 +81,7 @@ api.interceptors.response.use(
 				);
 
 				const rememberMe =
-					localStorage.setItem("rememberMePreference") === "true";
+                    localStorage.getItem("rememberMePreference") === "true";
 				if (rememberMe && localSession) {
 					const parsedToken = JSON.parse(localSession);
 					parsedToken.access_token = data.token;

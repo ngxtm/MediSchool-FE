@@ -18,6 +18,8 @@ import { Dialog } from "radix-ui";
 import { Select } from "antd";
 import { Zoom, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { parseDate, formatDate } from "../../../utils/dateparse";
+import Loading from "../../../components/Loading";
 
 const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	const [formData, setFormData] = useState({
@@ -113,7 +115,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	};
 
 	return (
-		<Dialog.Root open={open} onOpenChange={onOpenChange}>
+		<Dialog.Root open={open} onOpenChange={onOpenChange} className="font-inter">
 			<Dialog.Trigger asChild>
 				<button className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95">
 					Tạo lịch tiêm chủng mới
@@ -340,11 +342,7 @@ const Vaccination = () => {
 									`/vaccine-consents/event/${event.id}/results`
 								);
 								return { ...event, consentStats: statsResponse.data };
-							} catch (error) {
-								console.error(
-									`Error fetching stats for event ${event.id}:`,
-									error
-								);
+							} catch {
 								return { ...event, consentStats: null };
 							}
 						})
@@ -361,11 +359,7 @@ const Vaccination = () => {
 	const isError = results.some((result) => result.isError);
 
 	if (isLoading) {
-		return (
-			<div className="flex justify-center items-start h-screen mt-40">
-				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-			</div>
-		);
+		return <Loading />;
 	}
 
 	if (isError) {
@@ -374,19 +368,9 @@ const Vaccination = () => {
 
 	const [consentTotal, vaccineEvents] = results.map((result) => result.data);
 
-	const formatDate = (input) => {
-		if (!input) return "";
-
-		let date;
-		if (Array.isArray(input)) {
-			const [y, m, d, hh = 0, mm = 0, ss = 0] = input;
-			date = new Date(y, m - 1, d, hh, mm, ss);
-		} else {
-			date = new Date(input);
-		}
-
-		return date.toLocaleDateString("vi-VN");
-	};
+	const sortedEvents = [...(vaccineEvents || [])].sort(
+		(a, b) => parseDate(b.createdAt) - parseDate(a.createdAt)
+	);
 
 	const getStatusDisplay = (status, date) => {
 		if (!status) return { text: "Lỗi trạng thái", bgColor: "bg-[#DAEAF7]" };
@@ -409,7 +393,7 @@ const Vaccination = () => {
 	};
 
 	return (
-		<>
+		<div className="font-inter">
 			<div className="flex max-w-full justify-between mb-16">
 				<DetailBox
 					title="Đã gửi"
@@ -458,7 +442,7 @@ const Vaccination = () => {
 			</div>
 			<div className="flex flex-col justify-center space-y-4 mt-8">
 				{vaccineEvents && vaccineEvents.length > 0 ? (
-					vaccineEvents.map((event) => {
+					sortedEvents.map((event) => {
 						const { text: statusText, bgColor } = getStatusDisplay(
 							event.status,
 							event.event_date
@@ -469,9 +453,9 @@ const Vaccination = () => {
 							event.consentStats?.respondedConsents || 0;
 
 						return (
-							<div
+							<button onClick={() => navigate(`/nurse/vaccine-event/${event.id}`)}
 								key={event.id}
-								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6"
+								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
 							>
 								<div className="flex justify-center gap-10 items-center">
 									<Activity size={50} />
@@ -516,18 +500,23 @@ const Vaccination = () => {
 											</>
 										)}
 									</div>
-									<ChevronRight size={30} />
+									<button onClick={() => navigate(`/nurse/vaccine-event/${event.id}`)}>
+										<ChevronRight
+											size={30}
+											className="transition-transform duration-200 group-hover:translate-x-1 group-hover:scale-110 text-[#023E73]"
+										/>
+									</button>
 								</div>
-							</div>
+							</button>
 						);
 					})
 				) : (
-					<div className="text-center py-10">
+					<div className="text-center py-10 bg-[#DAEAF7] flex items-center justify-center mt-24 font-semibold">
 						Không có sự kiện tiêm chủng nào
 					</div>
 				)}
 			</div>
-		</>
+		</div>
 	);
 };
 

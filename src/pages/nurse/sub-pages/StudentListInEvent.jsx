@@ -115,9 +115,9 @@ const StudentListInEvent = () => {
 		return <Loading />;
 	}
 
-	// if (isVaccineEventError || isStudentsListError) {
-	// 	return <div>Error fetching api & load data</div>;
-	// }
+	if (isVaccineEventError || isStudentsListError) {
+		return <div>Error fetching api & load data</div>;
+	}
 
 	const columns = [
 		{

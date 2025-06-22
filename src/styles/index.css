@@ -6,6 +6,10 @@
 	--font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+body {
+	overflow-y: scroll;
+}
+
 .custom-select .ant-select-selector {
 	border-radius: 16px;
 }

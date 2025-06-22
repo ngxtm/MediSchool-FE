@@ -132,8 +132,8 @@ const VaccineList = () => {
 					</button>
 				</Dialog.Trigger>
 				<Dialog.Portal>
-					<Dialog.Overlay className="fixed inset-0 bg-black/60" />
-					<Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-10 px-8 shadow-lg focus:outline-none">
+					<Dialog.Overlay className="fixed inset-0 bg-black/60 z-[60]" />
+					<Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-10 px-8 shadow-lg focus:outline-none z-[61]">
 						<Dialog.Title className="text-2xl font-extrabold text-center mb-6">
 							THÔNG TIN VACCINE
 						</Dialog.Title>
@@ -369,8 +369,8 @@ const DialogEdit = ({ vaccine }) => {
 				</button>
 			</Dialog.Trigger>
 			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black/60" />
-				<Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-10 px-8 shadow-lg focus:outline-none">
+				<Dialog.Overlay className="fixed inset-0 bg-black/60 z-[60]" />
+				<Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-10 px-8 shadow-lg focus:outline-none z-[61]">
 					<Dialog.Title className="text-2xl font-extrabold text-center mb-6">
 						CHỈNH SỬA THÔNG TIN VACCINE
 					</Dialog.Title>

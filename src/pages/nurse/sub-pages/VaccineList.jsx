@@ -18,13 +18,12 @@ const VaccineList = () => {
 		},
 	});
 
-	const filteredVaccines = vaccines.filter((v) =>
-		v.name.toLowerCase().includes(search.toLowerCase())
-	);
+	const filteredVaccines = vaccines
+		.filter((v) => v.name.toLowerCase().includes(search.toLowerCase()))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	const queryClient = useQueryClient();
 
-	// show error toast
 	const toastPopup = (message) => {
 		toast.error(message, {
 			position: "bottom-center",
@@ -398,7 +397,11 @@ const DialogEdit = ({ vaccine }) => {
 	};
 
 	const handleSubmit = () => {
-		updateMutation.mutate(formData);
+		updateMutation.mutate({
+			...formData,
+			dosesRequired: Number(formData.dosesRequired),
+			categoryId: formData.categoryId || vaccine.categoryId,
+		});
 	};
 
 	return (

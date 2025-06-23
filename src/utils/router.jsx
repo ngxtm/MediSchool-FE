@@ -24,6 +24,7 @@ import {
 	VaccineList as NurseVaccineList,
 	VaccineEventDetail as NurseVaccineEventDetail,
 	StudentListInEvent as NurseStudentListInEvent,
+	ConsentDetail as NurseConsentDetail,
 } from "../pages/nurse/sub-pages";
 
 const router = createBrowserRouter([
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
 			{ path: "vaccine-list", element: <NurseVaccineList /> },
 			{ path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
 			{ path: "vaccine-event/:id/students", element: <NurseStudentListInEvent /> },
+			{ path: "vaccine-event/:eventId/consent/:consentId", element: <NurseConsentDetail /> },
 		],
 	},
 	{

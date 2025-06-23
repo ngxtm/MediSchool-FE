@@ -17,7 +17,6 @@ import Vaccination from "../pages/parent/Vaccination";
 import HealthCheck from "../pages/parent/HealthCheck";
 import Prescription from "../pages/parent/Prescription";
 import {
-	Dashboard as NurseDashboard,
 	Vaccination as NurseVaccination,
 	Healthcheck as NurseHealthcheck,
 	MedicalRequest as NurseMedicalRequest,

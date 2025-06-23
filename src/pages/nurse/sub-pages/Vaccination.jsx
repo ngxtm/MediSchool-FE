@@ -352,6 +352,13 @@ const Vaccination = () => {
 				},
 				enabled: true,
 			},
+			{
+				queryKey: ["upcoming-vaccine-events"],
+				queryFn: async () => {
+					const response = await api.get("/vaccine-events/upcoming");
+					return response.data;
+				},
+			}
 		],
 	});
 
@@ -366,8 +373,7 @@ const Vaccination = () => {
 		return <div>Error loading data</div>;
 	}
 
-	const [consentTotal, vaccineEvents] = results.map((result) => result.data);
-
+	const [consentTotal, vaccineEvents, upcomingEvents] = results.map((result) => result.data);
 	const sortedEvents = [...(vaccineEvents || [])].sort(
 		(a, b) => parseDate(b.createdAt) - parseDate(a.createdAt)
 	);
@@ -398,22 +404,22 @@ const Vaccination = () => {
 				<DetailBox
 					title="Đã gửi"
 					icon={<FileText size={28} />}
-					number={consentTotal}
+					number={consentTotal.totalConsents}
 				/>
 				<DetailBox
 					title="Đã phản hồi"
 					icon={<CircleCheckBig size={28} />}
-					number="794"
+					number={consentTotal.respondedConsents}
 				/>
 				<DetailBox
 					title="Chưa phản hồi"
 					icon={<CircleAlert size={28} />}
-					number="15"
+					number={consentTotal.pendingConsents}
 				/>
 				<DetailBox
 					title="Sự kiện sắp tới"
 					icon={<Calendar size={28} />}
-					number="4"
+					number={upcomingEvents.length}
 				/>
 			</div>
 			<div className="flex px-[100px] justify-between">
@@ -453,7 +459,7 @@ const Vaccination = () => {
 							event.consentStats?.respondedConsents || 0;
 
 						return (
-							<button onClick={() => navigate(`/nurse/vaccine-event/${event.id}`)}
+							<div
 								key={event.id}
 								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
 							>
@@ -494,8 +500,8 @@ const Vaccination = () => {
 													{statusText}
 												</p>
 												<p className="italic">
-													Phản hồi: {respondedConsents || "NA"}/
-													{totalConsents || "NA"} học sinh
+													Phản hồi: {respondedConsents ?? "NA"}/
+													{totalConsents ?? "NA"} học sinh
 												</p>
 											</>
 										)}
@@ -507,7 +513,7 @@ const Vaccination = () => {
 										/>
 									</button>
 								</div>
-							</button>
+							</div>
 						);
 					})
 				) : (

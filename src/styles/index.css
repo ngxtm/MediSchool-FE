@@ -10,13 +10,13 @@ body {
 	overflow-y: scroll;
 }
 
-.custom-select .ant-select-selector {
+/* .custom-select .ant-select-selector {
 	border-radius: 16px;
-}
+} */
 
-.custom-picker {
+/* .custom-picker {
 	border-radius: 16px;
-}
+} */
 
 .input-field {
 	@apply w-full h-[40px] mt-2 rounded-[8px] px-3 border border-gray-300 outline-none focus:border-[#1676fb] focus:border-2 placeholder:text-[#bfbfbf];

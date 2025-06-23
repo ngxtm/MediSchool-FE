@@ -12,12 +12,10 @@ import {
 import { useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../utils/api";
 import { useEffect, useState } from "react";
-import { Cardio } from "ldrs/react";
-import "ldrs/react/Cardio.css";
 import { Dialog } from "radix-ui";
 import { Select } from "antd";
 import { Zoom, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { parseDate, formatDate } from "../../../utils/dateparse";
 import Loading from "../../../components/Loading";
 
@@ -140,7 +138,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 								Tên sự kiện
 							</label>
 							<input
-								className="w-full h-[30px] rounded-[16px] px-3 text-[14px] border-gray-300 leading-none border  outline-none  focus:border-[#1676fb] focus:border-2 placeholder:text-[#bfbfbf]"
+								className="w-full h-[30px] rounded-sm px-3 text-[14px] border-gray-300 leading-none border  outline-none  focus:border-[#1676fb] focus:border-2 placeholder:text-[#bfbfbf]"
 								id="eventTitle"
 								value={formData.eventTitle}
 								onChange={(e) =>
@@ -258,7 +256,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 								Địa điểm
 							</label>
 							<input
-								className="w-full h-[30px] rounded-[16px] px-3 text-[14px] border-gray-300 leading-none border  outline-none  focus:border-[#1676fb] focus:border-2 placeholder:text-[#bfbfbf]"
+								className="w-full h-[30px] rounded-sm px-3 text-[14px] border-gray-300 leading-none border  outline-none  focus:border-[#1676fb] focus:border-2 placeholder:text-[#bfbfbf]"
 								id="location"
 								value={formData.location}
 								onChange={(e) => handleInputChange("location", e.target.value)}
@@ -358,7 +356,7 @@ const Vaccination = () => {
 					const response = await api.get("/vaccine-events/upcoming");
 					return response.data;
 				},
-			}
+			},
 		],
 	});
 
@@ -373,7 +371,9 @@ const Vaccination = () => {
 		return <div>Error loading data</div>;
 	}
 
-	const [consentTotal, vaccineEvents, upcomingEvents] = results.map((result) => result.data);
+	const [consentTotal, vaccineEvents, upcomingEvents] = results.map(
+		(result) => result.data
+	);
 	const sortedEvents = [...(vaccineEvents || [])].sort(
 		(a, b) => parseDate(b.createdAt) - parseDate(a.createdAt)
 	);
@@ -459,61 +459,67 @@ const Vaccination = () => {
 							event.consentStats?.respondedConsents || 0;
 
 						return (
-							<div
-								key={event.id}
-								className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
-							>
-								<div className="flex justify-center gap-10 items-center">
-									<Activity size={50} />
-									<div className="flex flex-col gap-2">
-										<p className="font-bold text-xl">
-											{event.eventTitle ||
-												event.vaccine?.name ||
-												"Không có tên"}
-										</p>
-										<p>
-											Đối tượng tiêm chủng:{" "}
-											{event.eventScope === "SCHOOL"
-												? "Học sinh toàn trường"
-												: "Theo lớp"}
-										</p>
-										<p className="italic text-gray-500 text-sm">
-											Ngày tạo: {formatDate(event.createdAt)}
-										</p>
+							<Link to ={`/nurse/vaccine-event/${event.id}`}>
+								<div
+									key={event.id}
+									className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
+								>
+									<div className="flex justify-center gap-10 items-center">
+										<Activity size={50} />
+										<div className="flex flex-col gap-2">
+											<p className="font-bold text-xl">
+												{event.eventTitle ||
+													event.vaccine?.name ||
+													"Không có tên"}
+											</p>
+											<p>
+												Đối tượng tiêm chủng:{" "}
+												{event.eventScope === "SCHOOL"
+													? "Học sinh toàn trường"
+													: "Theo lớp"}
+											</p>
+											<p className="italic text-gray-500 text-sm">
+												Ngày tạo: {formatDate(event.createdAt)}
+											</p>
+										</div>
+									</div>
+									<div className="flex items-center gap-10">
+										<div className="flex flex-col gap-2 min-w-[200px] items-center">
+											{statusText === "Đã hủy" ? (
+												<>
+													<p
+														className={`text-center ${bgColor} font-bold px-9 py-1 w-fit rounded-4xl`}
+													>
+														{statusText}
+													</p>
+												</>
+											) : (
+												<>
+													<p
+														className={`text-center ${bgColor} font-bold px-9 py-1 w-fit rounded-4xl`}
+													>
+														{statusText}
+													</p>
+													<p className="italic">
+														Phản hồi: {respondedConsents ?? "NA"}/
+														{totalConsents ?? "NA"} học sinh
+													</p>
+												</>
+											)}
+										</div>
+										<button
+											onClick={() =>
+												navigate(`/nurse/vaccine-event/${event.id}`)
+											}
+										>
+											<ChevronRight
+												size={30}
+												className="transition-transform duration-200 group-hover:translate-x-1 group-hover:scale-110 text-[#023E73]"
+											/>
+										</button>
 									</div>
 								</div>
-								<div className="flex items-center gap-10">
-									<div className="flex flex-col gap-2 min-w-[200px] items-center">
-										{statusText === "Đã hủy" ? (
-											<>
-												<p
-													className={`text-center ${bgColor} font-bold px-9 py-1 w-fit rounded-4xl`}
-												>
-													{statusText}
-												</p>
-											</>
-										) : (
-											<>
-												<p
-													className={`text-center ${bgColor} font-bold px-9 py-1 w-fit rounded-4xl`}
-												>
-													{statusText}
-												</p>
-												<p className="italic">
-													Phản hồi: {respondedConsents ?? "NA"}/
-													{totalConsents ?? "NA"} học sinh
-												</p>
-											</>
-										)}
-									</div>
-									<button onClick={() => navigate(`/nurse/vaccine-event/${event.id}`)}>
-										<ChevronRight
-											size={30}
-											className="transition-transform duration-200 group-hover:translate-x-1 group-hover:scale-110 text-[#023E73]"
-										/>
-									</button>
-								</div>
-							</div>
+							</Link>
 						);
 					})
 				) : (

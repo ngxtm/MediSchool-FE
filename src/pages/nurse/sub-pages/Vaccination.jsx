@@ -12,8 +12,6 @@ import {
 import { useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../utils/api";
 import { useEffect, useState } from "react";
-import { Cardio } from "ldrs/react";
-import "ldrs/react/Cardio.css";
 import { Dialog } from "radix-ui";
 import { Select } from "antd";
 import { Zoom, toast } from "react-toastify";

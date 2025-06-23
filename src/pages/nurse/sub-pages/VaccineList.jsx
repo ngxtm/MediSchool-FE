@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Input, Table, Select } from "antd";
-import { Search, Plus, X, Pencil } from "lucide-react";
+import { Input, Table, Select, Popconfirm } from "antd";
+import { Search, Plus, X, Pencil, Trash2 } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import api from "../../../utils/api";
 import ReturnButton from "../../../components/ReturnButton";
@@ -21,6 +21,32 @@ const VaccineList = () => {
 	const filteredVaccines = vaccines.filter((v) =>
 		v.name.toLowerCase().includes(search.toLowerCase())
 	);
+
+	const queryClient = useQueryClient();
+
+	// show error toast
+	const toastPopup = (message) => {
+		toast.error(message, {
+			position: "bottom-center",
+			autoClose: 5000,
+			hideProgressBar: false,
+			closeOnClick: true,
+			pauseOnHover: true,
+			draggable: true,
+			progress: undefined,
+			theme: "light",
+			transition: Zoom,
+		});
+	};
+
+	const deleteMutation = useMutation({
+		mutationFn: (id) => api.delete(`/vaccines/${id}`),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["vaccines"] });
+			toast.success("Xóa vaccine thành công!");
+		},
+		onError: (err) => toastPopup(err.message),
+	});
 
 	const columns = [
 		{
@@ -68,7 +94,24 @@ const VaccineList = () => {
 			title: "",
 			key: "action",
 			align: "center",
-			render: (_, record) => <DialogEdit vaccine={record} />,
+			render: (_, record) => (
+				<div className="flex items-center gap-2">
+					<DialogEdit vaccine={record} />
+					<Popconfirm
+						title="Bạn có chắc chắn muốn xoá vaccine này?"
+						okText="Xoá"
+						cancelText="Huỷ"
+						onConfirm={() => deleteMutation.mutate(record.vaccineId)}
+					>
+						<button
+							type="button"
+							className="group p-2 rounded-md hover:bg-red-100 active:scale-95 transition-all"
+						>
+							<Trash2 size={18} className="text-red-600" />
+						</button>
+					</Popconfirm>
+				</div>
+			),
 		},
 	];
 

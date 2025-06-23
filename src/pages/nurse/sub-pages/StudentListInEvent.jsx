@@ -6,8 +6,10 @@ import Loading from "../../../components/Loading";
 import { ChevronRight, Search } from "lucide-react";
 import { useState } from "react";
 import { Input, Table, Select } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const StudentListInEvent = () => {
+	const navigate = useNavigate();
 	const { id } = useParams();
 	const [search, setSearch] = useState("");
 	const [statusFilter, setStatusFilter] = useState("Tất cả");
@@ -179,9 +181,10 @@ const StudentListInEvent = () => {
 			key: "action",
 			align: "center",
 			width: 50,
-			render: () => {
+			render: (_, record) => {
 				return (
 					<button
+						onClick={() => navigate(`/nurse/vaccine-event/${id}/consent/${record.consentId}`)}
 						className="flex items-center justify-center w-8 h-8 rounded-full text-[#023E73] hover:text-white hover:bg-[#023E73] transition-colors duration-200"
 					>
 						<ChevronRight size={20} />
@@ -195,7 +198,7 @@ const StudentListInEvent = () => {
 		<div className="font-inter">
 			<ReturnButton linkNavigate={`/nurse/vaccine-event/${id}`} />
 			<div>
-				<div className="flex flex-col mt-10 gap-4 px-10">
+				<div className="flex flex-col mt-10 gap-4">
 					<h1 className="font-bold text-2xl">
 						Chiến dịch: {vaccineEvent?.eventTitle || "N/A"}
 					</h1>

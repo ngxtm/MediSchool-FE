@@ -242,7 +242,9 @@ const VaccineEventDetail = () => {
 							>
 								Xem danh sách đơn
 							</button>
-							<button className="rounded-lg bg-[#F5F5F5] px-6 py-2 w-full font-semibold mt-8 transition-all duration-200 ease-in-out hover:bg-[#f5f5f5a5] hover:scale-105 hover:shadow-lg active:scale-95">
+							<button 
+								onClick={() => navigate(`/nurse/vaccine-event/${id}/students`)}
+								className="rounded-lg bg-[#F5F5F5] px-6 py-2 w-full font-semibold mt-8 transition-all duration-200 ease-in-out hover:bg-[#f5f5f5a5] hover:scale-105 hover:shadow-lg active:scale-95">
 								Xem hồ sơ tiêm chủng
 							</button>
 						</div>

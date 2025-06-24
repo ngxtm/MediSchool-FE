@@ -1,8 +1,8 @@
-import ReturnButton from "../../../components/ReturnButton";
+import ReturnButton from "../../../../components/ReturnButton";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
-import api from "../../../utils/api";
-import Loading from "../../../components/Loading";
+import api from "../../../../utils/api";
+import Loading from "../../../../components/Loading";
 import { CircleAlert, CircleCheckBig, CircleX, FileText } from "lucide-react";
 
 const VaccineEventDetail = () => {

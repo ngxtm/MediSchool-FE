@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input, Table, Select, Popconfirm } from "antd";
 import { Search, Plus, X, Pencil, Trash2 } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
-import api from "../../../utils/api";
-import ReturnButton from "../../../components/ReturnButton";
+import api from "../../../../utils/api";
+import ReturnButton from "../../../../components/ReturnButton";
 import { toast, Zoom } from "react-toastify";
 
 const VaccineList = () => {

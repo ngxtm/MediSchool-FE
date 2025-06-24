@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
-import ReturnButton from "../../../components/ReturnButton";
+import ReturnButton from "../../../../components/ReturnButton";
 import { useQueries } from "@tanstack/react-query";
-import api from "../../../utils/api";
-import Loading from "../../../components/Loading";
+import api from "../../../../utils/api";
+import Loading from "../../../../components/Loading";
 import { ChevronRight, Search } from "lucide-react";
 import { useState } from "react";
 import { Input, Table, Select } from "antd";

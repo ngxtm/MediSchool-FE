@@ -1,5 +1,5 @@
-import { DatePicker } from "antd";
-import DetailBox from "../components/DetailBox";
+import { DatePicker, Input } from "antd";
+import DetailBox from "../../components/DetailBox";
 import {
 	FileText,
 	CircleAlert,
@@ -8,16 +8,17 @@ import {
 	Activity,
 	ChevronRight,
 	X,
+	Search,
 } from "lucide-react";
 import { useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../../utils/api";
+import api from "../../../../utils/api";
 import { useEffect, useState } from "react";
 import { Dialog } from "radix-ui";
 import { Select } from "antd";
 import { Zoom, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import { parseDate, formatDate } from "../../../utils/dateparse";
-import Loading from "../../../components/Loading";
+import { parseDate, formatDate } from "../../../../utils/dateparse";
+import Loading from "../../../../components/Loading";
 
 const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	const [formData, setFormData] = useState({
@@ -298,6 +299,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 
 const Vaccination = () => {
 	const navigate = useNavigate();
+	const [search, setSearch] = useState("");
 	const [selectedYear, setSelectedYear] = useState(null);
 	const queryClient = useQueryClient();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -374,7 +376,9 @@ const Vaccination = () => {
 	const [consentTotal, vaccineEvents, upcomingEvents] = results.map(
 		(result) => result.data
 	);
-	const sortedEvents = [...(vaccineEvents || [])].sort(
+	const sortedEvents = [...(vaccineEvents || [])]
+	.filter((event) => (event.eventTitle ?? "").toLowerCase().includes(search.toLowerCase()))
+	.sort(
 		(a, b) => parseDate(b.createdAt) - parseDate(a.createdAt)
 	);
 
@@ -423,13 +427,22 @@ const Vaccination = () => {
 				/>
 			</div>
 			<div className="flex px-[100px] justify-between">
-				<div className="flex items-center max-w-fit gap-12">
+				<div className="flex items-center max-w-fit gap-8">
 					<p className="font-bold text-xl">Năm học</p>
 					<DatePicker
 						placeholder="Chọn năm học"
 						onChange={onChange}
 						picker="year"
 						size="large"
+					/>
+					<Input
+						prefix={<Search size={16} className="text-gray-400 mr-4" />}
+						placeholder="Tìm kiếm chiến dịch tiêm chủng"
+						style={{ width: 300 }}
+						className="h-[38px] rounded-[8px] !border-[#d9d9d9]"
+						allowClear
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
 					/>
 				</div>
 				<div className="flex gap-10">
@@ -459,7 +472,7 @@ const Vaccination = () => {
 							event.consentStats?.respondedConsents || 0;
 
 						return (
-							<Link to ={`/nurse/vaccine-event/${event.id}`}>
+							<Link to={`/nurse/vaccine-event/${event.id}`}>
 								<div
 									key={event.id}
 									className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"

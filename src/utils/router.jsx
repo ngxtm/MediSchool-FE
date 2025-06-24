@@ -25,7 +25,7 @@ import {
 	VaccineEventDetail as NurseVaccineEventDetail,
 	StudentListInEvent as NurseStudentListInEvent,
 	ConsentDetail as NurseConsentDetail,
-} from "../pages/nurse/sub-pages";
+} from "../pages/nurse/sub-pages/vaccine";
 
 const router = createBrowserRouter([
 	{ path: "/", element: <Home /> },

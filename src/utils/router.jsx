@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
@@ -14,18 +14,22 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import StudentInfo from "../pages/parent/StudentInfo";
 import MedicalRecord from "../pages/parent/MedicalRecord";
 import Vaccination from "../pages/parent/Vaccination";
-import HealthCheck from "../pages/parent/HealthCheck";
 import Prescription from "../pages/parent/Prescription";
+import NurseMedicalRequest from "../pages/nurse/sub-pages/medical-request/MedicalRequest";
+import NurseHealthCheck from "../pages/nurse/sub-pages/Healthcheck";
+import NurseMedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
+import NurseVaccinationLayout from "../pages/nurse/sub-pages/vaccine/VaccinationLayout";
 import {
-	Vaccination as NurseVaccination,
-	Healthcheck as NurseHealthcheck,
-	MedicalRequest as NurseMedicalRequest,
+
 	Student as NurseStudent,
 	VaccineList as NurseVaccineList,
 	VaccineEventDetail as NurseVaccineEventDetail,
 	StudentListInEvent as NurseStudentListInEvent,
 	ConsentDetail as NurseConsentDetail,
+	VaccineRecord as NurseVaccineRecord,
+	Vaccination as NurseVaccination,
 } from "../pages/nurse/sub-pages/vaccine";
+import HealthCheck from "../pages/parent/HealthCheck";
 
 const router = createBrowserRouter([
 	{ path: "/", element: <Home /> },
@@ -43,13 +47,21 @@ const router = createBrowserRouter([
 		children: [
 			{ index: true, element: <NurseStudent /> },
 			{ path: "student", element: <NurseStudent /> },
-			{ path: "vaccination", element: <NurseVaccination /> },
-			{ path: "health-checkup", element: <NurseHealthcheck /> },
-			{ path: "medical-request", element: <NurseMedicalRequest /> },
-			{ path: "vaccine-list", element: <NurseVaccineList /> },
-			{ path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
-			{ path: "vaccine-event/:id/students", element: <NurseStudentListInEvent /> },
-			{ path: "vaccine-event/:eventId/consent/:consentId", element: <NurseConsentDetail /> },
+            { path: "health-checkup", element: <NurseHealthCheck /> },
+			{
+				path: "vaccination",
+				element: <NurseVaccinationLayout />,
+				children: [
+					{ index: true, element: <NurseVaccination /> },
+					{ path: "vaccine-list", element: <NurseVaccineList /> },
+					{ path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
+					{ path: "vaccine-event/:id/students", element: <NurseStudentListInEvent /> },
+					{ path: "vaccine-event/consent/:consentId", element: <NurseConsentDetail /> },
+					{ path: "vaccine-event/:id/records", element: <NurseVaccineRecord /> },
+				],
+			},
+            { path: "medical-request", element: <NurseMedicalRequest /> },
+            { path: "medication-event", element: <NurseMedicationEvent /> },
 		],
 	},
 	{

@@ -377,10 +377,10 @@ const Vaccination = () => {
 		(result) => result.data
 	);
 	const sortedEvents = [...(vaccineEvents || [])]
-	.filter((event) => (event.eventTitle ?? "").toLowerCase().includes(search.toLowerCase()))
-	.sort(
-		(a, b) => parseDate(b.createdAt) - parseDate(a.createdAt)
-	);
+		.filter((event) =>
+			(event.eventTitle ?? "").toLowerCase().includes(search.toLowerCase())
+		)
+		.sort((a, b) => parseDate(b.createdAt) - parseDate(a.createdAt));
 
 	const getStatusDisplay = (status, date) => {
 		if (!status) return { text: "Lỗi trạng thái", bgColor: "bg-[#DAEAF7]" };
@@ -448,7 +448,7 @@ const Vaccination = () => {
 				<div className="flex gap-10">
 					<button
 						className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95"
-						onClick={() => navigate("/nurse/vaccine-list")}
+						onClick={() => navigate("vaccine-list")}
 					>
 						Xem danh sách Vaccine
 					</button>
@@ -472,7 +472,7 @@ const Vaccination = () => {
 							event.consentStats?.respondedConsents || 0;
 
 						return (
-							<Link to={`/nurse/vaccine-event/${event.id}`}>
+							<Link to={`vaccine-event/${event.id}`}>
 								<div
 									key={event.id}
 									className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
@@ -520,11 +520,7 @@ const Vaccination = () => {
 												</>
 											)}
 										</div>
-										<button
-											onClick={() =>
-												navigate(`/nurse/vaccine-event/${event.id}`)
-											}
-										>
+										<button>
 											<ChevronRight
 												size={30}
 												className="transition-transform duration-200 group-hover:translate-x-1 group-hover:scale-110 text-[#023E73]"

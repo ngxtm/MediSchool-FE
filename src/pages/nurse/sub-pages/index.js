@@ -1,6 +1,6 @@
 export { default as Vaccination } from "./vaccine/Vaccination";
 export { default as HealthCheckup } from "./HealthCheckup";
-export { default as MedicalRequest } from "./medical-request/MedicalRequest";
+export { default as MedicalRequest } from "./medication/MedicationRequest.jsx";
 export { default as Student } from "./Student";
 export { default as VaccineList } from "./vaccine/VaccineList";
 export { default as VaccineEventDetail } from "./vaccine/VaccineEventDetail";

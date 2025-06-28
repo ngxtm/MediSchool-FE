@@ -1,5 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
-import Home from "../pages/Home";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Nurse from "../pages/nurse/Nurse";
@@ -25,9 +24,10 @@ import {
 	VaccineEventDetail as NurseVaccineEventDetail,
 	StudentListInEvent as NurseStudentListInEvent,
 } from "../pages/nurse/sub-pages";
+import MedicationPending from "../pages/nurse/sub-pages/medication/MedicationPending.jsx";
 
 const router = createBrowserRouter([
-	{ path: "/", element: <Home /> },
+	{ path: "/", element: <Navigate to="/login" replace /> },
 	{ path: "/login", element: <Login /> },
 	{ path: "/signup", element: <Signup /> },
 	{ path: "/forgot-password", element: <ForgotPassword /> },
@@ -44,7 +44,8 @@ const router = createBrowserRouter([
 			{ path: "student", element: <NurseStudent /> },
 			{ path: "vaccination", element: <NurseVaccination /> },
 			{ path: "health-checkup", element: <NurseHealthCheckup /> },
-			{ path: "medical-request", element: <NurseMedicalRequest /> },
+			{ path: "medication", element: <NurseMedicalRequest /> },
+			{ path: "/nurse/medication/pending", element: <MedicationPending /> },
 			{ path: "vaccine-list", element: <NurseVaccineList /> },
 			{ path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
 			{ path: "vaccine-event/:id/students", element: <NurseStudentListInEvent /> },

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import {createBrowserRouter, Navigate} from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
@@ -28,10 +28,10 @@ import {
 } from "../pages/nurse/sub-pages/vaccine/index";
 import ManagerHome from "../pages/manager/sub-pages/Home";
 import { HealthCheckup as NurseHealthCheck } from "../pages/nurse/sub-pages/health-checkup/index";
-import MedicalRequest from "../pages/nurse/sub-pages/medical-request/MedicalRequest";
+import MedicationRequestPending from "../pages/nurse/sub-pages/medication-request/MedicationRequestPending.jsx";
 import MedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
 const router = createBrowserRouter([
-	{ path: "/", element: <Home /> },
+	{ path: "/", element: <Navigate to="/login" replace /> },
 	{ path: "/login", element: <Login /> },
 	{ path: "/signup", element: <Signup /> },
 	{ path: "/forgot-password", element: <ForgotPassword /> },
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
 					},
 				],
 			},
-			{ path: "medical-request", element: <MedicalRequest /> },
+			{ path: "medication-request/pending", element: <MedicationRequestPending /> },
 			{ path: "medication-event", element: <MedicationEvent /> },
 		],
 	},

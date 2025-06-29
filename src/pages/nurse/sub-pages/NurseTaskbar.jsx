@@ -5,7 +5,7 @@ import {
 	LogOut,
 } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import useSignOut from "../../../utils/signout";
+import useSignOut from "../../../utils/signout.jsx";
 import { ToggleGroup } from "radix-ui";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -20,7 +20,7 @@ const NurseTaskBar = ({ userData }) => {
 	const location = useLocation();
 
 	const pathParts = location.pathname.split("/");
-	let currentTab = pathParts[pathParts.length - 1];
+	let currentTab = location.pathname.replace("/nurse/", "");
 
 	if (pathParts.includes("vaccine-event") || currentTab === "vaccine-list") {
 		currentTab = "vaccination";
@@ -31,7 +31,7 @@ const NurseTaskBar = ({ userData }) => {
 			"student",
 			"vaccination",
 			"health-checkup",
-			"medical-request",
+			"medication-request/pending",
 			"medication-event",
 		].includes(currentTab)
 	) {
@@ -59,7 +59,7 @@ const NurseTaskBar = ({ userData }) => {
 					{ value: "student", label: "Học sinh" },
 					{ value: "vaccination", label: "Tiêm chủng" },
 					{ value: "health-checkup", label: "Khám sức khoẻ" },
-					{ value: "medical-request", label: "Dặn thuốc" },
+					{ value: "medication-request/pending", label: "Dặn thuốc" },
 					{ value: "medication-event", label: "Sự kiện y tế" },
 				].map(({ value, label }) => {
 					const isActive =
@@ -71,21 +71,21 @@ const NurseTaskBar = ({ userData }) => {
 					return (
 						<Link to={`/nurse/${value}`}>
 							<ToggleGroup.Item
-							key={value}
-							className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
-								shouldShowActive
-									? "bg-[#023E73] text-white font-bold"
-									: isHovered
-									? "bg-[#023E73] text-white font-bold"
-									: "hover:bg-[#023E73] hover:text-white hover:font-bold"
-							}`}
-							value={value}
-							aria-label={label}
-							onMouseEnter={() => setHoveredTab(value)}
-							onMouseLeave={() => setHoveredTab(null)}
-						>
-							{label}
-						</ToggleGroup.Item>
+								key={value}
+								className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
+									shouldShowActive
+										? "bg-[#023E73] text-white font-bold"
+										: isHovered
+											? "bg-[#023E73] text-white font-bold"
+											: "hover:bg-[#023E73] hover:text-white hover:font-bold"
+								}`}
+								value={value}
+								aria-label={label}
+								onMouseEnter={() => setHoveredTab(value)}
+								onMouseLeave={() => setHoveredTab(null)}
+							>
+								{label}
+							</ToggleGroup.Item>
 						</Link>
 					);
 				})}

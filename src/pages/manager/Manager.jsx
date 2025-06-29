@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
-import NurseTaskBar from "./sub-pages/NurseTaskbar.jsx";
+import ManagerTaskBar from "./components/ManagerTaskbar";
 import { useState } from "react";
 import api from "../../utils/api";
 import { useEffect } from "react";
 import { Cardio } from "ldrs/react";
 
-const NurseDashboard = () => {
+const Manager = () => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 
@@ -33,7 +33,7 @@ const NurseDashboard = () => {
 
 	return (
 		<>
-			<NurseTaskBar userData={user} />
+			<ManagerTaskBar userData={user} />
 			<div className="p-4">
 				<div className="px-28 pt-5">
 					<Outlet />
@@ -43,4 +43,4 @@ const NurseDashboard = () => {
 	);
 };
 
-export default NurseDashboard;
+export default Manager;

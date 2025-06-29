@@ -5,7 +5,7 @@ import api from "../../../../utils/api";
 import Loading from "../../../../components/Loading";
 import { CircleAlert, CircleCheckBig, CircleX, FileText } from "lucide-react";
 
-const VaccineEventDetail = () => {
+const VaccineEventDetail = ({ actor }) => {
 	const navigate = useNavigate();
 	const paddingCustomBlue =
 		"bg-[#DAEAF7] py-3 px-6 rounded-lg flex flex-row justify-between";
@@ -139,7 +139,7 @@ const VaccineEventDetail = () => {
 
 	return (
 		<div className="font-inter">
-			<ReturnButton linkNavigate="/nurse/vaccination" />
+			<ReturnButton linkNavigate={actor === "manager" ? "/manager/vaccination" : "/nurse/vaccination"} />
 			<div className="grid grid-cols-12 gap-20 mt-10">
 				<div className="col-span-5">
 					<div className="flex flex-col gap-4">

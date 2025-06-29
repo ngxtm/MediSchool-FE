@@ -1,9 +1,4 @@
-import {
-	ChevronDown,
-	CircleUserRound,
-	Settings,
-	LogOut,
-} from "lucide-react";
+import { ChevronDown, CircleUserRound, Settings, LogOut } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import useSignOut from "../../../utils/signout";
 import { ToggleGroup } from "radix-ui";
@@ -11,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import heartIcon from "../../../assets/heart.png";
 
-const NurseTaskBar = ({ userData }) => {
+const ManagerTaskBar = ({ userData }) => {
 	const username = userData?.fullName || "N/A";
 	const signout = useSignOut();
 
@@ -31,7 +26,7 @@ const NurseTaskBar = ({ userData }) => {
 			"student",
 			"vaccination",
 			"health-checkup",
-			"medication",
+			"medication-request",
 			"medication-event",
 		].includes(currentTab)
 	) {
@@ -56,36 +51,37 @@ const NurseTaskBar = ({ userData }) => {
 				aria-label="Chức năng của phụ huynh"
 			>
 				{[
+					{ value: "home", label: "Trang chủ" },
 					{ value: "student", label: "Học sinh" },
 					{ value: "vaccination", label: "Tiêm chủng" },
 					{ value: "health-checkup", label: "Khám sức khoẻ" },
-					{ value: "medication", label: "Dặn thuốc" },
+					{ value: "medication-request", label: "Dặn thuốc" },
 					{ value: "medication-event", label: "Sự kiện y tế" },
 				].map(({ value, label }) => {
 					const isActive =
 						currentTab === value ||
-						(currentTab === "nurse" && value === "student")
+						(currentTab === "manager" && value === "home");
 					const isHovered = hoveredTab === value;
 					const shouldShowActive = isActive && (!hoveredTab || isHovered);
 
 					return (
-						<Link to={`/nurse/${value}`}>
+						<Link to={`/manager/${value}`}>
 							<ToggleGroup.Item
-							key={value}
-							className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
-								shouldShowActive
-									? "bg-[#023E73] text-white font-bold"
-									: isHovered
-									? "bg-[#023E73] text-white font-bold"
-									: "hover:bg-[#023E73] hover:text-white hover:font-bold"
-							}`}
-							value={value}
-							aria-label={label}
-							onMouseEnter={() => setHoveredTab(value)}
-							onMouseLeave={() => setHoveredTab(null)}
-						>
-							{label}
-						</ToggleGroup.Item>
+								key={value}
+								className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
+									shouldShowActive
+										? "bg-[#023E73] text-white font-bold"
+										: isHovered
+										? "bg-[#023E73] text-white font-bold"
+										: "hover:bg-[#023E73] hover:text-white hover:font-bold"
+								}`}
+								value={value}
+								aria-label={label}
+								onMouseEnter={() => setHoveredTab(value)}
+								onMouseLeave={() => setHoveredTab(null)}
+							>
+								{label}
+							</ToggleGroup.Item>
 						</Link>
 					);
 				})}
@@ -125,4 +121,4 @@ const NurseTaskBar = ({ userData }) => {
 	);
 };
 
-export default NurseTaskBar;
+export default ManagerTaskBar;

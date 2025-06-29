@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Input, Table, Select } from "antd";
 import { useNavigate } from "react-router-dom";
 
-const StudentListInEvent = () => {
+const StudentListInEvent = ({ actor }) => {
 	const navigate = useNavigate();
 	const { id } = useParams();
 	const [search, setSearch] = useState("");
@@ -184,7 +184,7 @@ const StudentListInEvent = () => {
 			render: (_, record) => {
 				return (
 					<button
-						onClick={() => navigate(`/nurse/vaccination/vaccine-event/consent/${record.consentId}`)}
+						onClick={() => navigate(`${actor === "manager" ? "/manager" : "/nurse"}/vaccination/vaccine-event/consent/${record.consentId}`)}
 						className="flex items-center justify-center w-8 h-8 rounded-full text-[#023E73] hover:text-white hover:bg-[#023E73] transition-colors duration-200"
 					>
 						<ChevronRight size={20} />
@@ -196,7 +196,7 @@ const StudentListInEvent = () => {
 
 	return (
 		<div className="font-inter">
-			<ReturnButton linkNavigate={`/nurse/vaccination/vaccine-event/${id}`} />
+			<ReturnButton linkNavigate={`${actor === "manager" ? "/manager" : "/nurse"}/vaccination/vaccine-event/${id}`} />
 			<div>
 				<div className="flex flex-col mt-10 gap-4">
 					<h1 className="font-bold text-2xl">

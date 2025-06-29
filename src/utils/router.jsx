@@ -1,4 +1,5 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import {createBrowserRouter, Navigate} from "react-router-dom";
+import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Nurse from "../pages/nurse/Nurse";
@@ -8,24 +9,27 @@ import PrivateRouter from "./privaterouter";
 import NoRole from "../pages/NoRole";
 import AuthCallback from "../pages/AuthCallback";
 import ParentDashboard from "../pages/parent/ParentDashboard";
-import ManagerDashboard from "../pages/manager/ManagerDashboard";
+import Manager from "../pages/manager/Manager";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import StudentInfo from "../pages/parent/StudentInfo";
 import MedicalRecord from "../pages/parent/MedicalRecord";
 import Vaccination from "../pages/parent/Vaccination";
 import HealthCheck from "../pages/parent/HealthCheck";
 import Prescription from "../pages/parent/Prescription";
+import { Student as NurseStudent } from "../pages/nurse/sub-pages/student/index";
 import {
-	Vaccination as NurseVaccination,
-	HealthCheckup as NurseHealthCheckup,
-	MedicalRequest as NurseMedicalRequest,
-	Student as NurseStudent,
 	VaccineList as NurseVaccineList,
 	VaccineEventDetail as NurseVaccineEventDetail,
 	StudentListInEvent as NurseStudentListInEvent,
-} from "../pages/nurse/sub-pages";
-import MedicationPending from "../pages/nurse/sub-pages/medication/MedicationPending.jsx";
-
+	ConsentDetail as NurseConsentDetail,
+	VaccineRecord as NurseVaccineRecord,
+	Vaccination as NurseVaccination,
+	VaccinationLayout as VaccinationLayout,
+} from "../pages/nurse/sub-pages/vaccine/index";
+import ManagerHome from "../pages/manager/sub-pages/Home";
+import { HealthCheckup as NurseHealthCheck } from "../pages/nurse/sub-pages/health-checkup/index";
+import MedicationRequestPending from "../pages/nurse/sub-pages/medication-request/MedicationRequestPending.jsx";
+import MedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
 const router = createBrowserRouter([
 	{ path: "/", element: <Navigate to="/login" replace /> },
 	{ path: "/login", element: <Login /> },
@@ -42,13 +46,30 @@ const router = createBrowserRouter([
 		children: [
 			{ index: true, element: <NurseStudent /> },
 			{ path: "student", element: <NurseStudent /> },
-			{ path: "vaccination", element: <NurseVaccination /> },
-			{ path: "health-checkup", element: <NurseHealthCheckup /> },
-			{ path: "medication", element: <NurseMedicalRequest /> },
-			{ path: "/nurse/medication/pending", element: <MedicationPending /> },
-			{ path: "vaccine-list", element: <NurseVaccineList /> },
-			{ path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
-			{ path: "vaccine-event/:id/students", element: <NurseStudentListInEvent /> },
+			{ path: "health-checkup", element: <NurseHealthCheck /> },
+			{
+				path: "vaccination",
+				element: <VaccinationLayout />,
+				children: [
+					{ index: true, element: <NurseVaccination /> },
+					{ path: "vaccine-list", element: <NurseVaccineList /> },
+					{ path: "vaccine-event/:id", element: <NurseVaccineEventDetail /> },
+					{
+						path: "vaccine-event/:id/students",
+						element: <NurseStudentListInEvent />,
+					},
+					{
+						path: "vaccine-event/consent/:consentId",
+						element: <NurseConsentDetail />,
+					},
+					{
+						path: "vaccine-event/:id/records",
+						element: <NurseVaccineRecord />,
+					},
+				],
+			},
+			{ path: "medication-request/pending", element: <MedicationRequestPending /> },
+			{ path: "medication-event", element: <MedicationEvent /> },
 		],
 	},
 	{
@@ -71,9 +92,40 @@ const router = createBrowserRouter([
 		path: "/manager",
 		element: (
 			<PrivateRouter requiredRole="MANAGER">
-				<ManagerDashboard />
+				<Manager />
 			</PrivateRouter>
 		),
+		children: [
+			{ index: true, element: <ManagerHome /> },
+			{ path: "home", element: <ManagerHome /> },
+			{
+				path: "vaccination",
+				element: <VaccinationLayout />,
+				children: [
+					{ index: true, element: <NurseVaccination /> },
+					{
+						path: "vaccine-list",
+						element: <NurseVaccineList actor="manager" />,
+					},
+					{
+						path: "vaccine-event/:id",
+						element: <NurseVaccineEventDetail actor="manager" />,
+					},
+					{
+						path: "vaccine-event/:id/students",
+						element: <NurseStudentListInEvent actor="manager" />,
+					},
+					{
+						path: "vaccine-event/consent/:consentId",
+						element: <NurseConsentDetail actor="manager" />,
+					},
+					{
+						path: "vaccine-event/:id/records",
+						element: <NurseVaccineRecord actor="manager" />,
+					},
+				],
+			},
+		],
 	},
 	{
 		path: "/admin",

@@ -7,7 +7,7 @@ import api from "../../../../utils/api";
 import ReturnButton from "../../../../components/ReturnButton";
 import { toast, Zoom } from "react-toastify";
 
-const VaccineList = () => {
+const VaccineList = ({ actor }) => {
 	const [search, setSearch] = useState("");
 
 	const { data: vaccines = [], isLoading } = useQuery({
@@ -325,7 +325,7 @@ const VaccineList = () => {
 
 	return (
 		<>
-			<ReturnButton linkNavigate="/nurse/vaccination" />
+			<ReturnButton linkNavigate={actor === "manager" ? "/manager/vaccination" : "/nurse/vaccination"} />
 			<p className="text-[24px] font-bold mt-10">
 				Danh sách các loại vaccine hiện có
 			</p>

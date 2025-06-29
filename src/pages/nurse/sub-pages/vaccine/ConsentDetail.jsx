@@ -5,7 +5,7 @@ import ReturnButton from "../../../../components/ReturnButton";
 import { formatDate } from "../../../../utils/dateparse";
 import Loading from "../../../../components/Loading";
 
-const ConsentDetail = () => {
+const ConsentDetail = ({ actor }) => {
 	const { consentId } = useParams();
 
 	const {
@@ -46,7 +46,7 @@ const ConsentDetail = () => {
 	return (
 		<div className="font-inter">
 			<ReturnButton
-				linkNavigate={`/nurse/vaccination/vaccine-event/${vaccineConsent?.event?.id}/students`}
+				linkNavigate={`${actor === "manager" ? "/manager" : "/nurse"}/vaccination/vaccine-event/${vaccineConsent?.event?.id}/students`}
 			/>
 			<div className="flex justify-between mt-10 bg-[#F5F5F5] px-10 py-5 rounded-lg">
 				<div className="flex flex-col gap-4">

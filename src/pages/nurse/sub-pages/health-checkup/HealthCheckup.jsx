@@ -1,7 +1,7 @@
 import { DatePicker } from "antd";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     FileText,
     CircleCheckBig,
@@ -12,15 +12,14 @@ import {
     X,
 } from "lucide-react";
 
-import api from "../../../utils/api";
-import DetailBox from "../components/DetailBox"
-import Loading from "../../../components/Loading";
+import api from "../../../../utils/api";
+import DetailBox from "../../components/DetailBox"
+import Loading from "../../../../components/Loading";
 import { toast, Zoom } from "react-toastify";
-import { formatDate, parseDate } from "../../../utils/dateparse";
+import { formatDate, parseDate } from "../../../../utils/dateparse";
 
 const HealthCheckup = () => {
     const navigate = useNavigate();
-    const queryClient = useQueryClient();
     const [selectedYear, setSelectedYear] = useState(null);
 
     const toastError = (message) => {

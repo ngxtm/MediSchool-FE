@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import api from "../utils/api";
-import { Cardio } from "ldrs/react";
+import Loading from "../components/Loading";
 
 const PrivateRouter = ({ children, requiredRole }) => {
 	const [loading, setLoading] = useState(true);
@@ -11,7 +11,9 @@ const PrivateRouter = ({ children, requiredRole }) => {
 	useEffect(() => {
 		const checkUserRole = async () => {
 			try {
-				const projectRef = supabase.supabaseUrl.split("https://")[1].split(".")[0];
+				const projectRef = supabase.supabaseUrl
+					.split("https://")[1]
+					.split(".")[0];
 				const session = localStorage.getItem(`sb-${projectRef}-auth-token`);
 				const tempSession = sessionStorage.getItem("tempSession");
 
@@ -41,11 +43,7 @@ const PrivateRouter = ({ children, requiredRole }) => {
 	}
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-			</div>
-		);
+		return <Loading />;
 	}
 
 	if (requiredRole && user && user.role !== requiredRole) {

@@ -12,7 +12,7 @@ const Manager = () => {
 	const fetchUser = async () => {
 		try {
 			setLoading(false);
-			const { data } = await api.get("me");
+			const { data } = await api.get("/me");
 			setUser(data);
 		} catch (err) {
 			console.error("Error fetching user: ", err);

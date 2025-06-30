@@ -16,7 +16,6 @@ const StudentHistory = () => {
 	const [abnormalNote, setAbnormalNote] = useState("");
 	const [selectedRecord, setSelectedRecord] = useState(null);
 
-	// Common follow-up templates
 	const followUpTemplates = [
 		{ key: "1", label: "Sau 30 phút, học sinh không có dấu hiệu bất thường." },
 		{ key: "2", label: "Các triệu chứng khác bình thường." },
@@ -57,12 +56,10 @@ const StudentHistory = () => {
 		mutationFn: ({ historyId, ...changes }) =>
 			api.patch(`/vaccination-history/${historyId}`, changes),
 
-		// 1. Optimistic update
 		onMutate: async (newData) => {
 			await queryClient.cancelQueries(["vaccination-history", id]);
 			const previous = queryClient.getQueryData(["vaccination-history", id]);
 
-			// ghi tạm vào cache
 			queryClient.setQueryData(["vaccination-history", id], (old = []) =>
 				old.map((h) =>
 					h.historyId === newData.historyId ? { ...h, ...newData } : h
@@ -72,7 +69,6 @@ const StudentHistory = () => {
 			return { previous };
 		},
 
-		// 2. Hoàn tác nếu lỗi
 		onError: (_err, _newData, context) => {
 			if (context?.previous) {
 				queryClient.setQueryData(["vaccination-history", id], context.previous);
@@ -80,7 +76,6 @@ const StudentHistory = () => {
 			message.error("Cập nhật thất bại");
 		},
 
-		// 3. Thông báo + refetch
 		onSuccess: () => message.success("Cập nhật thành công"),
 		onSettled: () => {
 			queryClient.invalidateQueries(["vaccination-history", id]);

@@ -92,6 +92,20 @@ const VaccineRecord = ({ actor }) => {
 		onError: () => message.error("Cập nhật thất bại"),
 	});
 
+	const bulkUpdateMutation = useMutation({
+		mutationFn: (updates) =>
+			api.patch(`/vaccination-history/bulk`, { updates }),
+		onSuccess: (response) => {
+			queryClient.invalidateQueries(["vaccine-record", id]);
+			if (response.data.errors.length > 0) {
+				message.warning(`${response.data.totalUpdated}/${response.data.totalRequested} bản ghi được cập nhật. Có ${response.data.errors.length} lỗi.`);
+			} else {
+				message.success(`Cập nhật thành công ${response.data.totalUpdated} bản ghi`);
+			}
+		},
+		onError: () => message.error("Cập nhật hàng loạt thất bại"),
+	});
+
 	// helper to update a record locally – optimistic UI
 	const updateLocalRecord = (id, payload) => {
 		setFilteredVaccines((prev) =>
@@ -302,14 +316,24 @@ const VaccineRecord = ({ actor }) => {
 
 	// bulk action handlers
 	const handleBulkNormal = () => {
-		selectedRowKeys.forEach((id) =>
-			handleUpdateRecord(id, { abnormal: false })
-		);
+		const updates = selectedRowKeys.map(id => ({
+			historyId: id,
+			abnormal: false,
+			followUpNote: ""
+		}));
+		
+		bulkUpdateMutation.mutate(updates);
 		setSelectedRowKeys([]);
 	};
 
 	const handleBulkAbnormal = () => {
-		selectedRowKeys.forEach((id) => handleUpdateRecord(id, { abnormal: true }));
+		const updates = selectedRowKeys.map(id => ({
+			historyId: id,
+			abnormal: true
+		}));
+		
+		bulkUpdateMutation.mutate(updates);
+		setSelectedRowKeys([]);
 	};
 
 	// example templates – reuse from AbnormalDetailModal
@@ -328,9 +352,13 @@ const VaccineRecord = ({ actor }) => {
 	];
 
 	const handleBulkTemplate = (tpl) => {
-		selectedRowKeys.forEach((id) =>
-			handleUpdateRecord(id, { followUpNote: tpl.followUpNote })
-		);
+		const updates = selectedRowKeys.map(id => ({
+			historyId: id,
+			followUpNote: tpl.followUpNote
+		}));
+		
+		bulkUpdateMutation.mutate(updates);
+		setSelectedRowKeys([]);
 	};
 
 	const rowSelection = {

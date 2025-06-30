@@ -438,7 +438,7 @@ const Vaccination = () => {
 					<Input
 						prefix={<Search size={16} className="text-gray-400 mr-4" />}
 						placeholder="Tìm kiếm chiến dịch tiêm chủng"
-						style={{ width: 300 }}
+						style={{ width: 250 }}
 						className="h-[38px] rounded-[8px] !border-[#d9d9d9]"
 						allowClear
 						value={search}

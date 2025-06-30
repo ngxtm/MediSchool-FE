@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import NurseTaskBar from "../../components/NurseTaskbar";
+import NurseTaskBar from "../NurseTaskbar.jsx";
 import { useState, useEffect } from "react";
 import api from "../../../../utils/api";
 import Loading from "../../../../components/Loading";

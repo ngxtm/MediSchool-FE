@@ -1,5 +1,4 @@
 import {createBrowserRouter, Navigate} from "react-router-dom";
-import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Nurse from "../pages/nurse/Nurse";

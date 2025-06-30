@@ -32,7 +32,7 @@ const Home = () => {
 			return api.put(`/vaccine-events/${eventId}/status`, null, {
 				params: { 
 					status: "CANCELLED",
-					rejectionReason: reason 
+					rejectionReason: reason
 				},
 			});
 		},

@@ -1,18 +1,30 @@
 import { useParams } from "react-router-dom";
 import ReturnButton from "../../../../components/ReturnButton";
-import { useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import api from "../../../../utils/api";
 import Loading from "../../../../components/Loading";
 import { ChevronRight, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input, Table, Select } from "antd";
 import { useNavigate } from "react-router-dom";
+import successToast from "../../../../components/ToastPopup";
 
 const StudentListInEvent = ({ actor }) => {
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const { id } = useParams();
 	const [search, setSearch] = useState("");
 	const [statusFilter, setStatusFilter] = useState("Tất cả");
+	const [disabledSendConsent, setDisabledSendConsent] = useState(false);
+	
+	const successToastPopup = (message) => successToast(message);
+
+	const sendConsentMutation = useMutation({
+		mutationFn: () => api.post(`/vaccine-events/${id}/send-consents`),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["vaccine-consent", id, "students"] });
+		},
+	});
 
 	const [
 		{
@@ -44,6 +56,14 @@ const StudentListInEvent = ({ actor }) => {
 			},
 		],
 	});
+
+	useEffect(() => {
+		if (vaccineEvent?.status === "APPROVED") {
+			setDisabledSendConsent(true);
+		} else {
+			setDisabledSendConsent(false);
+		}
+	}, [vaccineEvent]);
 
 	const statusMap = {
 		"Chấp thuận": "APPROVE",
@@ -112,6 +132,11 @@ const StudentListInEvent = ({ actor }) => {
 		vaccineEvent?.status,
 		vaccineEvent?.event_date
 	);
+
+	const handleSendConsent = () => {
+		sendConsentMutation.mutate();
+		successToastPopup("Gửi đơn thành công!");
+	}
 
 	if (isVaccineEventLoading || isStudentsListLoading) {
 		return <Loading />;
@@ -184,7 +209,13 @@ const StudentListInEvent = ({ actor }) => {
 			render: (_, record) => {
 				return (
 					<button
-						onClick={() => navigate(`${actor === "manager" ? "/manager" : "/nurse"}/vaccination/vaccine-event/consent/${record.consentId}`)}
+						onClick={() =>
+							navigate(
+								`${
+									actor === "manager" ? "/manager" : "/nurse"
+								}/vaccination/vaccine-event/consent/${record.consentId}`
+							)
+						}
 						className="flex items-center justify-center w-8 h-8 rounded-full text-[#023E73] hover:text-white hover:bg-[#023E73] transition-colors duration-200"
 					>
 						<ChevronRight size={20} />
@@ -196,7 +227,11 @@ const StudentListInEvent = ({ actor }) => {
 
 	return (
 		<div className="font-inter">
-			<ReturnButton linkNavigate={`${actor === "manager" ? "/manager" : "/nurse"}/vaccination/vaccine-event/${id}`} />
+			<ReturnButton
+				linkNavigate={`${
+					actor === "manager" ? "/manager" : "/nurse"
+				}/vaccination/vaccine-event/${id}`}
+			/>
 			<div>
 				<div className="flex flex-col mt-10 gap-4">
 					<h1 className="font-bold text-2xl">
@@ -238,6 +273,13 @@ const StudentListInEvent = ({ actor }) => {
 					</div>
 				</div>
 				<div className="flex gap-4 my-6">
+					<button
+						className="bg-[#023E73] text-white font-semibold px-6 py-2 rounded-md hover:bg-[#01294d] active:scale-95 transition-all"
+						onClick={handleSendConsent}
+						disabled={!disabledSendConsent}
+					>
+						Gửi đơn
+					</button>
 					<button className="bg-[#023E73] text-white font-semibold px-6 py-2 rounded-md hover:bg-[#01294d] active:scale-95 transition-all">
 						Gửi lời nhắc
 					</button>

@@ -1,19 +1,27 @@
 import { Cardio } from "ldrs/react";
 import "ldrs/react/Cardio.css";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useStudent } from "../../context/StudentContext";
+import api from "../../utils/api";
 
 const StudentInfo = () => {
+	const { selectedStudent } = useStudent();
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [studentData, setStudentData] = useState(null);
 
-	const API_URL = import.meta.env.VITE_API_URL;
-
 	useEffect(() => {
 		const fetchStudentData = async () => {
+			if (!selectedStudent?.studentId) {
+				setLoading(false);
+				return;
+			}
+
 			try {
-				const response = await axios.get(`${API_URL}/api/students/21`);
+				setLoading(true);
+				const response = await api.get(
+					`/students/${selectedStudent.studentId}`
+				);
 				setStudentData(response.data);
 			} catch (err) {
 				console.error("Error fetching student data:", err);
@@ -23,7 +31,15 @@ const StudentInfo = () => {
 			}
 		};
 		fetchStudentData();
-	}, [API_URL]);
+	}, [selectedStudent?.studentId]);
+
+	if (!selectedStudent) {
+		return (
+			<div className="flex justify-center items-center h-64">
+				<p className="text-gray-600">Vui lòng chọn học sinh để xem thông tin</p>
+			</div>
+		);
+	}
 
 	if (loading)
 		return (
@@ -46,7 +62,7 @@ const StudentInfo = () => {
 					<p className="w-fit">{studentData?.fullName || "N/A"}</p>
 				</div>
 				<div className={rowWhite}>
-					<p className="w-fit">Mã học sinh</p>
+					<p className="w-fit font-bold">Mã học sinh</p>
 					<p className="w-fit">{studentData?.studentCode || "N/A"}</p>
 				</div>
 				<div className={rowBlue}>

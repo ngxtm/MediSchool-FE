@@ -1,277 +1,715 @@
-const Vaccination = () => {
-    return (
-        <div className="flex justify-between gap-4 md:gap-30 md:flex-row flex-col">
-            <div className="md:w-1/2 gap-6 flex flex-col">
-                <h1 className="font-bold text-2xl">Mũi tiêm kế tiếp</h1>
-                <div className="flex flex-row justify-between bg-[#DAEAF7] rounded-xl px-12 py-5">
-                    <div className="flex flex-col gap-4">
-                        <p className="font-bold">CÚM MÙA</p>
-                        <p>15/07/2025</p>
-                    </div>
-                    <div className="flex flex-col gap-4">
-                        <p className="italic">Đã lên lịch</p>
-                        <a href="#" className="underline">
-                            Xem giấy đồng thuận
-                        </a>
-                    </div>
-                </div>
-                <div className="flex flex-row justify-between bg-[#DAEAF7] rounded-xl px-12 py-5">
-                    <div className="flex flex-col gap-4">
-                        <p className="font-bold">CÚM MÙA</p>
-                        <p>15/07/2025</p>
-                    </div>
-                    <div className="flex flex-col gap-4">
-                        <p className="italic">Đã lên lịch</p>
-                        <a href="#" className="underline">
-                            Xem giấy đồng thuận
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div className="md:w-1/2 gap-6 flex flex-col">
-                <h1 className="font-bold text-2xl">Lịch sử tiêm chủng</h1>
-                <div className="flex-1 max-h-[55vh] overflow-y-auto min-h-0 rounded-lg">
-                    <h1 className="bg-[#DAEAF7] px-6 py-3 rounded-xl font-bold">
-                        Phòng bệnh Cúm
-                    </h1>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="flex justify-between">
-                        <div className="px-6 py-3">
-                            <p>Mũi 2</p>
-                            <p>20/08/2024</p>
-                        </div>
-                        <div className="px-6 py-3">
-                            <p>Trường Tiểu học Alphabet</p>
-                            <p className="font-bold">Vaxigrip Tetra 0.5ml</p>
-                        </div>
-                        <div className="flex items-center">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                class="lucide lucide-chevron-right-icon lucide-chevron-right"
-                            >
-                                <path d="m9 18 6-6-6-6" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
+import api from '../../utils/api'
+import { useStudent } from '../../context/StudentContext'
+import { UserAuth } from '../../context/AuthContext'
+import { formatDate } from '../../utils/dateparse'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-export default Vaccination;
+const RejectReasonModal = ({ isOpen, onClose, onSubmit }) => {
+	const [rejectNote, setRejectNote] = useState('')
+
+	if (!isOpen) return null
+
+	const handleSubmit = () => {
+		if (!rejectNote.trim()) {
+			alert('Vui lòng nhập lý do từ chối tham gia')
+			return
+		}
+		onSubmit(rejectNote.trim())
+		setRejectNote('')
+	}
+
+	const handleCancel = () => {
+		setRejectNote('')
+		onClose()
+	}
+
+	return (
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+			<div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+				<div className="px-6 py-6 border-b border-gray-200">
+					<h2 className="text-xl font-bold text-center text-black">Phụ huynh vui lòng thông tin thêm</h2>
+				</div>
+
+				<div className="p-6 space-y-4">
+					<div>
+						<label className="block text-sm font-semibold text-black mb-3">Lý do từ chối tham gia</label>
+						<textarea
+							value={rejectNote}
+							onChange={e => setRejectNote(e.target.value)}
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+							rows="4"
+							placeholder="Lý do từ chối tham gia"
+						/>
+					</div>
+				</div>
+
+				<div className="px-6 py-4 flex gap-4">
+					<button
+						onClick={handleCancel}
+						className="flex-1 px-6 py-3 bg-gray-300 text-black rounded-lg hover:bg-gray-400 transition-colors font-semibold"
+					>
+						Hủy
+					</button>
+					<button
+						onClick={handleSubmit}
+						className="flex-1 px-6 py-3 bg-[#023E73] text-white rounded-lg hover:bg-[#034a8a] transition-colors font-semibold"
+					>
+						Xác nhận
+					</button>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+const AddVaccinationHistoryModal = ({ isOpen, onClose, onSubmit, studentId }) => {
+	const { session } = UserAuth()
+	const [formData, setFormData] = useState({
+		selectedVaccine: null,
+		vaccineSearch: '',
+		vaccinationDate: '',
+		location: '',
+		note: ''
+	})
+	const [showSuggestions, setShowSuggestions] = useState(false)
+	const [filteredVaccines, setFilteredVaccines] = useState([])
+
+	const vaccinesQuery = useQuery({
+		queryKey: ['vaccines'],
+		queryFn: () => api.get('/vaccines'),
+		enabled: isOpen
+	})
+
+	const categoriesQuery = useQuery({
+		queryKey: ['vaccine-categories'],
+		queryFn: () => api.get('/vaccine-categories'),
+		enabled: isOpen
+	})
+
+	if (!isOpen) return null
+
+	const vaccines = vaccinesQuery.data?.data || []
+	const categories = categoriesQuery.data?.data || []
+
+	const handleVaccineSearch = value => {
+		setFormData(prev => ({ ...prev, vaccineSearch: value }))
+
+		if (value.length > 0) {
+			const filtered = vaccines.filter(vaccine => vaccine.name.toLowerCase().includes(value.toLowerCase()))
+			setFilteredVaccines(filtered)
+			setShowSuggestions(true)
+		} else {
+			setShowSuggestions(false)
+			setFilteredVaccines([])
+		}
+	}
+
+	const handleVaccineSelect = vaccine => {
+		setFormData(prev => ({
+			...prev,
+			selectedVaccine: vaccine,
+			vaccineSearch: vaccine.name
+		}))
+		setShowSuggestions(false)
+	}
+
+	const handleInputChange = (field, value) => {
+		setFormData(prev => ({
+			...prev,
+			[field]: value
+		}))
+	}
+
+	const handleSubmit = async () => {
+		if (!formData.selectedVaccine || !formData.vaccinationDate || !formData.location) {
+			alert('Vui lòng điền đầy đủ thông tin')
+			return
+		}
+
+		const historyData = {
+			studentId: studentId,
+			eventId: null,
+			vaccine: {
+				vaccineId: formData.selectedVaccine.vaccineId,
+				name: formData.selectedVaccine.name,
+				description: formData.selectedVaccine.description,
+				manufacturer: formData.selectedVaccine.manufacturer,
+				dosesRequired: formData.selectedVaccine.dosesRequired,
+				storageTemperature: formData.selectedVaccine.storageTemperature,
+				sideEffects: formData.selectedVaccine.sideEffects,
+				categoryId: formData.selectedVaccine.categoryId
+			},
+			vaccinationDate: formData.vaccinationDate,
+			location: formData.location,
+			note: formData.note,
+			createdBy: session?.user?.id || null,
+			createdAt: new Date().toISOString()
+		}
+
+		try {
+			await api.post('/vaccination-history', historyData)
+			onSubmit()
+			handleCancel()
+		} catch (error) {
+			console.error('Error adding vaccination history:', error)
+			alert('Có lỗi xảy ra khi thêm lịch sử tiêm chủng')
+		}
+	}
+
+	const handleCancel = () => {
+		setFormData({
+			selectedVaccine: null,
+			vaccineSearch: '',
+			vaccinationDate: '',
+			location: '',
+			note: ''
+		})
+		setShowSuggestions(false)
+		onClose()
+	}
+
+	const getSelectedCategory = () => {
+		if (!formData.selectedVaccine) return ''
+		const category = categories.find(cat => cat.categoryId === formData.selectedVaccine.categoryId)
+		return category?.categoryName || ''
+	}
+
+	return (
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+			<div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+				<div className="px-6 py-6 border-b border-gray-200">
+					<h2 className="text-xl font-bold text-center text-black">THÔNG TIN HỒ SƠ TIÊM CHỦNG</h2>
+				</div>
+
+				<div className="p-6 space-y-6">
+					<div className="relative">
+						<label className="block text-sm font-semibold text-black mb-2">Vaccine</label>
+						<input
+							type="text"
+							value={formData.vaccineSearch}
+							onChange={e => handleVaccineSearch(e.target.value)}
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+							placeholder="Nhập tên vaccine..."
+						/>
+
+						{showSuggestions && filteredVaccines.length > 0 && (
+							<div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+								{filteredVaccines.map(vaccine => (
+									<div
+										key={vaccine.vaccineId}
+										onClick={() => handleVaccineSelect(vaccine)}
+										className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+									>
+										<div className="font-medium">{vaccine.name}</div>
+										{vaccine.manufacturer && (
+											<div className="text-sm text-gray-500">{vaccine.manufacturer}</div>
+										)}
+									</div>
+								))}
+							</div>
+						)}
+					</div>
+
+					{/* TODO: Add category dropdown */}
+					<div>
+						<label className="block text-sm font-semibold text-black mb-2">Hạng mục tiêm chủng</label>
+						<input
+							type="text"
+							value={getSelectedCategory()}
+							readOnly
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+							placeholder="Sẽ tự động điền khi chọn vaccine"
+						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-semibold text-black mb-2">Ngày tiêm</label>
+						<input
+							type="date"
+							value={formData.vaccinationDate}
+							onChange={e => handleInputChange('vaccinationDate', e.target.value)}
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-semibold text-black mb-2">Địa điểm</label>
+						<input
+							type="text"
+							value={formData.location}
+							onChange={e => handleInputChange('location', e.target.value)}
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+							placeholder="Ví dụ: VNVC, Trạm y tế phường A,..."
+						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-semibold text-black mb-2">Ghi chú (tùy chọn)</label>
+						<textarea
+							value={formData.note}
+							onChange={e => handleInputChange('note', e.target.value)}
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+							rows="3"
+							placeholder="Ghi chú thêm về mũi tiêm..."
+						/>
+					</div>
+				</div>
+
+				<div className="px-6 py-4 flex gap-4">
+					<button
+						onClick={handleCancel}
+						className="flex-1 px-6 py-3 bg-gray-300 text-black rounded-lg hover:bg-gray-400 transition-colors font-semibold"
+					>
+						Hủy
+					</button>
+					<button
+						onClick={handleSubmit}
+						className="flex-1 px-6 py-3 bg-[#023E73] text-white rounded-lg hover:bg-[#034a8a] transition-colors font-semibold"
+					>
+						Xác nhận
+					</button>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
+	if (!isOpen || !consent) return null
+
+	return (
+		<div className="fixed inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center z-50 p-4 before:absolute before:inset-0 before:bg-black/50 before:-z-10">
+			<div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+				{/* Header */}
+				<div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-2xl">
+					<div className="flex justify-between items-center">
+						<h2 className="text-xl font-bold">Đơn đề nghị tiêm chủng</h2>
+						<button onClick={onClose} className="text-white hover:text-gray-200 transition-colors">
+							<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M6 18L18 6M6 6l12 12"
+								/>
+							</svg>
+						</button>
+					</div>
+				</div>
+
+				{/* Body */}
+				<div className="p-6 space-y-6">
+					{/* Vaccine Information */}
+					<div className="bg-blue-50 rounded-xl p-4">
+						<h3 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
+							<svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+								/>
+							</svg>
+							Thông tin vaccine
+						</h3>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<p className="text-sm text-gray-600">Tên vaccine</p>
+								<p className="font-semibold text-gray-900">
+									{consent?.event?.vaccine?.name || 'Chưa có thông tin'}
+								</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600">Ngày dự kiến</p>
+								<p className="font-semibold text-gray-900">
+									{formatDate(consent?.event?.eventDate) ?? 'Chưa xác định'}
+								</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600">Địa điểm</p>
+								<p className="font-semibold text-gray-900">{consent.location || 'Trường học'}</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600">Phòng bệnh</p>
+								<p className="font-semibold text-gray-900">{consent?.category?.categoryName || '1'}</p>
+							</div>
+						</div>
+					</div>
+
+					{/* Student Information */}
+					<div className="bg-green-50 rounded-xl p-4">
+						<h3 className="font-bold text-green-900 text-lg mb-3 flex items-center">
+							<svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+								/>
+							</svg>
+							Thông tin học sinh
+						</h3>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<p className="text-sm text-gray-600">Họ và tên</p>
+								<p className="font-semibold text-gray-900">
+									{consent?.student?.fullName || 'Chưa có thông tin'}
+								</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600">Lớp</p>
+								<p className="font-semibold text-gray-900">
+									{consent?.student?.classCode || 'Chưa có thông tin'}
+								</p>
+							</div>
+						</div>
+					</div>
+
+					{/* Important Notice */}
+					<div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl">
+						<div className="flex">
+							<svg
+								className="w-5 h-5 text-yellow-400 mr-3 mt-0.5"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"
+								/>
+							</svg>
+							<div>
+								<h4 className="text-yellow-800 font-semibold">Lưu ý quan trọng</h4>
+								<p className="text-yellow-700 text-sm mt-1">
+									Việc tiêm chủng là tự nguyện. Quý phụ huynh vui lòng tham khảo ý kiến bác sĩ nếu con
+									em có tiền sử dị ứng hoặc bệnh lý đặc biệt.
+								</p>
+							</div>
+						</div>
+					</div>
+
+					{/* Notes */}
+					{consent.note && (
+						<div className="bg-gray-50 rounded-xl p-4">
+							<h3 className="font-bold text-gray-900 text-lg mb-3">Ghi chú từ trường</h3>
+							<p className="text-gray-700">{consent.note}</p>
+						</div>
+					)}
+				</div>
+
+				{/* Footer */}
+				<div className="bg-gray-50 px-6 py-4 rounded-b-2xl">
+					<div className="flex flex-col sm:flex-row gap-3 justify-end">
+						<button
+							onClick={onClose}
+							className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+						>
+							Để sau quyết định
+						</button>
+						<button
+							onClick={onReject}
+							className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+						>
+							Không tham gia
+						</button>
+						<button
+							onClick={() => onSubmit('APPROVE')}
+							className="px-6 py-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+						>
+							Đồng ý tham gia
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+const Vaccination = () => {
+	const { selectedStudent, selectStudent, studentsList } = useStudent()
+	const [selectedConsent, setSelectedConsent] = useState(null)
+	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [isAddHistoryModalOpen, setIsAddHistoryModalOpen] = useState(false)
+	const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
+	const [isLoadingStudent, setIsLoadingStudent] = useState(false)
+	const queryClient = useQueryClient()
+	const location = useLocation()
+	const navigate = useNavigate()
+
+	const consentsQuery = useQuery({
+		queryKey: ['vaccine-consents', selectedStudent?.studentId],
+		queryFn: () => api.get(`/vaccine-consents/student/${selectedStudent?.studentId}/detail_list`),
+		enabled: !!selectedStudent?.studentId
+	})
+
+	const consents = useMemo(() => consentsQuery.data?.data || [], [consentsQuery.data])
+
+	useEffect(() => {
+		const query = new URLSearchParams(location.search)
+		const consentId = query.get('consentId')
+		
+		if (consentId) {
+			const foundConsent = consents.find(c => String(c.id) === String(consentId))
+			if (foundConsent && selectedStudent) {
+				setSelectedConsent(foundConsent)
+				setIsModalOpen(true)
+				return
+			}
+			
+			if (!foundConsent && studentsList.length > 0) {
+				setIsLoadingStudent(true)
+				api.get(`/vaccine-consents/${consentId}`)
+					.then(res => {
+						const consent = res.data
+						if (consent && consent.student) {
+							const targetStudent = studentsList.find(s => s.studentId === consent.student.studentId)
+							if (targetStudent) {
+								selectStudent(targetStudent)
+							}
+						}
+					})
+					.catch(error => {
+						console.error('Error fetching consent:', error)
+					})
+					.finally(() => setIsLoadingStudent(false))
+			}
+		}
+	}, [location.search, selectedStudent, consents, studentsList, selectStudent])
+
+	const vaccinationHistoryQuery = useQuery({
+		queryKey: ['vaccination-history', selectedStudent?.studentId],
+		queryFn: () => api.get(`/vaccination-history/student/${selectedStudent?.studentId}/by-category`),
+		enabled: !!selectedStudent?.studentId
+	})
+
+	const updateConsentMutation = useMutation({
+		mutationFn: ({ consentId, status, note }) =>
+			api.put(`/vaccine-consents/${consentId}/status`, {
+				status: status,
+				note: note || ''
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries(['vaccine-consents', selectedStudent?.studentId])
+			setIsModalOpen(false)
+			setSelectedConsent(null)
+		},
+		onError: error => {
+			console.error('Error updating consent:', error)
+			alert('Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.')
+		}
+	})
+
+	const handleViewConsent = consent => {
+		setSelectedConsent(consent)
+		setIsModalOpen(true)
+	}
+
+	const handleSubmitConsent = status => {
+		if (selectedConsent) {
+			updateConsentMutation.mutate({
+				consentId: selectedConsent.id,
+				status: status,
+				note: ''
+			})
+		}
+	}
+
+	const handleCloseModal = () => {
+		setIsModalOpen(false)
+		setSelectedConsent(null)
+		const params = new URLSearchParams(location.search)
+		params.delete('consentId')
+		navigate({ search: params.toString() }, { replace: true })
+	}
+
+	const handleAddHistory = () => {
+		setIsAddHistoryModalOpen(true)
+	}
+
+	const handleCloseAddHistoryModal = () => {
+		setIsAddHistoryModalOpen(false)
+	}
+
+	const handleSubmitAddHistory = () => {
+		queryClient.invalidateQueries(['vaccination-history', selectedStudent?.studentId])
+		setIsAddHistoryModalOpen(false)
+	}
+
+	const handleRejectConsent = () => {
+		setIsRejectModalOpen(true)
+	}
+
+	const handleCloseRejectModal = () => {
+		setIsRejectModalOpen(false)
+	}
+
+	const handleSubmitReject = note => {
+		if (selectedConsent) {
+			updateConsentMutation.mutate({
+				consentId: selectedConsent.id,
+				status: 'REJECT',
+				note: note
+			})
+		}
+		setIsRejectModalOpen(false)
+	}
+
+	if (isLoadingStudent) {
+		return <div className="flex justify-center items-center h-64">Đang tải học sinh...</div>
+	}
+	if (!selectedStudent) {
+		return <div className="flex justify-center items-center h-64">Vui lòng chọn học sinh</div>
+	}
+
+	if (consentsQuery.isLoading || vaccinationHistoryQuery.isLoading) {
+		return <div className="flex justify-center items-center h-64">Đang tải...</div>
+	}
+
+	if (consentsQuery.error || vaccinationHistoryQuery.error) {
+		return <div className="flex justify-center items-center h-64 text-red-500">Có lỗi xảy ra khi tải dữ liệu</div>
+	}
+
+	const upcomingConsents = consents.filter(
+		consent => consent.consentStatus === null || consent.consentStatus === undefined
+	)
+
+	console.log(selectedConsent?.id)
+
+	const vaccinationHistory = vaccinationHistoryQuery.data?.data || {}
+
+	return (
+		<>
+			<div className="flex justify-between gap-4 md:gap-30 md:flex-row flex-col font-inter">
+				<div className="md:w-1/2 gap-6 flex flex-col">
+					<h1 className="font-bold text-2xl">Mũi tiêm kế tiếp</h1>
+					<div className="flex-1 max-h-[55vh] overflow-y-auto min-h-0 rounded-lg">
+						{upcomingConsents.length > 0 ? (
+							<div className="space-y-6">
+								{upcomingConsents.map((consent, index) => (
+									<div
+										key={index}
+										className="flex flex-row justify-between bg-[#DAEAF7] rounded-xl px-12 py-5"
+									>
+										<div className="flex flex-col gap-4">
+											<p className="font-bold text-xl">
+												{consent?.event?.vaccine?.name || 'Tên vaccine'}
+											</p>
+											<p>{formatDate(consent?.event?.eventDate) ?? 'Chưa có lịch'}</p>
+										</div>
+										<div className="flex flex-col gap-4">
+											<p className="italic">
+												{consent?.consentStatus === 'APPROVE'
+													? 'Đã phê duyệt'
+													: consent?.consentStatus === 'REJECT'
+													? 'Đã từ chối'
+													: 'Chờ phê duyệt'}
+											</p>
+											<button
+												onClick={() => handleViewConsent(consent)}
+												className="underline hover:text-blue-600 transition-colors"
+											>
+												Xem giấy đồng thuận
+											</button>
+										</div>
+									</div>
+								))}
+							</div>
+						) : (
+							<div className="bg-gray-100 rounded-xl px-12 py-5 text-center">
+								<p className="text-gray-600">Không có mũi tiêm nào đang chờ phê duyệt</p>
+							</div>
+						)}
+					</div>
+				</div>
+
+				<div className="md:w-1/2 gap-6 flex flex-col">
+					<h1 className="font-bold text-2xl">Lịch sử tiêm chủng</h1>
+					<div className="flex-1 max-h-[55vh] overflow-y-auto min-h-0 rounded-lg">
+						{Object.keys(vaccinationHistory).length > 0 ? (
+							Object.entries(vaccinationHistory).map(([categoryName, historyList]) => (
+								<div key={categoryName} className="mb-6">
+									<h1 className="bg-[#DAEAF7] px-6 py-3 rounded-xl font-bold mb-0 text-xl">
+										{categoryName}
+									</h1>
+									{historyList.map(history => (
+										<div
+											key={history.historyId}
+											className="flex justify-between border-b border-gray-200 last:border-b-0"
+										>
+											<div className="px-6 py-3">
+												<p className="font-semibold text-lg">Mũi {history.doseNumber || 1}</p>
+												<p className="text-gray-500">{formatDate(history.vaccinationDate)}</p>
+											</div>
+											<div className="px-6 py-3">
+												<p className="text-gray-600">{history.location || 'Trường học'}</p>
+												<p className="font-bold">
+													{history.vaccine?.manufacturer || history.vaccine?.name}
+												</p>
+											</div>
+											<div className="flex items-center px-6">
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="24"
+													height="24"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													className="lucide lucide-chevron-right-icon lucide-chevron-right cursor-pointer"
+												>
+													<path d="m9 18 6-6-6-6" />
+												</svg>
+											</div>
+										</div>
+									))}
+								</div>
+							))
+						) : (
+							<div className="bg-gray-100 rounded-xl px-6 py-8 text-center">
+								<p className="text-gray-600">Chưa có lịch sử tiêm chủng</p>
+							</div>
+						)}
+					</div>
+					<div>
+						<button
+							onClick={handleAddHistory}
+							className="bg-[#023E73] text-white py-3 rounded-lg w-full font-semibold text-lg"
+						>
+							Thêm lịch sử tiêm chủng
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<ConsentModal
+				consent={selectedConsent}
+				isOpen={isModalOpen}
+				onClose={handleCloseModal}
+				onSubmit={handleSubmitConsent}
+				onReject={handleRejectConsent}
+			/>
+
+			<RejectReasonModal
+				isOpen={isRejectModalOpen}
+				onClose={handleCloseRejectModal}
+				onSubmit={handleSubmitReject}
+			/>
+
+			<AddVaccinationHistoryModal
+				isOpen={isAddHistoryModalOpen}
+				onClose={handleCloseAddHistoryModal}
+				onSubmit={handleSubmitAddHistory}
+				studentId={selectedStudent?.studentId}
+			/>
+		</>
+	)
+}
+
+export default Vaccination

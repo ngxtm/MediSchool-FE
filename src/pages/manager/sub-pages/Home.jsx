@@ -58,17 +58,14 @@ const Home = () => {
 		showQuickJumper: true,
 	});
 
-	// States for reject modal
 	const [rejectModalOpen, setRejectModalOpen] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState(null);
 
-	// Handle opening reject modal
 	const handleRejectClick = (event) => {
 		setSelectedEvent(event);
 		setRejectModalOpen(true);
 	};
 
-	// Handle rejecting event with reason
 	const handleRejectConfirm = (reason) => {
 		if (selectedEvent) {
 			rejectEvent.mutate({ eventId: selectedEvent.id, reason });

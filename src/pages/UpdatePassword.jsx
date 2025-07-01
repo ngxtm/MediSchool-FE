@@ -109,16 +109,7 @@ const UpdatePassword = () => {
 			return true;
 		};
 
-		const timeoutId = setTimeout(() => {
-			if (loading) {
-				setLoading(false);
-				setError("Thao tác mất quá nhiều thời gian. Vui lòng thử lại.");
-			}
-		}, 10000);
-
 		checkSession();
-
-		return () => clearTimeout(timeoutId);
 	}, [location, navigate]);
 
 	const handleUpdatePassword = async (e) => {

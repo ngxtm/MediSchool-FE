@@ -10,11 +10,11 @@ export function useVaccinationsPage(studentId, page) {
 			const { data } = await api.get(`/students/${studentId}/vaccinations`, {
 				params: { page, size: PAGE_SIZE },
 			});
-			return data; // JSON Page<VaccinationGroupDTO>
+			return data;
 		},
 		{
-			placeholderData: keepPreviousData, // giữ UI cũ khi đổi trang
-			staleTime: 60 * 1000, // 60 s
+			placeholderData: keepPreviousData,
+			staleTime: 60 * 1000,
 		}
 	);
 }

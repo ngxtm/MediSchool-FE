@@ -5,6 +5,7 @@ import { useStudent } from '../../context/StudentContext'
 import { UserAuth } from '../../context/AuthContext'
 import { formatDate } from '../../utils/dateparse'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useVaccineCategories } from '../../hooks/useVaccineCategories'
 
 const RejectReasonModal = ({ isOpen, onClose, onSubmit }) => {
 	const [rejectNote, setRejectNote] = useState('')
@@ -64,7 +65,15 @@ const RejectReasonModal = ({ isOpen, onClose, onSubmit }) => {
 	)
 }
 
-const AddVaccinationHistoryModal = ({ isOpen, onClose, onSubmit, studentId }) => {
+const AddVaccinationHistoryModal = ({
+	isOpen,
+	onClose,
+	onSubmit,
+	studentId,
+	categories,
+	categoriesLoading,
+	categoriesError
+}) => {
 	const { session } = UserAuth()
 	const [formData, setFormData] = useState({
 		selectedVaccine: null,
@@ -82,16 +91,9 @@ const AddVaccinationHistoryModal = ({ isOpen, onClose, onSubmit, studentId }) =>
 		enabled: isOpen
 	})
 
-	const categoriesQuery = useQuery({
-		queryKey: ['vaccine-categories'],
-		queryFn: () => api.get('/vaccine-categories'),
-		enabled: isOpen
-	})
-
 	if (!isOpen) return null
 
 	const vaccines = vaccinesQuery.data?.data || []
-	const categories = categoriesQuery.data?.data || []
 
 	const handleVaccineSearch = value => {
 		setFormData(prev => ({ ...prev, vaccineSearch: value }))
@@ -171,14 +173,20 @@ const AddVaccinationHistoryModal = ({ isOpen, onClose, onSubmit, studentId }) =>
 	}
 
 	const getSelectedCategory = () => {
-		if (!formData.selectedVaccine) return ''
-		const category = categories.find(cat => cat.categoryId === formData.selectedVaccine.categoryId)
+		if (!formData.selectedVaccine) {
+			return ''
+		}
+
+		const categoryId = formData.selectedVaccine.categoryId
+
+		const category = categories.find(cat => cat.categoryId === categoryId)
+
 		return category?.categoryName || ''
 	}
 
 	return (
 		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+			<div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl">
 				<div className="px-6 py-6 border-b border-gray-200">
 					<h2 className="text-xl font-bold text-center text-black">THÔNG TIN HỒ SƠ TIÊM CHỦNG</h2>
 				</div>
@@ -212,15 +220,20 @@ const AddVaccinationHistoryModal = ({ isOpen, onClose, onSubmit, studentId }) =>
 						)}
 					</div>
 
-					{/* TODO: Add category dropdown */}
 					<div>
-						<label className="block text-sm font-semibold text-black mb-2">Hạng mục tiêm chủng</label>
-						<input
-							type="text"
+						<label className="block text-sm font-semibold text-black mb-2">Phòng bệnh</label>
+						<textarea
 							value={getSelectedCategory()}
 							readOnly
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
-							placeholder="Sẽ tự động điền khi chọn vaccine"
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 resize-none min-h-[48px]"
+							placeholder={
+								categoriesLoading
+									? 'Đang tải danh mục...'
+									: categoriesError
+									? 'Lỗi tải danh mục'
+									: 'Sẽ tự động điền khi chọn vaccine'
+							}
+							rows="2"
 						/>
 					</div>
 
@@ -282,7 +295,6 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
 	return (
 		<div className="fixed inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center z-50 p-4 before:absolute before:inset-0 before:bg-black/50 before:-z-10">
 			<div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-				{/* Header */}
 				<div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-2xl">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-bold">Đơn đề nghị tiêm chủng</h2>
@@ -299,9 +311,7 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
 					</div>
 				</div>
 
-				{/* Body */}
 				<div className="p-6 space-y-6">
-					{/* Vaccine Information */}
 					<div className="bg-blue-50 rounded-xl p-4">
 						<h3 className="font-bold text-blue-900 text-lg mb-3 flex items-center">
 							<svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -338,7 +348,6 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
 						</div>
 					</div>
 
-					{/* Student Information */}
 					<div className="bg-green-50 rounded-xl p-4">
 						<h3 className="font-bold text-green-900 text-lg mb-3 flex items-center">
 							<svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,7 +376,6 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
 						</div>
 					</div>
 
-					{/* Important Notice */}
 					<div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl">
 						<div className="flex">
 							<svg
@@ -393,7 +401,6 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
 						</div>
 					</div>
 
-					{/* Notes */}
 					{consent.note && (
 						<div className="bg-gray-50 rounded-xl p-4">
 							<h3 className="font-bold text-gray-900 text-lg mb-3">Ghi chú từ trường</h3>
@@ -402,7 +409,6 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
 					)}
 				</div>
 
-				{/* Footer */}
 				<div className="bg-gray-50 px-6 py-4 rounded-b-2xl">
 					<div className="flex flex-col sm:flex-row gap-3 justify-end">
 						<button
@@ -441,6 +447,8 @@ const Vaccination = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 
+	const categoriesQuery = useVaccineCategories()
+
 	const consentsQuery = useQuery({
 		queryKey: ['vaccine-consents', selectedStudent?.studentId],
 		queryFn: () => api.get(`/vaccine-consents/student/${selectedStudent?.studentId}/detail_list`),
@@ -452,7 +460,7 @@ const Vaccination = () => {
 	useEffect(() => {
 		const query = new URLSearchParams(location.search)
 		const consentId = query.get('consentId')
-		
+
 		if (consentId) {
 			const foundConsent = consents.find(c => String(c.id) === String(consentId))
 			if (foundConsent && selectedStudent) {
@@ -460,7 +468,7 @@ const Vaccination = () => {
 				setIsModalOpen(true)
 				return
 			}
-			
+
 			if (!foundConsent && studentsList.length > 0) {
 				setIsLoadingStudent(true)
 				api.get(`/vaccine-consents/${consentId}`)
@@ -577,8 +585,6 @@ const Vaccination = () => {
 	const upcomingConsents = consents.filter(
 		consent => consent.consentStatus === null || consent.consentStatus === undefined
 	)
-
-	console.log(selectedConsent?.id)
 
 	const vaccinationHistory = vaccinationHistoryQuery.data?.data || {}
 
@@ -707,6 +713,9 @@ const Vaccination = () => {
 				onClose={handleCloseAddHistoryModal}
 				onSubmit={handleSubmitAddHistory}
 				studentId={selectedStudent?.studentId}
+				categories={categoriesQuery.data?.data || []}
+				categoriesLoading={categoriesQuery.isLoading}
+				categoriesError={categoriesQuery.error}
 			/>
 		</>
 	)

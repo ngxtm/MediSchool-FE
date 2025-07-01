@@ -6,6 +6,7 @@ import { UserAuth } from '../../context/AuthContext'
 import { formatDate } from '../../utils/dateparse'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useVaccineCategories } from '../../hooks/useVaccineCategories'
+import { errorToast } from '../../components/ToastPopup'
 
 const RejectReasonModal = ({ isOpen, onClose, onSubmit }) => {
 	const [rejectNote, setRejectNote] = useState('')
@@ -84,6 +85,7 @@ const AddVaccinationHistoryModal = ({
 	})
 	const [showSuggestions, setShowSuggestions] = useState(false)
 	const [filteredVaccines, setFilteredVaccines] = useState([])
+	const errorToastPopup = errorToast
 
 	const vaccinesQuery = useQuery({
 		queryKey: ['vaccines'],
@@ -154,9 +156,8 @@ const AddVaccinationHistoryModal = ({
 			await api.post('/vaccination-history', historyData)
 			onSubmit()
 			handleCancel()
-		} catch (error) {
-			console.error('Error adding vaccination history:', error)
-			alert('Có lỗi xảy ra khi thêm lịch sử tiêm chủng')
+		} catch {
+			errorToastPopup('Đã tiêm đủ mũi cho chủng bệnh này không thể thêm lịch sử tiêm chủng')
 		}
 	}
 
@@ -446,6 +447,7 @@ const Vaccination = () => {
 	const queryClient = useQueryClient()
 	const location = useLocation()
 	const navigate = useNavigate()
+	const errorToastPopup = errorToast
 
 	const categoriesQuery = useVaccineCategories()
 
@@ -506,9 +508,8 @@ const Vaccination = () => {
 			setIsModalOpen(false)
 			setSelectedConsent(null)
 		},
-		onError: error => {
-			console.error('Error updating consent:', error)
-			alert('Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.')
+		onError: () => {
+			errorToastPopup('Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.')
 		}
 	})
 

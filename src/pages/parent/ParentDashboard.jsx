@@ -4,8 +4,8 @@ import NavToggle from "../../components/NavToggle";
 import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../../utils/api";
-import { Cardio } from "ldrs/react";
-import "ldrs/react/Cardio.css";
+import { StudentProvider } from "../../context/StudentContext";
+import Loading from "../../components/Loading";
 
 const ParentDashboard = () => {
     const [user, setUser] = useState(null);
@@ -26,24 +26,26 @@ const ParentDashboard = () => {
     }, []);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-screen">
-            <Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-        </div>;
+        return (
+            <Loading />
+        )
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 font-inter">
-            <ParentTaskBar userData={user}/>
-            <div className="px-20 py-6">
-                <StudentBox />
-                <div className="mt-6">
-                    <NavToggle />
-                </div>
-                <div className="mt-6">
-                    <Outlet />
+        <StudentProvider>
+            <div className="min-h-screen bg-gray-50 font-inter">
+                <ParentTaskBar userData={user}/>
+                <div className="px-20 py-6">
+                    <StudentBox />
+                    <div className="mt-6">
+                        <NavToggle />
+                    </div>
+                    <div className="mt-6">
+                        <Outlet />
+                    </div>
                 </div>
             </div>
-        </div>
+        </StudentProvider>
     );
 }
 

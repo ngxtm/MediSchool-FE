@@ -7,12 +7,12 @@ const RejectReasonModal = ({ isOpen, onClose, onConfirm, eventTitle, loading }) 
 	const handleSubmit = () => {
 		if (reason.trim()) {
 			onConfirm(reason);
-			setReason(""); // Reset form
+			setReason("");
 		}
 	};
 
 	const handleClose = () => {
-		setReason(""); // Reset form when closing
+		setReason("");
 		onClose();
 	};
 

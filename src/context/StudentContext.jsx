@@ -9,7 +9,6 @@ export const StudentProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch students list khi component mount
     useEffect(() => {
         fetchStudents();
     }, []);
@@ -21,7 +20,6 @@ export const StudentProvider = ({ children }) => {
             const students = response.data;
             setStudentsList(students);
             
-            // Auto select first student if available
             if (students.length > 0 && !selectedStudent) {
                 setSelectedStudent(students[0]);
             }

@@ -78,7 +78,7 @@ export const AuthContextProvider = ({ children }) => {
 
 			sessionStorage.removeItem("tempSession");
 			localStorage.removeItem("rememberMePreference");
-
+			localStorage.removeItem("intendedUrl");
 			const projectRef = supabase.supabaseUrl
 				.split("https://")[1]
 				.split(".")[0];

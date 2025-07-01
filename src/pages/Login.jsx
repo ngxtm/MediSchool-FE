@@ -1,100 +1,104 @@
-import "../styles/login.css";
-import React, { useState } from "react";
-import LoginImage from "../assets/login-image.png";
-import { Eye, EyeOff, User, Lock } from "lucide-react";
-import { UserAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../utils/supabase";
+import '../styles/login.css'
+import React, { useState } from 'react'
+import LoginImage from '../assets/login-image.png'
+import { Eye, EyeOff, User, Lock } from 'lucide-react'
+import { UserAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../utils/supabase'
 
 const Login = () => {
-	const [showPassword, setShowPassword] = useState(false);
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [rememberMe, setRememberMe] = useState(false);
-	const navigate = useNavigate();
+	const [showPassword, setShowPassword] = useState(false)
+	const [email, setEmail] = useState('')
+	const [password, setPassword] = useState('')
+	const [error, setError] = useState('')
+	const [loading, setLoading] = useState(false)
+	const [rememberMe, setRememberMe] = useState(false)
+	const navigate = useNavigate()
 
-	const { signInWithEmail, signInWithGoogle } = UserAuth();
+	const { signInWithEmail, signInWithGoogle } = UserAuth()
 
-	const handleSignInWithEmail = async (e) => {
-		e.preventDefault();
-		setLoading(true);
+	const handleSignInWithEmail = async e => {
+		e.preventDefault()
+		setLoading(true)
 		try {
-			const result = await signInWithEmail(email, password, rememberMe);
-			console.log("TESTING: ");
-			console.log("Data: ", result.data);
+			const result = await signInWithEmail(email, password, rememberMe)
+			console.log('TESTING: ')
+			console.log('Data: ', result.data)
 			if (result.success) {
-				const { user } = result.data;
+				const { user } = result.data
 				const { data: userData, error: roleError } = await supabase
-					.from("user_profile")
-					.select("role")
-					.eq("id", user.id)
-					.single();
-				setError(roleError?.message);
+					.from('user_profile')
+					.select('role')
+					.eq('id', user.id)
+					.single()
+				setError(roleError?.message)
 				if (!rememberMe) {
-					await new Promise(resolve => setTimeout(resolve, 150));
+					await new Promise(resolve => setTimeout(resolve, 150))
+				}
+
+				const intendedUrl = localStorage.getItem('intendedUrl')
+				if (intendedUrl) {
+					localStorage.removeItem('intendedUrl')
+					const roleBasePaths = {
+						NURSE: '/nurse',
+						MANAGER: '/manager',
+						ADMIN: '/admin',
+						PARENT: '/parent'
+					}
+					if (intendedUrl.startsWith(roleBasePaths[userData.role])) {
+						navigate(intendedUrl)
+						return
+					}
 				}
 
 				switch (userData.role) {
-					case "NURSE":
-						navigate("/nurse");
-						break;
-					case "MANAGER":
-						navigate("/manager");
-						break;
-					case "ADMIN":
-						navigate("/admin");
-						break;
-					case "PARENT":
-						navigate("/parent");
-						break;
+					case 'NURSE':
+						navigate('/nurse')
+						break
+					case 'MANAGER':
+						navigate('/manager')
+						break
+					case 'ADMIN':
+						navigate('/admin')
+						break
+					case 'PARENT':
+						navigate('/parent')
+						break
 					default:
-						navigate("/no-role");
+						navigate('/no-role')
 				}
 			} else {
-				setError(
-					result.error?.message || "Đăng nhập thất bại. Vui lòng thử lại."
-				);
+				setError(result.error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.')
 			}
 		} catch (error) {
-			console.error("Login error:", error);
-			setError(
-				error.message || "Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại."
-			);
+			console.error('Login error:', error)
+			setError(error.message || 'Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.')
 		} finally {
-			setLoading(false);
+			setLoading(false)
 		}
-	};
+	}
 
 	const handleSignInWithGoogle = async () => {
 		try {
-			setLoading(true);
-			await signInWithGoogle(rememberMe);
-			setLoading(false);
+			setLoading(true)
+			await signInWithGoogle(rememberMe)
+			setLoading(false)
 		} catch (error) {
-			console.error("Error starting Google OAuth:", error);
-			setError(error.message);
-			setLoading(false);
+			console.error('Error starting Google OAuth:', error)
+			setError(error.message)
+			setLoading(false)
 		}
-	};
+	}
 
 	return (
 		<div className="min-h-screen w-full bg-[#E8F4FB] relative overflow-hidden">
 			<div className="absolute top-0 left-0 z-20 p-6 sm:p-8">
-				<p className="mb-1 text-2xl font-semibold text-gray-800 sm:text-3xl">
-					MediSchool
-				</p>
-				<p className="text-xl font-semibold text-gray-800 sm:text-2xl">
-					Chào mừng trở lại!
-				</p>
+				<p className="mb-1 text-2xl font-semibold text-gray-800 sm:text-3xl">MediSchool</p>
+				<p className="text-xl font-semibold text-gray-800 sm:text-2xl">Chào mừng trở lại!</p>
 			</div>
 			<div className="flex relative z-10 min-h-screen">
 				<div className="flex flex-col justify-center p-6 pt-20 w-full md:w-1/2 sm:p-8 md:p-10 md:pt-20">
-					<form
-						onSubmit={handleSignInWithEmail}
-						className="mx-auto w-full max-w-md"
-					>
+					<form onSubmit={handleSignInWithEmail} className="mx-auto w-full max-w-md">
 						<h1 className="mb-2 text-2xl font-bold text-center text-gray-800 sm:text-3xl">
 							Vui lòng đăng nhập để tiếp tục
 						</h1>
@@ -102,12 +106,8 @@ const Login = () => {
 							Truy cập hồ sơ y tế của con bạn một cách an toàn
 						</p>
 						<p className="mb-8 text-sm text-center text-gray-600">
-							Chưa có tài khoản?{" "}
-							<a
-								href="#"
-								className="text-blue-600 hover:underline"
-								onClick={() => navigate("/signup")}
-							>
+							Chưa có tài khoản?{' '}
+							<a href="#" className="text-blue-600 hover:underline" onClick={() => navigate('/signup')}>
 								Đăng ký
 							</a>
 						</p>
@@ -116,7 +116,7 @@ const Login = () => {
 								<User className="absolute left-3 text-gray-500" size={24} />
 								<input
 									value={email}
-									onChange={(e) => setEmail(e.target.value)}
+									onChange={e => setEmail(e.target.value)}
 									type="email"
 									pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
 									placeholder="Địa chỉ email"
@@ -130,8 +130,8 @@ const Login = () => {
 								<Lock className="absolute left-3 text-gray-500" size={24} />
 								<input
 									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-									type={showPassword ? "text" : "password"}
+									onChange={e => setPassword(e.target.value)}
+									type={showPassword ? 'text' : 'password'}
 									placeholder="Mật khẩu"
 									className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
 								/>
@@ -157,7 +157,7 @@ const Login = () => {
 								Ghi nhớ đăng nhập
 							</label>
 							<a
-								onClick={() => navigate("/forgot-password")}
+								onClick={() => navigate('/forgot-password')}
 								href="#"
 								className="text-sm font-medium text-[#0A3D62] hover:underline"
 							>
@@ -215,21 +215,16 @@ const Login = () => {
 
 				<div className="hidden relative w-1/2 md:block">
 					<div className="flex absolute inset-0 justify-center items-center">
-						<img
-							src={LoginImage}
-							alt="Minh họa y tế"
-							className="object-contain z-10 max-w-full h-auto"
-						/>
+						<img src={LoginImage} alt="Minh họa y tế" className="object-contain z-10 max-w-full h-auto" />
 					</div>
 				</div>
 			</div>
 
 			<footer className="absolute bottom-0 py-3 w-full text-sm text-center text-gray-600">
-				© {new Date().getFullYear()} MediSchool Bản quyền. Tất cả các quyền được
-				bảo lưu.
+				© {new Date().getFullYear()} MediSchool Bản quyền. Tất cả các quyền được bảo lưu.
 			</footer>
 		</div>
-	);
-};
+	)
+}
 
-export default Login;
+export default Login

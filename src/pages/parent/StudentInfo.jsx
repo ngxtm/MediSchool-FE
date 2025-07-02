@@ -1,37 +1,29 @@
 import { Cardio } from "ldrs/react";
 import "ldrs/react/Cardio.css";
-import { useEffect, useState } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { useStudent } from "../../context/StudentContext";
 import api from "../../utils/api";
+import Loading from "../../components/Loading";
 
 const StudentInfo = () => {
 	const { selectedStudent } = useStudent();
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [studentData, setStudentData] = useState(null);
-
-	useEffect(() => {
-		const fetchStudentData = async () => {
-			if (!selectedStudent?.studentId) {
-				setLoading(false);
-				return;
-			}
-
-			try {
-				setLoading(true);
-				const response = await api.get(
-					`/students/${selectedStudent.studentId}`
-				);
-				setStudentData(response.data);
-			} catch (err) {
-				console.error("Error fetching student data:", err);
-				setError(err);
-			} finally {
-				setLoading(false);
-			}
-		};
-		fetchStudentData();
-	}, [selectedStudent?.studentId]);
+	
+	const {
+		data: studentData,
+		isLoading: loading,
+		isError: error,
+		error: errorMessage
+	} = useQuery({
+		queryKey: ['studentDetails', selectedStudent?.studentId],
+		queryFn: async () => {
+			if (!selectedStudent?.studentId) return null;
+			const response = await api.get(`/students/${selectedStudent.studentId}`);
+			return response.data;
+		},
+		enabled: !!selectedStudent?.studentId,
+		staleTime: 5 * 60 * 1000,
+		cacheTime: 10 * 60 * 1000,
+	});
 
 	if (!selectedStudent) {
 		return (
@@ -42,12 +34,8 @@ const StudentInfo = () => {
 	}
 
 	if (loading)
-		return (
-			<div className="flex justify-center items-start h-screen mt-40">
-				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-			</div>
-		);
-	if (error) return <p>{error.message}</p>;
+		return <Loading />
+	if (error) return <p className="text-red-600 text-center p-4">Có lỗi xảy ra: {errorMessage?.message || 'Không thể tải thông tin học sinh'}</p>;
 
 	const rowBlue =
 		"flex justify-between flex-col md:flex-row bg-[#DAEAF7] px-6 py-3 rounded-xl";

@@ -1,30 +1,36 @@
 import { useOutletContext } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import api from "../../../../utils/api";
 import MedicationRequestList from "./MedicationRequestList";
 import Loading from "../../../../components/Loading";
 
 const MedicationRequestApproved = () => {
 	const { search } = useOutletContext();
+	const [debouncedSearch, setDebouncedSearch] = useState("");
+
+	useEffect(() => {
+		const timeout = setTimeout(() => setDebouncedSearch(search), 400); // debounce
+		return () => clearTimeout(timeout);
+	}, [search]);
 
 	const { data: requests = [], isLoading } = useQuery({
-		queryKey: ["approved-medication-requests"],
+		queryKey: ["approved-medication-requests", debouncedSearch],
 		queryFn: async () => {
-			const res = await api.get("/medication-requests/approved");
-			return Array.isArray(res.data) ? res.data : [res.data];
+			if (!debouncedSearch.trim()) {
+				const res = await api.get("/medication-requests/approved");
+				return res.data;
+			}
+			const res = await api.get(`/medication-requests/search?keyword=${debouncedSearch}`);
+
+			return res.data.filter((r) => r.medicationStatus === "APPROVED");
 		},
+		enabled: true,
 	});
 
 	if (isLoading) return <Loading />;
 
-	const filteredRequests = !search?.trim()
-		? requests
-		: requests.filter((req) =>
-			req.student?.fullName?.toLowerCase().includes(search.trim().toLowerCase())
-		);
-
-
-	return <MedicationRequestList data={filteredRequests} />;
+	return <MedicationRequestList data={requests} />;
 };
 
 export default MedicationRequestApproved;

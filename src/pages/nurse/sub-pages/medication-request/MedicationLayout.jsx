@@ -60,12 +60,12 @@ export default function MedicationLayout() {
 			)}
 
 			{}
-			<div className="flex px-[100px] justify-between items-center mb-6">
+			<div className="flex px-[100px] justify-between items-center mb-6 font-inter">
 				<Input
 					style={{ fontFamily: "Inter", width: 300 }}
-					prefix={<Search size={16} className="text-gray-400 mr-4" />}
-					placeholder="Tìm học sinh"
-					className="h-[38px] rounded-[8px] !border-[#d9d9d9]"
+					prefix={<Search size={16} className="text-gray-400 mr-4 font-inter" />}
+					placeholder="Tìm kiếm đơn thuốc"
+					className="h-[38px] rounded-[8px] !border-[#d9d9d9] font-inter"
 					allowClear
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}

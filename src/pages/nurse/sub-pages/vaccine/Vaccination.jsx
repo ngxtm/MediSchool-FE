@@ -304,12 +304,6 @@ const Vaccination = () => {
 	const queryClient = useQueryClient();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-	useEffect(() => {
-		if (selectedYear) {
-			console.log(selectedYear);
-		}
-	}, [selectedYear]);
-
 	const onChange = (date, dateString) => {
 		setSelectedYear(dateString);
 	};

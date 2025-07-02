@@ -386,7 +386,7 @@ const Vaccination = () => {
 				}
 				return { text: "Đã duyệt", bgColor: "bg-[#DAEAF7]" };
 			case "PENDING":
-				return { text: "Chờ duyệt", bgColor: "bg-[#DAEAF7]" };
+				return { text: "Chờ duyệt", bgColor: "bg-[#FFF694]" };
 			case "CANCELLED":
 				return { text: "Đã hủy", bgColor: "bg-[#FFCCCC]" };
 			case "COMPLETED":

@@ -11,15 +11,18 @@ const MedicationRequestApproved = () => {
 		queryKey: ["approved-medication-requests"],
 		queryFn: async () => {
 			const res = await api.get("/medication-requests/approved");
-			return res.data;
+			return Array.isArray(res.data) ? res.data : [res.data];
 		},
 	});
 
-	const filteredRequests = requests.filter((req) =>
-		req.student?.fullName?.toLowerCase().includes(search.toLowerCase())
-	);
-
 	if (isLoading) return <Loading />;
+
+	const filteredRequests = !search?.trim()
+		? requests
+		: requests.filter((req) =>
+			req.student?.fullName?.toLowerCase().includes(search.trim().toLowerCase())
+		);
+
 
 	return <MedicationRequestList data={filteredRequests} />;
 };

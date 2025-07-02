@@ -5,10 +5,10 @@ import api from "../../../../utils/api";
 import { useState } from "react";
 import { toast, Zoom } from "react-toastify";
 
-const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
+const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) => {
 	const [open, setOpen] = useState(false);
 	const [reason, setReason] = useState("");
-	const [medicineName, setMedicineName] = useState("");
+	const [selectedItemId, setSelectedItemId] = useState("");
 	const [dose, setDose] = useState("");
 	const [status, setStatus] = useState("");
 	const [note, setNote] = useState("");
@@ -32,11 +32,11 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 
 			if (actionType === "deliver") {
 				return api.post(`/medication-requests/${requestId}/dispense`, {
-					requestId,
-					medicineName,
+					itemId: selectedItemId || null,
+					requestId: selectedItemId ? null : requestId,
 					dose,
 					note,
-					status,
+					status
 				});
 			}
 
@@ -51,9 +51,10 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 			});
 			queryClient.invalidateQueries(["medication-requests/pending"]);
 			queryClient.invalidateQueries(["medication-request/stats"]);
+			queryClient.invalidateQueries(["approved-medication-requests"]);
 			setOpen(false);
 			setReason("");
-			setMedicineName("");
+			setSelectedItemId("");
 			setDose("");
 			setNote("");
 			setStatus("");
@@ -119,15 +120,25 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 							{isSuccess && (
 								<>
 									<div>
-										<label className="block mb-1 font-semibold text-sm">Tên thuốc</label>
-										<input
-											type="text"
-											value={medicineName}
-											onChange={(e) => setMedicineName(e.target.value)}
-											className="w-full border px-3 py-2 rounded-md text-sm"
-											placeholder="Nhập tên thuốc"
-										/>
+										<label className="block mb-1 font-semibold text-sm">Thuốc</label>
+										{items && items.length > 0 ? (
+											<select
+												value={selectedItemId}
+												onChange={(e) => setSelectedItemId(e.target.value)}
+												className="w-full border px-3 py-2 rounded-md text-sm"
+											>
+												<option value="">Chọn thuốc</option>
+												{items.map((item) => (
+													<option key={item.itemId} value={item.itemId}>
+														{item.medicineName || `ID ${item.itemId}`}
+													</option>
+												))}
+											</select>
+										) : (
+											<p className="text-sm italic text-gray-500">Không có thuốc nào</p>
+										)}
 									</div>
+
 									<div>
 										<label className="block mb-1 font-semibold text-sm">Liều dùng</label>
 										<input
@@ -140,6 +151,7 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 									</div>
 								</>
 							)}
+
 							<div>
 								<label className="block mb-1 font-semibold text-sm">Ghi chú</label>
 								<textarea
@@ -147,13 +159,13 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 									value={note}
 									onChange={(e) => setNote(e.target.value)}
 									className="w-full border px-3 py-2 rounded-md text-sm"
-									placeholder="Ví dụ: Học sinh có dấu hiệu sốt nhẹ,..."
+									placeholder="Ví dụ: Ghi chú thêm nếu cần"
 								/>
 							</div>
 						</div>
 					)}
 
-					<div className="flex justify-center gap-3 mt-6 font-inter text-sm">
+					<div className="flex justify-center gap-3 mt-6">
 						<Dialog.Close asChild>
 							<button className="px-6 py-2 bg-gray-200 rounded-md font-semibold hover:bg-gray-300">
 								Hủy
@@ -165,16 +177,15 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 								(isReject && !reason.trim()) ||
 								(isDeliver && (
 									!status ||
-									(status === "SUCCESS" && (!medicineName.trim() || !dose.trim()))
+									(status === "SUCCESS" && (!selectedItemId || !dose.trim()))
 								))
 							}
-
 							onClick={() => mutation.mutate()}
-							className={`px-6 py-2 rounded-md font-semibold text-white ${
+							className={`px-6 py-2 rounded-md font-semibold text-white font-inter ${
 								isReject || isDeliver
 									? "bg-[#023E73] hover:bg-[#01294d]"
 									: "bg-[#023E73] hover:bg-[#01294d]"
-							}`}
+							} `}
 						>
 							{mutation.isPending
 								? "Đang xử lý..."
@@ -184,6 +195,14 @@ const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 						</button>
 					</div>
 
+					<Dialog.Close asChild>
+						<button
+							className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+							aria-label="Close"
+						>
+							<X size={20} />
+						</button>
+					</Dialog.Close>
 				</Dialog.Content>
 			</Dialog.Portal>
 		</Dialog.Root>

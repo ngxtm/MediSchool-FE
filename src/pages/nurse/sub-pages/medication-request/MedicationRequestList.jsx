@@ -16,8 +16,8 @@ export default function MedicationRequestList({ data, nurseId }) {
         <div className="px-[120px] pb-20">
             {sortedData && sortedData.length > 0 ? (
                 <div className="flex flex-col divide-y">
-                    {sortedData.map((request) => (
-                        <MedicationRequestCard key={request.requestId} data={request} nurseId={nurseId} />
+                    {sortedData.map((request, index) => (
+                        <MedicationRequestCard key={request.requestId || index} data={request} nurseId={nurseId} />
                     ))}
                 </div>
             ) : (

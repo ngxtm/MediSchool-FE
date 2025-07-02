@@ -7,7 +7,7 @@ import { ChevronRight, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Input, Table, Select } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import successToast from '../../../../components/ToastPopup'
+import { successToast, errorToast } from '../../../../components/ToastPopup'
 
 const StudentListInEvent = ({ actor }) => {
 	const navigate = useNavigate()
@@ -17,7 +17,8 @@ const StudentListInEvent = ({ actor }) => {
 	const [statusFilter, setStatusFilter] = useState('Tất cả')
 	const [disabledSendConsent, setDisabledSendConsent] = useState(false)
 
-	const successToastPopup = message => successToast(message)
+	const successToastPopup = successToast
+	const errorToastPopup = errorToast
 
 	const sendConsentMutation = useMutation({
 		mutationFn: () => api.post(`/vaccine-events/${id}/send-consents`),
@@ -164,8 +165,14 @@ const StudentListInEvent = ({ actor }) => {
 	}
 
 	const handleExportPDF = () => {
-		exportPDFMutation.mutate(id)
-		successToastPopup('Xuất PDF thành công!')
+		exportPDFMutation.mutate(id, {
+			onSuccess: () => {
+				successToastPopup('Xuất PDF thành công!')
+			},
+			onError: () => {
+				errorToastPopup('Có lỗi xảy ra khi xuất file PDF')
+			}
+		})
 	}
 
 	const columns = [

@@ -135,6 +135,7 @@ const router = createBrowserRouter([
 					},
 				],
 			},
+			{ path: "medication-event", element: <MedicationEvent /> },
 		],
 	},
 	{

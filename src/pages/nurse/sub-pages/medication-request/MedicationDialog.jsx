@@ -5,9 +5,13 @@ import api from "../../../../utils/api";
 import { useState } from "react";
 import { toast, Zoom } from "react-toastify";
 
-const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => {
+const MedicationDialog = ({ requestId, actionType, triggerButton }) => {
 	const [open, setOpen] = useState(false);
 	const [reason, setReason] = useState("");
+	const [medicineName, setMedicineName] = useState("");
+	const [dose, setDose] = useState("");
+	const [status, setStatus] = useState("");
+	const [note, setNote] = useState("");
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
@@ -27,15 +31,12 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => 
 			}
 
 			if (actionType === "deliver") {
-				// Giả định body rỗng và nurseId không cần thiết (bạn có thể chỉnh lại nếu cần)
 				return api.post(`/medication-requests/${requestId}/dispense`, {
-					// Có thể truyền thêm thông tin phát thuốc nếu backend yêu cầu
-					medicineName: "Paracetamol", // placeholder nếu cần
-					dose: "1 viên", // placeholder
-				}, {
-					params: {
-						requestId,
-					},
+					requestId,
+					medicineName,
+					dose,
+					note,
+					status,
 				});
 			}
 
@@ -52,6 +53,10 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => 
 			queryClient.invalidateQueries(["medication-request/stats"]);
 			setOpen(false);
 			setReason("");
+			setMedicineName("");
+			setDose("");
+			setNote("");
+			setStatus("");
 		},
 		onError: (err) => {
 			toast.error(err?.response?.data?.message || "Có lỗi xảy ra", {
@@ -62,6 +67,8 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => 
 	});
 
 	const isReject = actionType === "reject";
+	const isDeliver = actionType === "deliver";
+	const isSuccess = status === "SUCCESS";
 
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
@@ -69,18 +76,18 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => 
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 bg-black/60 z-[60]" />
 				<Dialog.Content className="fixed left-1/2 top-1/2 w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white py-10 px-8 shadow-xl z-[61]">
-					<Dialog.Title className="text-2xl font-bold text-center text-[#023E73] mb-4">
+					<Dialog.Title className="text-2xl font-bold text-center text-[#000000] mb-4 font-inter">
 						{actionType === "approve"
 							? "Xác nhận duyệt đơn"
 							: actionType === "reject"
 								? "Lý do từ chối"
 								: actionType === "deliver"
-									? "Xác nhận phát thuốc"
+									? "Ghi nhận phát thuốc"
 									: "Xác nhận hoàn thành"}
 					</Dialog.Title>
 
 					{isReject && (
-						<div className="mb-6">
+						<div className="mb-6 font-inter">
 							<label className="block mb-2 font-semibold text-[14px]">
 								Lý do từ chối <span className="text-red-500">*</span>
 							</label>
@@ -94,20 +101,80 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => 
 						</div>
 					)}
 
-					<div className="flex justify-center gap-3 mt-4">
+					{isDeliver && (
+						<div className="space-y-4 font-inter">
+							<div>
+								<label className="block mb-1 font-semibold text-sm">Trạng thái</label>
+								<select
+									value={status}
+									onChange={(e) => setStatus(e.target.value)}
+									className="w-full border px-3 py-2 rounded-md text-sm"
+								>
+									<option value="">Chọn trạng thái</option>
+									<option value="SUCCESS">Thành công</option>
+									<option value="FAIL">Không thành công</option>
+								</select>
+							</div>
+
+							{isSuccess && (
+								<>
+									<div>
+										<label className="block mb-1 font-semibold text-sm">Tên thuốc</label>
+										<input
+											type="text"
+											value={medicineName}
+											onChange={(e) => setMedicineName(e.target.value)}
+											className="w-full border px-3 py-2 rounded-md text-sm"
+											placeholder="Nhập tên thuốc"
+										/>
+									</div>
+									<div>
+										<label className="block mb-1 font-semibold text-sm">Liều dùng</label>
+										<input
+											type="text"
+											value={dose}
+											onChange={(e) => setDose(e.target.value)}
+											className="w-full border px-3 py-2 rounded-md text-sm"
+											placeholder="Ví dụ: 5ml, 1 viên,..."
+										/>
+									</div>
+								</>
+							)}
+							<div>
+								<label className="block mb-1 font-semibold text-sm">Ghi chú</label>
+								<textarea
+									rows={3}
+									value={note}
+									onChange={(e) => setNote(e.target.value)}
+									className="w-full border px-3 py-2 rounded-md text-sm"
+									placeholder="Ví dụ: Học sinh có dấu hiệu sốt nhẹ,..."
+								/>
+							</div>
+						</div>
+					)}
+
+					<div className="flex justify-center gap-3 mt-6 font-inter text-sm">
 						<Dialog.Close asChild>
 							<button className="px-6 py-2 bg-gray-200 rounded-md font-semibold hover:bg-gray-300">
 								Hủy
 							</button>
 						</Dialog.Close>
 						<button
-							disabled={mutation.isPending || (isReject && !reason.trim())}
+							disabled={
+								mutation.isPending ||
+								(isReject && !reason.trim()) ||
+								(isDeliver && (
+									!status ||
+									(status === "SUCCESS" && (!medicineName.trim() || !dose.trim()))
+								))
+							}
+
 							onClick={() => mutation.mutate()}
 							className={`px-6 py-2 rounded-md font-semibold text-white ${
-								isReject
-									? "bg-[#DF3C3C] hover:bg-[#bf2b2b]"
+								isReject || isDeliver
+									? "bg-[#023E73] hover:bg-[#01294d]"
 									: "bg-[#023E73] hover:bg-[#01294d]"
-							} disabled:opacity-60`}
+							}`}
 						>
 							{mutation.isPending
 								? "Đang xử lý..."
@@ -117,14 +184,6 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, nurseId }) => 
 						</button>
 					</div>
 
-					<Dialog.Close asChild>
-						<button
-							className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-							aria-label="Close"
-						>
-							<X size={20} />
-						</button>
-					</Dialog.Close>
 				</Dialog.Content>
 			</Dialog.Portal>
 		</Dialog.Root>

@@ -2,7 +2,7 @@ import { Activity, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
 import MedicationDialog from "./MedicationDialog";
 
-export default function MedicationRequestCard({ data, nurseId }) {
+export default function MedicationRequestCard({ data }) {
     return (
         <div className="flex items-center justify-between border-b py-8 gap-6 font-inter">
             <div className="flex items-center gap-5 w-[40%]">
@@ -41,7 +41,6 @@ export default function MedicationRequestCard({ data, nurseId }) {
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="approve"
-                            nurseId={nurseId}
                             triggerButton={
                                 <button className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
                                     Duyệt
@@ -65,7 +64,6 @@ export default function MedicationRequestCard({ data, nurseId }) {
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="deliver"
-                            nurseId={nurseId}
                             triggerButton={
                                 <button className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
                                     Phát thuốc
@@ -75,7 +73,6 @@ export default function MedicationRequestCard({ data, nurseId }) {
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="done"
-                            nurseId={nurseId}
                             triggerButton={
                                 <button className="bg-[#EDF3F8] text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]">
                                     Đánh dấu đã xong
@@ -87,13 +84,13 @@ export default function MedicationRequestCard({ data, nurseId }) {
 
                 {["REJECTED", "DONE"].includes(data.medicationStatus) && (
                     <span
-                        className={`px-4 py-[6px] rounded-md font-semibold text-center ${
+                        className={`px-4 py-[6px] rounded-md font-semibold text-center w-[120px] ${
                             data.medicationStatus === "REJECTED"
                                 ? "bg-red-100 text-red-600"
                                 : "bg-green-100 text-green-700"
                         }`}
                     >
-                        {data.medicationStatus === "REJECTED" ? "Đã từ chối" : "Hoàn thành"}
+                        {data.medicationStatus === "REJECTED" ? "Đã từ chối" : "Đã hoàn thành"}
                     </span>
                 )}
             </div>

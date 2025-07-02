@@ -104,7 +104,7 @@ const Home = () => {
 		queries: eventsData.map((event) => ({
 			queryKey: ["class-in-event", event.id],
 			queryFn: async () => {
-				const response = await api.get(`vaccine-event-class/${event.id}`);
+				const response = await api.get(`/vaccine-event-class/${event.id}`);
 				return response.data.map((item) => item.classCode);
 			},
 			enabled: event.eventScope !== "SCHOOL",

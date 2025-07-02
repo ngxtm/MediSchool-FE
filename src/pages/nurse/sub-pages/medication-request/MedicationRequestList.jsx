@@ -1,4 +1,4 @@
-import { MedicationRequestCard } from "./MedicationRequestCard";
+import MedicationRequestCard from "./MedicationRequestCard";
 
 export default function MedicationRequestList({ data }) {
     return (

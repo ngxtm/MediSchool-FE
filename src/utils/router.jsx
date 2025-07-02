@@ -28,6 +28,9 @@ import {
 import ManagerHome from "../pages/manager/sub-pages/Home";
 import { HealthCheckup as NurseHealthCheck } from "../pages/nurse/sub-pages/health-checkup/index";
 import MedicationRequestPending from "../pages/nurse/sub-pages/medication-request/MedicationRequestPending.jsx";
+import MedicationRequestApproved from "../pages/nurse/sub-pages/medication-request/MedicationRequestApproved.jsx";
+import MedicationRequestAll from "../pages/nurse/sub-pages/medication-request/MedicationRequestAll.jsx";
+import MedicationLayout from "../pages/nurse/sub-pages/medication-request/MedicationLayout.jsx";
 import MedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
 const router = createBrowserRouter([
 	{ path: "/", element: <Navigate to="/login" replace /> },
@@ -67,7 +70,15 @@ const router = createBrowserRouter([
 					},
 				],
 			},
-			{ path: "medication-request/pending", element: <MedicationRequestPending /> },
+			{
+				path: "/nurse/medication-request",
+				element: <MedicationLayout />,
+				children: [
+					{ path: "pending", element: <MedicationRequestPending /> },
+					{ path: "approved", element: <MedicationRequestApproved /> },
+					{ path: "all", element: <MedicationRequestAll /> },
+				],
+			},
 			{ path: "medication-event", element: <MedicationEvent /> },
 		],
 	},

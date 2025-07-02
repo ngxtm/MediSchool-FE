@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { User, ChevronRight, Activity } from "lucide-react";
 import { Check, X } from "lucide-react";
 import dayjs from "dayjs";
 
@@ -11,60 +11,98 @@ export function MedicationRequestCard({ data }) {
         console.log(`Rejecting medication request ${data.requestId}`);
     };
 
-    return (
-        <div className="w-full p-6 border border-gray-200 rounded-xl flex items-center justify-between gap-6 hover:shadow-md transition-all duration-200 font-inter">
-            <div className="min-w-[40px] h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                <User className="w-6 h-6 text-gray-600" />
-            </div>
+    const handleDeliver = () => {
+        console.log(`Delivering medicine ${data.requestId}`);
+    };
 
-            <div className="flex-grow flex justify-between items-start gap-2">
-                <div className="flex flex-col gap-1">
-                    <p className="text-base font-bold text-gray-800">
+    const handleMarkDone = () => {
+        console.log(`Marking Done medication request ${data.requestId}`);
+    };
+
+    return (
+        <div className="flex items-center justify-between border-b py-8 gap-6 font-inter">
+            <div className="flex items-center gap-5 w-[45%]">
+                <div className="pt-1">
+                    <Activity size={30} />
+                </div>
+                <div className="flex flex-col gap-[6px] leading-relaxed">
+                    <p className="font-bold text-lg">
                         {data.student?.studentCode || "N/A"} - {data.student?.fullName || "Không có tên"}
                     </p>
-                    <p className="text-sm text-gray-700">{data.title || "Không có tiêu đề"}</p>
-                    <p className="text-xs text-gray-500 italic">
-                        Ngày tạo:{" "}
-                        {data.createAt
-                            ? dayjs.unix(data.createAt).format("DD/MM/YYYY")
-                            : "Không rõ"}
-                    </p>
-                </div>
-
-                <div className="text-sm text-black space-y-1 text-left min-w-[300px]">
-                    <p>
-                        <span className="font-medium">Bắt đầu:</span>{" "}
-                        {data.startDate ? dayjs(data.startDate).format("DD/MM/YYYY") : "N/A"}
-                    </p>
-                    <p>
-                        <span className="font-medium">Kết thúc:</span>{" "}
-                        {data.endDate ? dayjs(data.endDate).format("DD/MM/YYYY") : "N/A"}
-                    </p>
-                    <p>
-                        <span className="font-medium">Số loại thuốc:</span>{" "}
-                        {(data.items?.length ?? 0).toString().padStart(2, "0")}
+                    <p className="text-m text-black">{data.title || "Không có tiêu đề"}</p>
+                    <p className="text-sm italic text-gray-500">
+                        Ngày tạo: {data.createAt ? dayjs.unix(data.createAt).format("DD/MM/YYYY") : "Không rõ"}
                     </p>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-                <button
-                    type="button"
-                    onClick={handleApprove}
-                    className="group bg-[#023E73] text-white px-5 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-[#01294d] active:scale-95 transition-all duration-200"
-                >
-                    <Check size={16} className="transition-transform duration-200" />
-                    Duyệt
-                </button>
-                <button
-                    type="button"
-                    onClick={handleReject}
-                    className="group bg-[#FBEAEA] text-red-700 px-5 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-red-100 active:scale-95 transition-all duration-200"
-                >
-                    <X size={16} className="transition-transform duration-200" />
-                    Từ chối
-                </button>
+            <div className="text-m w-[30%] space-y-1.5 text-left text-black">
+                <p>
+                    <span className="font-semibold">Ngày bắt đầu:</span>{" "}
+                    {data.startDate ? dayjs(data.startDate).format("DD/MM/YYYY") : "N/A"}
+                </p>
+                <p>
+                    <span className="font-semibold">Ngày kết thúc:</span>{" "}
+                    {data.endDate ? dayjs(data.endDate).format("DD/MM/YYYY") : "N/A"}
+                </p>
+                <p>
+                    <span className="font-semibold">Số loại thuốc:</span>{" "}
+                    {(data.items?.length ?? 0).toString().padStart(2, "0")}
+                </p>
+            </div>
+
+            <div className="w-[20%] flex text-center justify-center flex-col gap-3 items-center">
+                {data.medicationStatus === "PENDING" && (
+                    <>
+                        <button
+                            onClick={handleApprove}
+                            className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]"
+                        >
+                            Duyệt
+                        </button>
+                        <button
+                            onClick={handleReject}
+                            className="bg-[#EDF3F8] text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]"
+                        >
+                            Từ chối
+                        </button>
+                    </>
+                )}
+
+                {data.medicationStatus === "APPROVED" && (
+                    <>
+                        <button
+                            onClick={handleDeliver}
+                            className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]"
+                        >
+                            Phát thuốc
+                        </button>
+                        <button
+                            onClick={handleMarkDone}
+                            className="bg-[#EDF3F8] text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]"
+                        >
+                            Đánh dấu đã xong
+                        </button>
+                    </>
+                )}
+
+                {["REJECTED", "DONE"].includes(data.medicationStatus) && (
+                    <span
+                        className={`px-4 py-[6px] rounded-md font-semibold ${
+                            data.medicationStatus === "REJECTED"
+                                ? "bg-red-100 text-red-600"
+                                : "bg-green-100 text-green-700"
+                        }`}
+                    >
+                {data.medicationStatus === "REJECTED" ? "Đã từ chối" : "Đã hoàn thành"}
+            </span>
+                )}
+            </div>
+
+            <div className="w-[5%] pt-1">
+                <ChevronRight className="text-black" />
             </div>
         </div>
+
     );
 }

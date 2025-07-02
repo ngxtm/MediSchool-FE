@@ -6,7 +6,8 @@ import { UserAuth } from '../../context/AuthContext'
 import { formatDate } from '../../utils/dateparse'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useVaccineCategories } from '../../hooks/useVaccineCategories'
-import { errorToast } from '../../components/ToastPopup'
+import successToast, { errorToast } from '../../components/ToastPopup'
+import { FileDown, Plus } from 'lucide-react'
 
 const RejectReasonModal = ({ isOpen, onClose, onSubmit }) => {
 	const [rejectNote, setRejectNote] = useState('')
@@ -448,13 +449,32 @@ const Vaccination = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const errorToastPopup = errorToast
-
+	const successToastPopup = successToast
 	const categoriesQuery = useVaccineCategories()
 
 	const consentsQuery = useQuery({
 		queryKey: ['vaccine-consents', selectedStudent?.studentId],
 		queryFn: () => api.get(`/vaccine-consents/student/${selectedStudent?.studentId}/detail_list`),
 		enabled: !!selectedStudent?.studentId
+	})
+
+	const exportPDFMutation = useMutation({
+		mutationFn: async studentId => {
+			const response = await api.get(`/vaccination-history/student/${studentId}/pdf`, {
+				responseType: 'blob'
+			})
+			
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+			const link = document.createElement('a')
+			link.href = url
+			link.setAttribute('download', `vaccination-history-student-${studentId}.pdf`)
+			document.body.appendChild(link)
+			link.click()
+			link.parentNode.removeChild(link)
+			window.URL.revokeObjectURL(url)
+			
+			return { success: true }
+		}
 	})
 
 	const consents = useMemo(() => consentsQuery.data?.data || [], [consentsQuery.data])
@@ -589,6 +609,17 @@ const Vaccination = () => {
 
 	const vaccinationHistory = vaccinationHistoryQuery.data?.data || {}
 
+	const handleExportPDF = () => {
+		exportPDFMutation.mutate(selectedStudent?.studentId, {
+			onSuccess: () => {
+				successToastPopup('Đã xuất file PDF thành công')
+			},
+			onError: () => {
+				errorToastPopup('Có lỗi xảy ra khi xuất file PDF')
+			}
+		})
+	}
+
 	return (
 		<>
 			<div className="flex justify-between gap-4 md:gap-30 md:flex-row flex-col font-inter">
@@ -684,11 +715,25 @@ const Vaccination = () => {
 							</div>
 						)}
 					</div>
-					<div>
+					<div className="grid grid-cols-2 gap-4">
+						<button
+							onClick={handleExportPDF}
+							className="bg-[#023E73] text-white py-3 px-4 rounded-lg w-full font-semibold text-lg transition-all duration-300 ease-in-out hover:bg-[#034a8a] hover:shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group"
+						>
+							<FileDown
+								size={22}
+								className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12 group-hover:text-blue-200 group-hover:drop-shadow-lg"
+							/>
+							Xuất PDF
+						</button>
 						<button
 							onClick={handleAddHistory}
-							className="bg-[#023E73] text-white py-3 rounded-lg w-full font-semibold text-lg"
+							className="bg-[#023E73] text-white py-3 px-4 rounded-lg w-full font-semibold text-lg transition-all duration-300 ease-in-out hover:bg-[#034a8a] hover:shadow-lg hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group"
 						>
+							<Plus
+								size={22}
+								className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-90 group-hover:drop-shadow-lg"
+							/>
 							Thêm lịch sử tiêm chủng
 						</button>
 					</div>

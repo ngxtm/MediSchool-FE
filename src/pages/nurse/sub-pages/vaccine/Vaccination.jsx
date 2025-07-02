@@ -304,12 +304,6 @@ const Vaccination = () => {
 	const queryClient = useQueryClient();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-	useEffect(() => {
-		if (selectedYear) {
-			console.log(selectedYear);
-		}
-	}, [selectedYear]);
-
 	const onChange = (date, dateString) => {
 		setSelectedYear(dateString);
 	};
@@ -392,7 +386,7 @@ const Vaccination = () => {
 				}
 				return { text: "Đã duyệt", bgColor: "bg-[#DAEAF7]" };
 			case "PENDING":
-				return { text: "Chờ duyệt", bgColor: "bg-[#DAEAF7]" };
+				return { text: "Chờ duyệt", bgColor: "bg-[#FFF694]" };
 			case "CANCELLED":
 				return { text: "Đã hủy", bgColor: "bg-[#FFCCCC]" };
 			case "COMPLETED":

@@ -39,4 +39,26 @@ const formatDate = (input) => {
     return date.toLocaleDateString("vi-VN");
 };
 
-export { parseDate, formatDate };
+const formatDateTime = (input) => {
+    if (!input) return "";
+
+    let date;
+    if (Array.isArray(input)) {
+        const [y, m, d, hh = 0, mm = 0, ss = 0] = input;
+        date = new Date(y, m - 1, d, hh, mm, ss);
+    } else {
+        date = new Date(input);
+    }
+
+    return date.toLocaleString("vi-VN", {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+};
+
+export { parseDate, formatDate, formatDateTime };

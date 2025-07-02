@@ -1,12 +1,23 @@
 import MedicationRequestCard from "./MedicationRequestCard";
 
-export default function MedicationRequestList({ data }) {
+const statusOrder = {
+    PENDING: 1,
+    APPROVED: 2,
+    DONE: 3,
+    REJECTED: 4,
+};
+
+export default function MedicationRequestList({ data, nurseId }) {
+    const sortedData = [...data].sort(
+        (a, b) => statusOrder[a.medicationStatus] - statusOrder[b.medicationStatus]
+    );
+
     return (
         <div className="px-[120px] pb-20">
-            {data && data.length > 0 ? (
+            {sortedData && sortedData.length > 0 ? (
                 <div className="flex flex-col divide-y">
-                    {data.map((request) => (
-                        <MedicationRequestCard key={request.requestId} data={request} />
+                    {sortedData.map((request) => (
+                        <MedicationRequestCard key={request.requestId} data={request} nurseId={nurseId} />
                     ))}
                 </div>
             ) : (

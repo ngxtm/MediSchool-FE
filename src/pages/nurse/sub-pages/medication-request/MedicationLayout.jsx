@@ -44,8 +44,8 @@ export default function MedicationLayout() {
 				<div className="flex max-w-full justify-center gap-x-20 mb-12 mt-6">
 					{[
 						{ label: "Tổng số đơn", icon: <Package />, value: stats?.total ?? 0, note: "toàn trường" },
-						{ label: "Đang xử lí", icon: <Users2 />, value: stats?.processing ?? 0, note: "đơn thuốc" },
-						{ label: "Đã huỷ", icon: <AlertCircle />, value: stats?.cancelled ?? 0, note: "đơn thuốc" },
+						{ label: "Đang xử lí", icon: <Users2 />, value: stats?.approved ?? 0, note: "đơn thuốc" },
+						{ label: "Đã huỷ", icon: <AlertCircle />, value: stats?.rejected ?? 0, note: "đơn thuốc" },
 					].map((item, i) => (
 						<div key={i} className="bg-[#DEEDFA] px-6 py-4 rounded-xl w-[280px]">
 							<div className="flex justify-between items-center mb-1">
@@ -60,12 +60,12 @@ export default function MedicationLayout() {
 			)}
 
 			{}
-			<div className="flex px-[100px] justify-between items-center mb-6">
+			<div className="flex px-[100px] justify-between items-center mb-6 font-inter">
 				<Input
 					style={{ fontFamily: "Inter", width: 300 }}
-					prefix={<Search size={16} className="text-gray-400 mr-4" />}
-					placeholder="Tìm học sinh"
-					className="h-[38px] rounded-[8px] !border-[#d9d9d9]"
+					prefix={<Search size={16} className="text-gray-400 mr-4 font-inter" />}
+					placeholder="Tìm kiếm đơn thuốc"
+					className="h-[38px] rounded-[8px] !border-[#d9d9d9] font-inter"
 					allowClear
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}

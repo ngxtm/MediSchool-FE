@@ -32,6 +32,7 @@ import MedicationRequestApproved from "../pages/nurse/sub-pages/medication-reque
 import MedicationRequestAll from "../pages/nurse/sub-pages/medication-request/MedicationRequestAll.jsx";
 import MedicationLayout from "../pages/nurse/sub-pages/medication-request/MedicationLayout.jsx";
 import MedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
+import HealthEventDetail from "../pages/nurse/sub-pages/medication-event/HealthEventDetail.jsx";
 const router = createBrowserRouter([
 	{ path: "/", element: <Navigate to="/login" replace /> },
 	{ path: "/login", element: <Login /> },
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
 				],
 			},
 			{ path: "medication-event", element: <MedicationEvent /> },
+			{ path: "medication-event/:id", element: <HealthEventDetail /> },
 		],
 	},
 	{
@@ -135,6 +137,8 @@ const router = createBrowserRouter([
 					},
 				],
 			},
+			{ path: "medication-event", element: <MedicationEvent /> },
+			{ path: "medication-event/:id", element: <HealthEventDetail /> },
 		],
 	},
 	{

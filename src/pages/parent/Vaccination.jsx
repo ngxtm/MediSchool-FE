@@ -610,14 +610,8 @@ const Vaccination = () => {
 	const vaccinationHistory = vaccinationHistoryQuery.data?.data || {}
 
 	const handleExportPDF = () => {
-		exportPDFMutation.mutate(selectedStudent?.studentId, {
-			onSuccess: () => {
-				successToastPopup('Đã xuất file PDF thành công')
-			},
-			onError: () => {
-				errorToastPopup('Có lỗi xảy ra khi xuất file PDF')
-			}
-		})
+		exportPDFMutation.mutate(selectedStudent?.studentId)
+		successToastPopup('Đã xuất file PDF thành công')
 	}
 
 	return (

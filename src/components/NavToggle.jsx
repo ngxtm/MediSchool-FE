@@ -10,7 +10,7 @@ const NavToggle = () => {
     // Get the current tab from URL, default to 'info' if at /parent
     const pathParts = location.pathname.split("/");
     let currentTab = pathParts[pathParts.length - 1];
-    if (pathParts.includes('parent') && !['info', 'medical-record', 'vaccination', 'health-check', 'prescription'].includes(currentTab)) {
+    if (pathParts.includes('parent') && !['info', 'medical-record', 'vaccination', 'health-check', 'medication-request'].includes(currentTab)) {
         currentTab = 'info';
     }
     const handleValueChange = (value) => {
@@ -32,7 +32,7 @@ const NavToggle = () => {
                     { value: 'medical-record', label: 'Hồ sơ y tế' },
                     { value: 'vaccination', label: 'Tiêm chủng' },
                     { value: 'health-check', label: 'Khám sức khoẻ' },
-                    { value: 'prescription', label: 'Dặn thuốc' }
+                    { value: 'medication-request', label: 'Dặn thuốc' }
                 ].map(({ value, label }) => {
                     const isActive = currentTab === value || (currentTab === 'parent' && value === 'info');
                     const isHovered = hoveredTab === value;

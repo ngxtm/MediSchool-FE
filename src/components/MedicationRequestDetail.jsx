@@ -88,7 +88,13 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 							<h1 className="text-xl font-bold mb-2">{medication.title}</h1>
 							<span className="inline-block">
 								{renderStatusBadge(medication.medicationStatus)}
+								{medication.medicationStatus === "REJECTED" && medication.rejectReason && (
+									<p className="mt-2 text-sm text-red-600 font-medium">
+										Lý do từ chối: {medication.rejectReason}
+									</p>
+								)}
 							</span>
+
 							<div className="mt-4 text-sm text-black space-y-2">
 								<p>Cán bộ y tế phụ trách: {medication.nurseName || "Không rõ"}</p>
 								<p>Người duyệt: {medication.managerName || "Không rõ"}</p>
@@ -130,7 +136,7 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 							<div className="grid grid-cols-2 gap-4 text-sm">
 								<div>
 									<span className="text-gray-600">Lí do gửi thuốc</span>
-									<p className="font-medium">{medication.reason}</p>
+									<p className="font-medium">{medication.rejectReason}</p>
 								</div>
 								<div>
 									<span className="text-gray-600">Ngày bắt đầu</span>

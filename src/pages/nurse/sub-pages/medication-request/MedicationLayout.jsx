@@ -41,13 +41,14 @@ export default function MedicationLayout() {
 			{statsLoading ? (
 				<div className="text-center py-10 text-gray-500">Đang tải thống kê...</div>
 			) : (
-				<div className="flex max-w-full justify-center gap-x-20 mb-12 mt-6">
+				<div className="flex max-w-full justify-center gap-x-10 mb-12 mt-6">
 					{[
 						{ label: "Tổng số đơn", icon: <Package />, value: stats?.total ?? 0, note: "toàn trường" },
+						{ label: "Chờ duyệt", icon: <Users2 />, value: stats?.pending ?? 0, note: "đơn thuốc" },
 						{ label: "Đang xử lí", icon: <Users2 />, value: stats?.approved ?? 0, note: "đơn thuốc" },
 						{ label: "Đã huỷ", icon: <AlertCircle />, value: stats?.rejected ?? 0, note: "đơn thuốc" },
 					].map((item, i) => (
-						<div key={i} className="bg-[#DEEDFA] px-6 py-4 rounded-xl w-[280px]">
+						<div key={i} className="bg-[#DEEDFA] px-6 py-4 rounded-xl w-[250px]">
 							<div className="flex justify-between items-center mb-1">
 								<p className="font-semibold text-[15px]">{item.label}</p>
 								{item.icon}

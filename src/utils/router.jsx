@@ -14,7 +14,7 @@ import StudentInfo from "../pages/parent/StudentInfo";
 import MedicalRecord from "../pages/parent/MedicalRecord";
 import Vaccination from "../pages/parent/Vaccination";
 import HealthCheck from "../pages/parent/HealthCheck";
-import Prescription from "../pages/parent/Prescription";
+import MedicationRequest from "../pages/parent/MedicationRequest.jsx";
 import { Student as NurseStudent } from "../pages/nurse/sub-pages/student/index";
 import {
 	VaccineList as NurseVaccineList,
@@ -32,7 +32,7 @@ import MedicationRequestApproved from "../pages/nurse/sub-pages/medication-reque
 import MedicationRequestAll from "../pages/nurse/sub-pages/medication-request/MedicationRequestAll.jsx";
 import MedicationLayout from "../pages/nurse/sub-pages/medication-request/MedicationLayout.jsx";
 import MedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
-import HealthEventDetail from "../pages/nurse/sub-pages/medication-event/HealthEventDetail.jsx";
+import MedicationRequestDetail from '../components/MedicationRequestDetail.jsx'
 const router = createBrowserRouter([
 	{ path: "/", element: <Navigate to="/login" replace /> },
 	{ path: "/login", element: <Login /> },
@@ -81,7 +81,6 @@ const router = createBrowserRouter([
 				],
 			},
 			{ path: "medication-event", element: <MedicationEvent /> },
-			{ path: "medication-event/:id", element: <HealthEventDetail /> },
 		],
 	},
 	{
@@ -97,7 +96,7 @@ const router = createBrowserRouter([
 			{ path: "medical-record", element: <MedicalRecord /> },
 			{ path: "vaccination", element: <Vaccination /> },
 			{ path: "health-check", element: <HealthCheck /> },
-			{ path: "prescription", element: <Prescription /> },
+			{ path: "medication-request", element: <MedicationRequest /> },
 		],
 	},
 	{
@@ -137,8 +136,6 @@ const router = createBrowserRouter([
 					},
 				],
 			},
-			{ path: "medication-event", element: <MedicationEvent /> },
-			{ path: "medication-event/:id", element: <HealthEventDetail /> },
 		],
 	},
 	{
@@ -151,6 +148,7 @@ const router = createBrowserRouter([
 	},
 	{ path: "/no-role", element: <NoRole /> },
 	{ path: "/auth/callback", element: <AuthCallback /> },
+	{ path: "medication-request/:id", element:<MedicationRequestDetail/>}
 ]);
 
 export default router;

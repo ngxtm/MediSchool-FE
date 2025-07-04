@@ -41,7 +41,10 @@ const ManagerTaskBar = ({ userData }) => {
 		<div className="flex justify-between items-center bg-white/80 backdrop-blur-xl px-4 md:px-20 py-3 shadow-lg rounded-b-xl font-inter sticky top-0 z-50">
 			<div className="flex items-center gap-2">
 				<img src={heartIcon} alt="MediSchool Logo" />
-				<p className="font-extrabold text-xl text-[#023E73]">MediSchool</p>
+				<div className="flex flex-col">
+					<p className="font-extrabold text-xl text-teal-700">MediSchool</p>
+					<p className="text-sm text-teal-500 font-medium -mt-1">Cổng thông tin Quản lý</p>
+				</div>
 			</div>
 			<ToggleGroup.Root
 				className="inline-flex rounded-md justify-between"
@@ -68,12 +71,12 @@ const ManagerTaskBar = ({ userData }) => {
 						<Link to={`/manager/${value}`}>
 							<ToggleGroup.Item
 								key={value}
-								className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
+								className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-600 ${
 									shouldShowActive
-										? "bg-[#023E73] text-white font-bold"
+										? "bg-teal-600 text-white font-bold"
 										: isHovered
-										? "bg-[#023E73] text-white font-bold"
-										: "hover:bg-[#023E73] hover:text-white hover:font-bold"
+										? "bg-teal-600 text-white font-bold"
+										: "hover:bg-teal-600 hover:text-white hover:font-bold"
 								}`}
 								value={value}
 								aria-label={label}
@@ -87,7 +90,7 @@ const ManagerTaskBar = ({ userData }) => {
 				})}
 			</ToggleGroup.Root>
 			<div className="flex items-center gap-2">
-				<CircleUserRound color="#4d8ab3" size={28} className="mr-1.5" />
+				<CircleUserRound color="#0d9488" size={28} className="mr-1.5" />
 				<p>Hi, {username}</p>
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger asChild>

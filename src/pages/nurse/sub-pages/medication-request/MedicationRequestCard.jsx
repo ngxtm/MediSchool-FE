@@ -1,8 +1,10 @@
 import { Activity, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
 import MedicationDialog from "./MedicationDialog";
+import { useNavigate } from "react-router-dom";
 
 export default function MedicationRequestCard({ data, nurseId }) {
+    const navigate = useNavigate();
     return (
         <div className="flex items-center justify-between border-b py-8 gap-6 font-inter">
             <div className="flex items-center gap-5 w-[40%]">
@@ -100,8 +102,11 @@ export default function MedicationRequestCard({ data, nurseId }) {
                 )}
             </div>
 
-            <div>
-                <ChevronRight className="text-black" />
+            <div
+                className="cursor-pointer"
+                onClick={() => navigate(`/medication-request/${data.requestId}`)}
+            >
+                <ChevronRight className="text-black hover:scale-110 transition-transform" />
             </div>
         </div>
     );

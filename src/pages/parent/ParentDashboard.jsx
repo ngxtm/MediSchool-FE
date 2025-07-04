@@ -33,7 +33,7 @@ const ParentDashboard = () => {
 
     return (
         <StudentProvider>
-            <div className="min-h-screen bg-gray-50 font-inter">
+            <div className="min-h-screen font-inter">
                 <ParentTaskBar userData={user}/>
                 <div className="px-20 py-6">
                     <StudentBox />

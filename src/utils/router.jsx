@@ -36,6 +36,7 @@ import MedicationEvent from "../pages/nurse/sub-pages/medication-event/Medicatio
 import MedicationRequestDetail from '../components/MedicationRequestDetail.jsx'
 import MedicationRequestCreate from '../pages/parent/MedicationRequestCreate.jsx'
 import MedicationRequestUpdate from '../pages/parent/MedicationRequestUpdate.jsx'
+import MedicationRequestPage from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPage.jsx'
 const router = createBrowserRouter([
 	{ path: "/", element: <Navigate to="/login" replace /> },
 	{ path: "/login", element: <Login /> },
@@ -81,6 +82,7 @@ const router = createBrowserRouter([
 					{ path: "pending", element: <MedicationRequestPending /> },
 					{ path: "approved", element: <MedicationRequestApproved /> },
 					{ path: "all", element: <MedicationRequestAll /> },
+					{ path: ":id", element: <MedicationRequestPage /> },
 				],
 			},
 			{ path: "medication-event", element: <MedicationEvent /> },

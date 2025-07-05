@@ -89,22 +89,29 @@ export default function MedicationRequestCard({ data, nurseId }) {
                     </>
                 )}
 
-                {["REJECTED", "DONE"].includes(data.medicationStatus) && (
+                {["REJECTED", "DONE", "DISABLED"].includes(data.medicationStatus) && (
                     <span
                         className={`px-4 py-[6px] rounded-md font-semibold text-center ${
                             data.medicationStatus === "REJECTED"
                                 ? "bg-red-100 text-red-600"
-                                : "bg-green-100 text-green-700"
+                                : data.medicationStatus === "DONE"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-200 text-black"
                         }`}
                     >
-                        {data.medicationStatus === "REJECTED" ? "Đã từ chối" : "Hoàn thành"}
+                            {data.medicationStatus === "DISABLED"
+                                ? "Đã hủy"
+                                : data.medicationStatus === "REJECTED"
+                                    ? "Đã từ chối"
+                                    : "Hoàn thành"}
                     </span>
                 )}
+
             </div>
 
             <div
                 className="cursor-pointer"
-                onClick={() => navigate(`/medication-request/${data.requestId}`)}
+                onClick={() => navigate(`/nurse/medication-requests/${data.requestId}`)}
             >
                 <ChevronRight className="text-black hover:scale-110 transition-transform" />
             </div>

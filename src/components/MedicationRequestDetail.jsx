@@ -46,22 +46,31 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 		toast(
 			({ closeToast }) => (
 				<div>
-					<p className="mb-2 font-medium">Bạn có chắc chắn muốn xóa đơn thuốc này?</p>
+					<p className="mb-3 font-medium font-inter">Bạn có chắc chắn muốn xóa đơn thuốc này?</p>
 					<div className="flex justify-end gap-2">
 						<button
-							className="px-3 py-1 text-sm rounded bg-gray-300 hover:bg-gray-400"
+							className="px-3 py-2 text-sm rounded bg-gray-300 hover:bg-gray-400 font-inter"
 							onClick={closeToast}
 						>
 							Hủy
 						</button>
 						<button
-							className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+							className="px-3 py-2 text-sm rounded bg-red-600 text-white hover:bg-red-700 font-inter"
 							onClick={async () => {
 								try {
 									await api.put(`/medication-requests/${id}`);
 									toast.dismiss("confirm-delete");
 									toast.success("Đã xoá đơn thuốc thành công!");
-									navigate("/parent/medication-requests");
+									const user = await api.get("/me");
+									const role = user.data.role;
+
+									if (role === "PARENT") {
+										navigate("/parent/medication-requests");
+									} else if (role === "NURSE") {
+										navigate("/nurse/medication-requests/pending");
+									} else {
+										navigate("/");
+									}
 								} catch (err) {
 									console.error("Lỗi khi xóa:", err);
 									toast.error("Không thể xoá đơn thuốc. Vui lòng thử lại.");
@@ -167,7 +176,7 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 							</div>
 						</div>
 
-						<div className="bg-white rounded-lg border p-4 w-[90%]">
+						<div className="bg-white rounded-lg border p-4 w-[80%]">
 							<h3 className="font-semibold mb-3">Thông tin học sinh</h3>
 							<div className="space-y-2 text-sm">
 								<p>Họ và tên: {medication.student?.fullName || "Không rõ"}</p>
@@ -178,7 +187,7 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 							</div>
 						</div>
 
-						<div className="bg-white rounded-lg border p-4 w-[90%]">
+						<div className="bg-white rounded-lg border p-4 w-[80%]">
 							<h3 className="font-semibold mb-3">Thông tin phụ huynh</h3>
 							<div className="space-y-2 text-sm">
 								<p>Họ và tên: {medication.parent?.fullName || "Không rõ"}</p>

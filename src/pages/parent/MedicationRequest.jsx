@@ -40,7 +40,7 @@ const MedicationRequest = () => {
 	}, [selectedStudent?.studentId]);
 
 	return (
-		<div className="max-w-7xl mx-auto p-6 font-inter space-y-5">
+		<div className="w-full py-6 font-inter space-y-5">
 			<button
 				className="bg-[#023E73] text-white font-semibold px-5 py-3 text-m rounded-lg hover:bg-[#034a8a]"
 				onClick={() =>

@@ -202,7 +202,7 @@ const MedicationRequestForm = () => {
 	return (
 		<div className="max-w-4xl mx-auto p-6 font-inter">
 			<h1 className="text-2xl font-bold mb-6">{id ? "Chỉnh sửa đơn thuốc" : "Tạo đơn dặn thuốc"}</h1>
-			<form onSubmit={handleSubmit} className="space-y-6">
+			<form onSubmit={handleSubmit} className="space-y-6 font-inter">
 				<div>
 					<label className="block font-medium">* Tiêu đề đơn thuốc</label>
 					<input value={title} onChange={(e) => setTitle(e.target.value)} type="text" className="border rounded w-full px-3 py-2 mt-1" />

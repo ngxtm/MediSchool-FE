@@ -1,4 +1,4 @@
-import ParentTaskBar from "../../components/ParentTaskBar";
+import ParentTaskBar from "./ParentTaskBar.jsx";
 import StudentBox from "../../components/StudentBox";
 import NavToggle from "../../components/NavToggle";
 import { Outlet } from "react-router-dom";

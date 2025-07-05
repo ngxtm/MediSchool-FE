@@ -27,7 +27,7 @@ export default function MedicationLayout() {
 	const [{ data: stats, isLoading: statsLoading }] = useQueries({
 		queries: [
 			{
-				queryKey: ["medication-request-stats"],
+				queryKey: ["medication-requests-stats"],
 				queryFn: async () => (await api.get("/medication-requests/stats")).data,
 			},
 		],
@@ -76,7 +76,7 @@ export default function MedicationLayout() {
 					{tabButtons.map((btn) => (
 						<button
 							key={btn.value}
-							onClick={() => navigate(`/nurse/medication-request/${btn.value}`)}
+							onClick={() => navigate(`/nurse/medication-requests/${btn.value}`)}
 							className={`px-4 py-2 rounded-md ${
 								currentTab === btn.value ? "bg-[#023E73] text-white font-bold" : "bg-white text-black"
 							}`}

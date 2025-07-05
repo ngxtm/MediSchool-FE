@@ -50,7 +50,7 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 				position: "bottom-center",
 			});
 			queryClient.invalidateQueries(["medication-requests/pending"]);
-			queryClient.invalidateQueries(["medication-request/stats"]);
+			queryClient.invalidateQueries(["medication-requests/stats"]);
 			queryClient.invalidateQueries(["approved-medication-requests"]);
 			setOpen(false);
 			setRejectReason("");

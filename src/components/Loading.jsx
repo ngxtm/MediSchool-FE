@@ -1,10 +1,10 @@
 import { Cardio } from "ldrs/react";
 import "ldrs/react/Cardio.css";
 
-const Loading = () => {
+const Loading = ({ bgColor }) => {
 	return (
 		<div className="flex justify-center items-start h-screen mt-40">
-			<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
+			<Cardio size="100" stroke="4" speed="2" color={`${bgColor}`} />
 		</div>
 	);
 };

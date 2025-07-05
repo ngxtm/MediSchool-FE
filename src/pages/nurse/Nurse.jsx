@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import NurseTaskBar from "./sub-pages/NurseTaskbar.jsx";
+import NurseTaskBar from "./components/NurseTaskbar.jsx";
 import { useState } from "react";
 import api from "../../utils/api";
 import { useEffect } from "react";
@@ -32,14 +32,14 @@ const NurseDashboard = () => {
 	}
 
 	return (
-		<>
+		<div className="min-h-screen bg-[#eefdf8]">
 			<NurseTaskBar userData={user} />
 			<div className="p-4">
 				<div className="px-28 pt-5">
 					<Outlet />
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 

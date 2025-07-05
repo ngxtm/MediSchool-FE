@@ -32,14 +32,14 @@ const Manager = () => {
 	}
 
 	return (
-		<>
+		<div className="min-h-screen bg-[#eefdf8]">
 			<ManagerTaskBar userData={user} />
 			<div className="p-4">
 				<div className="px-28 pt-5">
 					<Outlet />
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 

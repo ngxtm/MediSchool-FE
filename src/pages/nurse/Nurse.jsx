@@ -4,10 +4,14 @@ import { useState } from "react";
 import api from "../../utils/api";
 import { useEffect } from "react";
 import { Cardio } from "ldrs/react";
+import Loading from "../../components/Loading.jsx";
+import useActorNavigation from "../../hooks/useActorNavigation.jsx";
 
 const NurseDashboard = () => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
+
+	useActorNavigation('nurse')
 
 	const fetchUser = async () => {
 		try {
@@ -24,15 +28,11 @@ const NurseDashboard = () => {
 	}, []);
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-			</div>
-		);
+		return <Loading />
 	}
 
 	return (
-		<div className="min-h-screen bg-[#eefdf8]">
+		<div className="min-h-screen">
 			<NurseTaskBar userData={user} />
 			<div className="p-4">
 				<div className="px-28 pt-5">

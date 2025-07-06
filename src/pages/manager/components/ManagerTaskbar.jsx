@@ -26,7 +26,7 @@ const ManagerTaskBar = ({ userData }) => {
 			"student",
 			"vaccination",
 			"health-checkup",
-			"medication-request",
+			"medication-requests",
 			"medication-event",
 		].includes(currentTab)
 	) {
@@ -58,7 +58,7 @@ const ManagerTaskBar = ({ userData }) => {
 					{ value: "student", label: "Học sinh" },
 					{ value: "vaccination", label: "Tiêm chủng" },
 					{ value: "health-checkup", label: "Khám sức khoẻ" },
-					{ value: "medication-request", label: "Dặn thuốc" },
+					{ value: "medication-requests", label: "Dặn thuốc" },
 					{ value: "medication-event", label: "Sự kiện y tế" },
 				].map(({ value, label }) => {
 					const isActive =

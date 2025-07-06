@@ -1,6 +1,6 @@
 import { ChevronDown, CircleUserRound, Settings, LogOut } from "lucide-react";
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import useSignOut from "../utils/signout";
+import useSignOut from "../../utils/signout.jsx";
 
 const TaskBar = ({userData}) => {
     const username = userData?.fullName || "N/A";

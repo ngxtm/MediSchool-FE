@@ -31,9 +31,9 @@ const NurseTaskBar = ({ userData }) => {
 			"student",
 			"vaccination",
 			"health-checkup",
-			"medication-request/pending",
-			"medication-request/approved",
-			"medication-request/all",
+			"medication-requests/pending",
+			"medication-requests/approved",
+			"medication-requests/all",
 			"medication-event",
 		].includes(currentTab)
 	) {
@@ -91,12 +91,11 @@ const NurseTaskBar = ({ userData }) => {
 					);
 				})}
 
-				{/* Dặn thuốc - Dùng Dropdown riêng */}
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger asChild>
 						<ToggleGroup.Item
 							className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
-								currentTab.includes("medication-request")
+								currentTab.includes("medication-requests")
 									? "bg-[#023E73] text-white font-bold"
 									: "hover:bg-[#023E73] hover:text-white hover:font-bold"
 							}`}
@@ -109,9 +108,9 @@ const NurseTaskBar = ({ userData }) => {
 					</DropdownMenu.Trigger>
 					<DropdownMenu.Content className="bg-white shadow-md rounded-md p-1 z-[100] text-lg">
 						{[
-							{ label: "Chờ duyệt", value: "medication-request/pending" },
-							{ label: "Phát thuốc", value: "medication-request/approved" },
-							{ label: "Tất cả", value: "medication-request/all" },
+							{ label: "Chờ duyệt", value: "medication-requests/pending" },
+							{ label: "Phát thuốc", value: "medication-requests/approved" },
+							{ label: "Tất cả", value: "medication-requests/all" },
 						].map(({ label, value }) => (
 							<DropdownMenu.Item key={value} asChild>
 								<Link

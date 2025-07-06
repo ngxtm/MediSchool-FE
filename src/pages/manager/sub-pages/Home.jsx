@@ -4,9 +4,9 @@ import api from '../../../utils/api'
 import Loading from '../../../components/Loading'
 import DetailBox from '../../nurse/components/DetailBox'
 import { formatDate } from '../../../utils/dateparse'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table } from 'antd'
-import successToast, { errorToast } from '../../../components/ToastPopup'
+import { errorToast, successToast } from '../../../components/ToastPopup'
 import RejectReasonModal from '../../../components/RejectReasonModal'
 
 const Home = () => {
@@ -20,10 +20,10 @@ const Home = () => {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries(['vaccine-event'])
-			toastSuccessPopup('Duyệt sự kiện thành công')
+			successToast('Duyệt sự kiện thành công')
 		},
 		onError: () => {
-			toastErrorPopup('Duyệt sự kiện thất bại. Vui lòng thử lại')
+			errorToast('Duyệt sự kiện thất bại. Vui lòng thử lại')
 		}
 	})
 
@@ -38,18 +38,14 @@ const Home = () => {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries(['vaccine-event'])
-			toastSuccessPopup('Từ chối sự kiện thành công')
+			successToast('Từ chối sự kiện thành công')
 			setRejectModalOpen(false)
 			setSelectedEvent(null)
 		},
 		onError: () => {
-			toastErrorPopup('Từ chối sự kiện thất bại. Vui lòng thử lại')
+			errorToast('Từ chối sự kiện thất bại. Vui lòng thử lại')
 		}
 	})
-
-	const toastSuccessPopup = successToast
-
-	const toastErrorPopup = errorToast
 
 	const [pagination, setPagination] = useState({
 		current: 1,
@@ -98,6 +94,19 @@ const Home = () => {
 		]
 	})
 
+	useEffect(() => {
+		results.forEach((result, index) => {
+			if (result.isError || result.data?.length === 0) {
+				const errorMessage =
+					result.error?.response?.data?.error ||
+					`Lỗi khi tải dữ liệu ${
+						index === 0 ? 'thống kê' : index === 1 ? 'sự kiện sắp tới' : 'danh sách sự kiện'
+					}`
+				errorToast(errorMessage, undefined, 8000)
+			}
+		})
+	}, [results])
+
 	const eventsData = results[2]?.data ?? []
 
 	const classQueries = useQueries({
@@ -112,13 +121,9 @@ const Home = () => {
 	})
 
 	const isLoading = results.some(result => result.isLoading) || classQueries.some(q => q.isLoading)
-	const isError = results.some(result => result.isError)
+
 	if (isLoading) {
 		return <Loading bgColor="#00bc92" />
-	}
-
-	if (isError) {
-		return <div>Error loading data</div>
 	}
 
 	const [consentTotal, upcomingEvents, events] = results.map(result => result.data)
@@ -259,6 +264,23 @@ const Home = () => {
 					.custom-pagination .ant-pagination-jump-next {
 						color: #0d9488 !important;
 					}
+					.custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-selector {
+						border-color: #0d9488 !important;
+					}
+					.custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-arrow {
+						color: #0d9488 !important;
+					}
+					.custom-pagination .ant-pagination-options-size-changer.ant-select-focused .ant-select-selector {
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
+					}
+					.custom-pagination .ant-pagination-options-quick-jumper input {
+						border-color: #0d9488 !important;
+					}
+					.custom-pagination .ant-pagination-options-quick-jumper input:focus {
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
+					}
 					.custom-pagination .ant-table-tbody > tr:hover > td {
 						background-color: #f0fdfa !important;
 					}
@@ -268,28 +290,28 @@ const Home = () => {
 				<DetailBox
 					title="Đã gửi"
 					icon={<User size={28} />}
-					number={consentTotal.totalConsents}
+					number={consentTotal?.totalConsents ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-teal-500 to-teal-600"
 					subText="toàn trường"
 				/>
 				<DetailBox
 					title="Đã phản hồi"
 					icon={<FileText size={28} />}
-					number={consentTotal.respondedConsents}
+					number={consentTotal?.respondedConsents ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
 					subText="đang xử lý"
 				/>
 				<DetailBox
 					title="Chưa phản hồi"
 					icon={<Package size={28} />}
-					number={consentTotal.pendingConsents}
+					number={consentTotal?.pendingConsents ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-amber-500 to-orange-500"
 					subText="năm học này"
 				/>
 				<DetailBox
 					title="Sự kiện sắp tới"
 					icon={<CircleAlert size={28} />}
-					number={upcomingEvents.length}
+					number={upcomingEvents?.length ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-cyan-500 to-blue-500"
 					subText="tháng này"
 				/>
@@ -310,7 +332,6 @@ const Home = () => {
 					pagination={pagination}
 					onChange={pagination => setPagination(pagination)}
 					loading={isLoading}
-					error={isError}
 					components={{
 						header: {
 							cell: props => <th {...props} style={{ ...props.style, backgroundColor: '#a7f3d0' }} />
@@ -319,7 +340,6 @@ const Home = () => {
 				/>
 			</div>
 
-			{/* Reject Reason Modal */}
 			<RejectReasonModal
 				isOpen={rejectModalOpen}
 				onClose={() => setRejectModalOpen(false)}

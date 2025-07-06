@@ -46,26 +46,26 @@ const Login = () => {
 						PARENT: '/parent'
 					}
 					if (intendedUrl.startsWith(roleBasePaths[userData.role])) {
-						navigate(intendedUrl)
+						navigate(intendedUrl, { replace: true })
 						return
 					}
 				}
 
 				switch (userData.role) {
 					case 'NURSE':
-						navigate('/nurse')
+						navigate('/nurse', { replace: true })
 						break
 					case 'MANAGER':
-						navigate('/manager')
+						navigate('/manager', { replace: true })
 						break
 					case 'ADMIN':
-						navigate('/admin')
+						navigate('/admin', { replace: true })
 						break
 					case 'PARENT':
-						navigate('/parent')
+						navigate('/parent', { replace: true })
 						break
 					default:
-						navigate('/no-role')
+						navigate('/no-role', { replace: true })
 				}
 			} else {
 				setError(result.error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.')

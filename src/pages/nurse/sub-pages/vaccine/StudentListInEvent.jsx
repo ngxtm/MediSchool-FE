@@ -4,10 +4,12 @@ import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query'
 import api from '../../../../utils/api'
 import Loading from '../../../../components/Loading'
 import { ChevronRight, Search } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Input, Table, Select } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { successToast, errorToast } from '../../../../components/ToastPopup'
+import { useEmailToast } from '../../../../hooks/useEmailToast'
+import BulkActionBar from '../../../../components/BulkActionBar'
 
 const StudentListInEvent = ({ actor }) => {
 	const navigate = useNavigate()
@@ -15,7 +17,10 @@ const StudentListInEvent = ({ actor }) => {
 	const { id } = useParams()
 	const [search, setSearch] = useState('')
 	const [statusFilter, setStatusFilter] = useState('Tất cả')
-	const [disabledSendConsent, setDisabledSendConsent] = useState(false)
+	const [selectedStudents, setSelectedStudents] = useState([])
+	const [selectedRowKeys, setSelectedRowKeys] = useState([])
+
+	const { sendEmailWithProgress, isSending } = useEmailToast('blue')
 
 	const successToastPopup = successToast
 	const errorToastPopup = errorToast
@@ -34,21 +39,30 @@ const StudentListInEvent = ({ actor }) => {
 		}
 	})
 
+	const sendSelectiveEmailMutation = useMutation({
+		mutationFn: (consentIds) => api.post(`/vaccine-events/${id}/send-selective-emails`, { consentIds }),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['vaccine-consent', id, 'students'] })
+			setSelectedStudents([])
+			setSelectedRowKeys([])
+		}
+	})
+
 	const exportPDFMutation = useMutation({
-		mutationFn: async (eventId) => {
+		mutationFn: async eventId => {
 			const response = await api.get(`/vaccination-history/event/${eventId}/pdf`, {
-				responseType: 'blob',
-			});
-			const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-			const link = document.createElement('a');
-			link.href = url;
-			link.setAttribute('download', `vaccination-history-event-${eventId}.pdf`);
-			document.body.appendChild(link);
-			link.click();
-			link.parentNode.removeChild(link);
-			window.URL.revokeObjectURL(url);
-		},
-	});
+				responseType: 'blob'
+			})
+			const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+			const link = document.createElement('a')
+			link.href = url
+			link.setAttribute('download', `vaccination-history-event-${eventId}.pdf`)
+			document.body.appendChild(link)
+			link.click()
+			link.parentNode.removeChild(link)
+			window.URL.revokeObjectURL(url)
+		}
+	})
 
 	const [
 		{ data: vaccineEvent, isLoading: isVaccineEventLoading, isError: isVaccineEventError },
@@ -73,45 +87,32 @@ const StudentListInEvent = ({ actor }) => {
 		]
 	})
 
-	useEffect(() => {
-		if (vaccineEvent?.status === 'APPROVED') {
-			setDisabledSendConsent(true)
-		} else {
-			setDisabledSendConsent(false)
+	const safeStudentsList = useMemo(() => studentsList || [], [studentsList])
+	
+	const isEventApproved = useMemo(() => vaccineEvent?.status === 'APPROVED', [vaccineEvent?.status])
+	
+	const unrespondedConsents = useMemo(() => 
+		safeStudentsList.filter(student => student.status == null), 
+		[safeStudentsList]
+	)
+
+	const filteredStudentsList = useMemo(() => {
+		const reverseStatusMap = {
+			APPROVE: 'Chấp thuận',
+			REJECT: 'Từ chối',
+			null: 'Chưa phản hồi'
 		}
-	}, [vaccineEvent])
+		
+		return safeStudentsList.filter(student => {
+			const matchesSearch =
+				student.studentName.toLowerCase().includes(search.toLowerCase()) ||
+				student.parentName.toLowerCase().includes(search.toLowerCase())
+			const matchesStatus = statusFilter === 'Tất cả' || reverseStatusMap[student.status] === statusFilter
+			return matchesSearch && matchesStatus
+		})
+	}, [safeStudentsList, search, statusFilter])
 
-	const statusMap = {
-		'Chấp thuận': 'APPROVE',
-		'Từ chối': 'REJECT',
-		'Chưa phản hồi': null
-	}
-
-	const safeStudentsList = Array.isArray(studentsList) ? studentsList : []
-
-	const filteredStudentList = safeStudentsList.filter(s => {
-		const matchesSearch =
-			(s.studentName ?? '').toLowerCase().includes(search.toLowerCase()) ||
-			(s.parentName ?? '').toLowerCase().includes(search.toLowerCase())
-
-		const matchesStatus =
-			statusFilter === 'Tất cả'
-				? true
-				: statusFilter === 'Chưa phản hồi'
-				? s.status == null
-				: s.status?.toUpperCase() === statusMap[statusFilter]
-
-		return matchesSearch && matchesStatus
-	})
-
-	const [pagination, setPagination] = useState({
-		current: 1,
-		pageSize: 10,
-		showSizeChanger: true,
-		showQuickJumper: true
-	})
-
-	const getStatusDisplay = status => {
+	const getStatusDisplay = (status) => {
 		if (!status) return { text: 'Chưa phản hồi', bgColor: 'bg-[#FFF694]' }
 
 		switch (status.toUpperCase()) {
@@ -151,26 +152,63 @@ const StudentListInEvent = ({ actor }) => {
 		successToastPopup('Gửi đơn thành công!')
 	}
 
-	if (isVaccineEventLoading || isStudentsListLoading) {
-		return <Loading />
+	const handleSendReminder = async () => {
+		if (unrespondedConsents.length === 0) {
+			errorToastPopup('Không có phụ huynh nào cần gửi email nhắc nhở. Tất cả đã phản hồi!')
+			return
+		}
+		
+		await sendEmailWithProgress(
+			id,
+			unrespondedConsents.length,
+			() => sendReminderMutation.mutateAsync()
+		)
 	}
 
-	if (isVaccineEventError || isStudentsListError) {
-		return <div>Error fetching api & load data</div>
+	const handleSendSelectedEmails = async () => {
+		if (selectedStudents.length === 0) {
+			errorToastPopup('Vui lòng chọn ít nhất một học sinh để gửi email!')
+			return
+		}
+		
+		const consentIds = selectedStudents
+			.map(student => student.consentId)
+			.filter(id => id != null)
+
+		if (consentIds.length === 0) {
+			errorToastPopup('Không thể xác định ID consent. Vui lòng kiểm tra dữ liệu!')
+			return
+		}
+		
+		await sendEmailWithProgress(
+			`${id}-selective`,
+			selectedStudents.length,
+			() => sendSelectiveEmailMutation.mutateAsync(consentIds)
+		)
 	}
 
-	const handleSendReminder = () => {
-		sendReminderMutation.mutate(id)
-		successToastPopup('Gửi lời nhắc thành công!')
+	const handleClearSelection = () => {
+		setSelectedStudents([])
+		setSelectedRowKeys([])
+	}
+
+	const rowSelection = {
+		selectedRowKeys,
+		onChange: (selectedRowKeys, selectedRows) => {
+			setSelectedRowKeys(selectedRowKeys)
+			setSelectedStudents(selectedRows)
+		},
+		getCheckboxProps: (record) => ({
+			disabled: record.status !== null,
+			name: record.studentName,
+		}),
+		type: 'checkbox',
 	}
 
 	const handleExportPDF = () => {
 		exportPDFMutation.mutate(id, {
 			onSuccess: () => {
 				successToastPopup('Xuất PDF thành công!')
-			},
-			onError: () => {
-				errorToastPopup('Có lỗi xảy ra khi xuất file PDF')
 			}
 		})
 	}
@@ -254,8 +292,58 @@ const StudentListInEvent = ({ actor }) => {
 		}
 	]
 
+	if (isVaccineEventLoading || isStudentsListLoading) {
+		return <Loading />
+	}
+
+	if (isVaccineEventError || isStudentsListError) {
+		return <div>Error fetching api & load data</div>
+	}
+
 	return (
 		<div className="font-inter">
+			<style>
+				{`
+					/* Row Selection Styling */
+					.ant-table-tbody > tr.ant-table-row-selected > td {
+						background-color: #dbeafe !important; /* blue-100 */
+					}
+					.ant-table-tbody > tr.ant-table-row-selected:hover > td {
+						background-color: #bfdbfe !important; /* blue-200 */
+					}
+
+					/* Checkbox Styling */
+					.ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner {
+						background-color: #2563eb !important; /* blue-600 */
+						border-color: #2563eb !important;
+					}
+					.ant-checkbox-wrapper .ant-checkbox-checked::after {
+						border-color: #2563eb !important;
+					}
+					.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+					.ant-checkbox:hover .ant-checkbox-inner {
+						border-color: #2563eb !important;
+					}
+					.ant-checkbox-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner {
+						background-color: #2563eb !important;
+						border-color: #2563eb !important;
+					}
+					.ant-checkbox-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner::after {
+						background-color: white !important;
+					}
+
+					/* Table header checkbox */
+					.ant-table-thead .ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner {
+						background-color: #2563eb !important;
+						border-color: #2563eb !important;
+					}
+
+					/* Table hover effect */
+					.ant-table-tbody > tr:hover > td {
+						background-color: #eff6ff !important; /* blue-50 */
+					}
+				`}
+			</style>
 			<ReturnButton
 				linkNavigate={`${actor === 'manager' ? '/manager' : '/nurse'}/vaccination/vaccine-event/${id}`}
 			/>
@@ -295,17 +383,37 @@ const StudentListInEvent = ({ actor }) => {
 				</div>
 				<div className="flex gap-4 my-6">
 					<button
-						className="bg-[#023E73] text-white font-semibold px-6 py-2 rounded-md hover:bg-[#01294d] active:scale-95 transition-all"
+						className={`font-semibold px-6 py-2 rounded-md transition-all duration-200 ${
+							!isEventApproved
+								? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60 pointer-events-none'
+								: 'bg-[#023E73] text-white hover:bg-[#01294d] hover:shadow-lg active:scale-95 cursor-pointer shadow-sm'
+						}`}
 						onClick={handleSendConsent}
-						disabled={!disabledSendConsent}
+						disabled={!isEventApproved}
 					>
 						Gửi đơn
 					</button>
 					<button
 						onClick={handleSendReminder}
-						className="bg-[#023E73] text-white font-semibold px-6 py-2 rounded-md hover:bg-[#01294d] active:scale-95 transition-all"
+						disabled={sendReminderMutation.isPending || isSending(id)}
+						className={`font-semibold px-6 py-2 rounded-md transition-all flex items-center gap-2 ${
+							sendReminderMutation.isPending || isSending(id)
+								? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+								: 'bg-[#023E73] text-white hover:bg-[#01294d] active:scale-95'
+						}`}
+						title={unrespondedConsents.length > 0 
+							? `Gửi email nhắc nhở tới ${unrespondedConsents.length} phụ huynh chưa phản hồi`
+							: 'Tất cả phụ huynh đã phản hồi'}
 					>
-						Gửi lời nhắc
+						{(sendReminderMutation.isPending || isSending(id)) && (
+							<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+						)}
+						{(() => {
+							if (sendReminderMutation.isPending || isSending(id)) {
+								return 'Đang gửi...'
+							}
+							return unrespondedConsents.length > 0 ? `Gửi lời nhắc (${unrespondedConsents.length})` : 'Gửi lời nhắc'
+						})()}
 					</button>
 					<button
 						onClick={handleExportPDF}
@@ -316,13 +424,22 @@ const StudentListInEvent = ({ actor }) => {
 				</div>
 			</div>
 
+			{selectedStudents.length > 0 && (
+				<BulkActionBar
+					selectedCount={selectedStudents.length}
+					onSendEmail={handleSendSelectedEmails}
+					onCancel={handleClearSelection}
+					isSending={isSending(`${id}-selective`)}
+					theme="blue"
+				/>
+			)}
+
 			<Table
 				columns={columns}
-				dataSource={filteredStudentList}
+				dataSource={filteredStudentsList}
 				loading={isStudentsListLoading}
-				onChange={pagination => setPagination(pagination)}
-				pagination={pagination}
-				rowKey="vaccineId"
+				rowKey="consentId"
+				rowSelection={rowSelection}
 			/>
 		</div>
 	)

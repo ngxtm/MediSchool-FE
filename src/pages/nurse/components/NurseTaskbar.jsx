@@ -25,15 +25,17 @@ const NurseTaskBar = ({ userData }) => {
 		currentTab = "vaccination";
 	}
 
+	if (pathParts.includes("medication-requests")) {
+		currentTab = "medication-requests";
+	}
+
 	if (
 		pathParts.includes("nurse") &&
 		![
 			"student",
 			"vaccination",
 			"health-checkup",
-			"medication-requests/pending",
-			"medication-requests/approved",
-			"medication-requests/all",
+			"medication-requests",
 			"medication-event",
 		].includes(currentTab)
 	) {
@@ -65,6 +67,7 @@ const NurseTaskBar = ({ userData }) => {
 					{ value: "vaccination", label: "Tiêm chủng" },
 					{ value: "health-checkup", label: "Khám sức khoẻ" },
 					{ value: "medication-event", label: "Sự kiện y tế" },
+					{ value: "medication-requests", label: "Dặn thuốc" },
 				].map(({ value, label }) => {
 					const isActive = currentTab === value;
 					const isHovered = hoveredTab === value;
@@ -90,39 +93,6 @@ const NurseTaskBar = ({ userData }) => {
 						</Link>
 					);
 				})}
-
-				<DropdownMenu.Root>
-					<DropdownMenu.Trigger asChild>
-						<ToggleGroup.Item
-							className={`flex-1 max-w-fit text-center py-2 md:py-3 px-3 md:px-4 rounded-md transition-colors duration-300 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#023E73] ${
-								currentTab.includes("medication-requests")
-									? "bg-[#023E73] text-white font-bold"
-									: "hover:bg-[#023E73] hover:text-white hover:font-bold"
-							}`}
-							value="dặn-thuốc"
-							onMouseEnter={() => setHoveredTab("dặn-thuốc")}
-							onMouseLeave={() => setHoveredTab(null)}
-						>
-							Dặn thuốc
-						</ToggleGroup.Item>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Content className="bg-white shadow-md rounded-md p-1 z-[100] text-lg">
-						{[
-							{ label: "Chờ duyệt", value: "medication-requests/pending" },
-							{ label: "Phát thuốc", value: "medication-requests/approved" },
-							{ label: "Tất cả", value: "medication-requests/all" },
-						].map(({ label, value }) => (
-							<DropdownMenu.Item key={value} asChild>
-								<Link
-									to={`/nurse/${value}`}
-									className="block px-4 py-2 hover:bg-gray-100 rounded-md text-sm"
-								>
-									{label}
-								</Link>
-							</DropdownMenu.Item>
-						))}
-					</DropdownMenu.Content>
-				</DropdownMenu.Root>
 			</ToggleGroup.Root>
 
 			<div className="flex items-center gap-2">

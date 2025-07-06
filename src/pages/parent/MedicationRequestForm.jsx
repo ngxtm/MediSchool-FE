@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import api from "../../utils/api";
 import dayjs from "dayjs";
 import { toast, Zoom } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 const MedicationRequestForm = () => {
 	const { id } = useParams();
@@ -201,6 +202,13 @@ const MedicationRequestForm = () => {
 
 	return (
 		<div className="max-w-4xl mx-auto p-6 font-inter">
+			<button
+				onClick={() => navigate(-1)}
+				className="flex items-center gap-2 mb-6 px-4 py-2 border border-black rounded-full text-sm text-black"
+			>
+				<ArrowLeft className="w-4 h-4" />
+				Trở về
+			</button>
 			<h1 className="text-2xl font-bold mb-6">{id ? "Chỉnh sửa đơn thuốc" : "Tạo đơn dặn thuốc"}</h1>
 			<form onSubmit={handleSubmit} className="space-y-6 font-inter">
 				<div>

@@ -38,7 +38,6 @@ export default function MedicationLayout() {
 
 	return (
 		<div className="font-inter pb-20">
-			{/* Chỉ hiển thị thống kê nếu không phải trang chi tiết */}
 			{!isDetailPage && (
 				statsLoading ? (
 					<div className="text-center py-10 text-gray-500">Đang tải thống kê...</div>
@@ -63,7 +62,6 @@ export default function MedicationLayout() {
 				)
 			)}
 
-			{/* Thanh tìm kiếm + nút tab cũng ẩn nếu là trang chi tiết */}
 			{!isDetailPage && (
 				<div className="flex px-[100px] justify-between items-center mb-6 font-inter">
 					<Input

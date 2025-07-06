@@ -1,34 +1,34 @@
-import { Outlet } from "react-router-dom";
-import ManagerTaskBar from "./components/ManagerTaskbar";
-import { useState } from "react";
-import api from "../../utils/api";
-import { useEffect } from "react";
-import { Cardio } from "ldrs/react";
+import { Outlet } from 'react-router-dom'
+import ManagerTaskBar from './components/ManagerTaskbar'
+import { useState } from 'react'
+import api from '../../utils/api'
+import { useEffect } from 'react'
+import { Cardio } from 'ldrs/react'
+import useActorNavigation from '../../hooks/useActorNavigation'
+import Loading from '../../components/Loading'
 
 const Manager = () => {
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
+	const [user, setUser] = useState(null)
+	const [loading, setLoading] = useState(true)
+
+	useActorNavigation('manager')
 
 	const fetchUser = async () => {
 		try {
-			setLoading(false);
-			const { data } = await api.get("/me");
-			setUser(data);
+			setLoading(false)
+			const { data } = await api.get('/me')
+			setUser(data)
 		} catch (err) {
-			console.error("Error fetching user: ", err);
+			console.error('Error fetching user: ', err)
 		}
-	};
+	}
 
 	useEffect(() => {
-		fetchUser();
-	}, []);
+		fetchUser()
+	}, [])
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<Cardio size="100" stroke="4" speed="2" color="#0A3D62" />
-			</div>
-		);
+		return <Loading />
 	}
 
 	return (
@@ -40,7 +40,7 @@ const Manager = () => {
 				</div>
 			</div>
 		</div>
-	);
-};
+	)
+}
 
-export default Manager;
+export default Manager

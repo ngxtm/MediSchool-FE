@@ -79,7 +79,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 
 	const createStudentMutation = useMutation({
 		mutationFn: (newStudent) => {
-			// Convert date arrays to proper format for API
 			const studentData = {
 				...newStudent,
 				dateOfBirth: newStudent.dateOfBirth ? [
@@ -227,7 +226,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 							/>
 						</div>
 
-						{/* Ngày sinh */}
 						<div className="flex flex-col gap-2">
 							<label className="text-[14px] font-semibold text-gray-700">
 								Ngày sinh
@@ -242,7 +240,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 							/>
 						</div>
 
-						{/* Ngày nhập học */}
 						<div className="flex flex-col gap-2">
 							<label className="text-[14px] font-semibold text-gray-700">
 								Ngày nhập học
@@ -257,7 +254,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 							/>
 						</div>
 
-						{/* Người liên hệ khẩn cấp */}
 						<div className="flex flex-col gap-2">
 							<label className="text-[14px] font-semibold text-gray-700" htmlFor="emergencyContact">
 								Người liên hệ khẩn cấp
@@ -271,7 +267,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 							/>
 						</div>
 
-						{/* Số điện thoại khẩn cấp */}
 						<div className="flex flex-col gap-2">
 							<label className="text-[14px] font-semibold text-gray-700" htmlFor="emergencyPhone">
 								Số điện thoại khẩn cấp
@@ -286,7 +281,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 						</div>
 					</div>
 
-					{/* Địa chỉ - full width */}
 					<div className="flex flex-col gap-2 mt-4">
 						<label className="text-[14px] font-semibold text-gray-700" htmlFor="address">
 							Địa chỉ
@@ -301,7 +295,6 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
 						/>
 					</div>
 
-					{/* Buttons */}
 					<div className="flex justify-end gap-4 mt-6 pt-4 border-t border-gray-200">
 						<Dialog.Close asChild>
 							<button className="px-6 py-2 rounded-md text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors font-medium">

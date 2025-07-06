@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { parseDate, formatDate } from "../../../../utils/dateparse";
 import Loading from "../../../../components/Loading";
 import DetailBox from "../../../nurse/components/DetailBox";
+import { errorToast } from "../../../../components/ToastPopup";
 
 const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	const [formData, setFormData] = useState({
@@ -117,14 +118,14 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 		<Dialog.Root open={open} onOpenChange={onOpenChange} className="font-inter">
 			<Dialog.Trigger asChild>
 				<button className="bg-teal-600 hover:bg-teal-700 text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-lg active:scale-95">
-					Tạo lịch tiêm chủng mới
+					Tạo chiến dịch tiêm chủng mới
 				</button>
 			</Dialog.Trigger>
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 bg-black/60 data-[state=open]:animate-overlayShow" />
 				<Dialog.Content className="fixed left-1/2 top-1/2 max-h-[90vh] w-[90vw] max-w-[630px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-12 px-24 shadow-lg focus:outline-none data-[state=open]:animate-contentShow">
-					<Dialog.Title className="m-0 text-2xl font-bold text-[#023E73] text-center">
-						Tạo lịch tiêm chủng mới
+					<Dialog.Title className="m-0 text-2xl font-bold text-teal-600 text-center">
+						Tạo chiến dịch tiêm chủng mới
 					</Dialog.Title>
 					<Dialog.Description className="mb-5 mt-2.5 text-[15px] leading-normal text-gray-600 text-center">
 						Điền thông tin để tạo lịch tiêm chủng mới cho học sinh
@@ -274,7 +275,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 						</Dialog.Close>
 						<Dialog.Close asChild>
 							<button
-								className="inline-flex h-[35px] items-center justify-center rounded bg-[#023E73] px-[15px] font-medium leading-none text-white outline-none hover:bg-[#01294d]"
+								className="inline-flex h-[35px] items-center justify-center rounded bg-gradient-to-r from-teal-600 to-teal-700 px-[15px] font-medium leading-none text-white outline-none hover:scale-105 hover:brightness-110 hover:shadow-teal-500/50 active:scale-95 transition-all duration-300 disabled:opacity-60"
 								onClick={handleSubmit}
 								disabled={createEventMutation.isPending}
 							>
@@ -356,15 +357,23 @@ const Vaccination = () => {
 		],
 	});
 
+	useEffect(() => {
+		results.forEach((result, index) => {
+			if (result.isError || result.data?.length === 0) {
+				const errorMessage =
+					result.error?.response?.data?.error ||
+					`Lỗi khi tải dữ liệu ${
+						index === 0 ? 'thống kê' : index === 1 ? 'sự kiện sắp tới' : 'danh sách sự kiện'
+					}`
+				errorToast(errorMessage, undefined, 8000)
+			}
+		})
+	}, [results])
+
 	const isLoading = results.some((result) => result.isLoading);
-	const isError = results.some((result) => result.isError);
 
 	if (isLoading) {
 		return <Loading bgColor="#00bc92" />;
-	}
-
-	if (isError) {
-		return <div>Error loading data</div>;
 	}
 
 	const [consentTotal, vaccineEvents, upcomingEvents] = results.map(
@@ -397,34 +406,86 @@ const Vaccination = () => {
 	};
 
 	return (
-		<div className="font-inter">
-			<div className="flex max-w-full justify-between mb-16">
+		<>
+			<style>
+				{`
+					input:focus {
+						border-color: #10b981 !important;
+						box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+						outline: none !important;
+					}
+					.ant-select-focused .ant-select-selector {
+						border-color: #10b981 !important;
+						box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+					}
+					.ant-select:hover .ant-select-selector {
+						border-color: #10b981 !important;
+					}
+					.ant-picker-focused {
+						border-color: #10b981 !important;
+						box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+					}
+					.ant-picker:hover {
+						border-color: #10b981 !important;
+					}
+					.ant-select-dropdown .ant-select-item-option-selected {
+						background-color: #10b981 !important;
+						color: white !important;
+					}
+					.ant-select-dropdown .ant-select-item-option-active {
+						background-color: #10b981 !important;
+						color: white !important;
+					}
+					.ant-select-selection-search-input:focus {
+						outline: none !important;
+						border: none !important;
+						box-shadow: none !important;
+					}
+					.ant-picker-input > input:focus {
+						outline: none !important;
+						border: none !important;
+						box-shadow: none !important;
+					}
+					.ant-select-selector input:focus {
+						outline: none !important;
+						border: none !important;
+						box-shadow: none !important;
+					}
+					.ant-picker-input input:focus {
+						outline: none !important;
+						border: none !important;
+						box-shadow: none !important;
+					}
+				`}
+			</style>
+			<div className="font-inter">
+				<div className="flex max-w-full justify-between mb-16">
 				<DetailBox
 					title="Đã gửi"
 					icon={<FileText size={28} />}
-					number={consentTotal.totalConsents}
+					number={consentTotal?.totalConsents ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-teal-500 to-teal-600"
 				/>
 				<DetailBox
 					title="Đã phản hồi"
 					icon={<CircleCheckBig size={28} />}
-					number={consentTotal.respondedConsents}
+					number={consentTotal?.respondedConsents ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
 				/>
 				<DetailBox
 					title="Chưa phản hồi"
 					icon={<CircleAlert size={28} />}
-					number={consentTotal.pendingConsents}
+					number={consentTotal?.pendingConsents ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-amber-500 to-orange-500"
 				/>
 				<DetailBox
 					title="Sự kiện sắp tới"
 					icon={<Calendar size={28} />}
-					number={upcomingEvents.length}
+					number={upcomingEvents?.length ?? 'N/A'}
 					bgColor="bg-gradient-to-r from-cyan-500 to-blue-500"
 				/>
 			</div>
-			<div className="flex px-[100px] justify-between">
+			<div className="flex justify-between">
 				<div className="flex items-center max-w-fit gap-8">
 					<p className="font-bold text-xl">Năm học</p>
 					<DatePicker
@@ -533,9 +594,10 @@ const Vaccination = () => {
 					<div className="text-center py-10 bg-[#DAEAF7] flex items-center justify-center mt-24 font-semibold">
 						Không có sự kiện tiêm chủng nào
 					</div>
-				)}
+									)}
 			</div>
 		</div>
+		</>
 	);
 };
 

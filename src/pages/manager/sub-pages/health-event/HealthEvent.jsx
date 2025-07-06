@@ -11,14 +11,14 @@ import {
 	Send
 } from 'lucide-react'
 import api from '../../../../utils/api'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import DetailBox from '../../components/DetailBox.jsx'
+import DetailBox from '../../../nurse/components/DetailBox.jsx'
 import Loading from '../../../../components/Loading.jsx'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Input, Select } from 'antd'
 import { formatDate, formatDateTime } from '../../../../utils/dateparse.jsx'
 import { useNavigate } from 'react-router-dom'
-import { successToast, errorToast } from '../../../../components/ToastPopup.jsx'
+import { useEmailToast } from '../../../../hooks/useEmailToast'
 
 const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 	const [showSuggestions, setShowSuggestions] = useState(false)
@@ -237,15 +237,15 @@ const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 				className="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
 				onClick={e => e.stopPropagation()}
 			>
-				<div className="bg-gradient-to-r from-[#023E73] to-[#034a8a] text-white px-6 py-6 rounded-t-2xl">
+				<div className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-6 py-6 rounded-t-2xl">
 					<h2 className="text-2xl font-bold text-center">TẠO SỰ KIỆN Y TẾ</h2>
-					<p className="text-center text-blue-100 mt-2">Ghi nhận và xử lý tình huống sức khỏe học sinh</p>
+					<p className="text-center text-teal-100 mt-2">Ghi nhận và xử lý tình huống sức khỏe học sinh</p>
 				</div>
 
 				<div className="p-8">
-					<div className="bg-blue-50 rounded-xl p-6 mb-8">
-						<h3 className="text-xl font-bold text-[#023E73] mb-4 flex items-center">
-							<div className="w-6 h-6 bg-[#023E73] rounded-full text-white flex items-center justify-center text-sm font-bold mr-3">
+					<div className="bg-teal-50 rounded-xl p-6 mb-8">
+						<h3 className="text-xl font-bold text-teal-700 mb-4 flex items-center">
+							<div className="w-6 h-6 bg-teal-700 rounded-full text-white flex items-center justify-center text-sm font-bold mr-3">
 								1
 							</div>
 							Thông tin học sinh
@@ -284,11 +284,11 @@ const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 										type="text"
 										value={formDate.studentSearch}
 										onChange={e => handleStudentSearch(e.target.value)}
-										className={`w-full px-4 py-3 border rounded-lg transition-all duration-200 ${
-											formDate.classSelected
-												? 'bg-white text-gray-900 border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#023E73] focus:border-transparent cursor-text'
-												: 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-										}`}
+																		className={`w-full px-4 py-3 border rounded-lg transition-all duration-200 ${
+									formDate.classSelected
+										? 'bg-white text-gray-900 border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent cursor-text'
+										: 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+								}`}
 										placeholder={
 											formDate.classSelected ? 'Nhập tên học sinh' : 'Vui lòng chọn lớp trước'
 										}
@@ -346,9 +346,9 @@ const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 						)}
 					</div>
 
-					<div className="bg-gray-50 rounded-xl p-6 mb-8">
-						<h3 className="text-xl font-bold text-[#023E73] mb-4 flex items-center">
-							<div className="w-6 h-6 bg-[#023E73] rounded-full text-white flex items-center justify-center text-sm font-bold mr-3">
+					<div className="bg-emerald-50 rounded-xl p-6 mb-8">
+						<h3 className="text-xl font-bold text-teal-700 mb-4 flex items-center">
+							<div className="w-6 h-6 bg-teal-700 rounded-full text-white flex items-center justify-center text-sm font-bold mr-3">
 								2
 							</div>
 							Chi tiết sự kiện
@@ -417,9 +417,9 @@ const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 						</div>
 					</div>
 
-					<div className="bg-orange-50 rounded-xl p-6 mb-8">
-						<h3 className="text-xl font-bold text-[#023E73] mb-4 flex items-center">
-							<div className="w-6 h-6 bg-[#023E73] rounded-full text-white flex items-center justify-center text-sm font-bold mr-3">
+					<div className="bg-amber-50 rounded-xl p-6 mb-8">
+						<h3 className="text-xl font-bold text-teal-700 mb-4 flex items-center">
+							<div className="w-6 h-6 bg-teal-700 rounded-full text-white flex items-center justify-center text-sm font-bold mr-3">
 								3
 							</div>
 							Thuốc và vật dụng y tế
@@ -455,7 +455,7 @@ const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 															{medicine.quantityOnHand || 0} {medicine.unit}
 														</div>
 													</div>
-													<Plus className="w-4 h-4 text-[#023E73]" />
+													<Plus className="w-4 h-4 text-teal-600" />
 												</div>
 											</div>
 										))}
@@ -541,7 +541,7 @@ const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 						<button
 							type="button"
 							onClick={handleSubmit}
-							className="px-8 py-3 bg-[#023E73] text-white rounded-lg hover:bg-[#01294d] transition-colors font-medium flex items-center gap-2"
+							className="px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white rounded-lg hover:scale-105 hover:brightness-110 hover:shadow-xl hover:shadow-teal-500/50 active:scale-95 transition-all duration-300 font-medium flex items-center gap-2"
 						>
 							<Plus className="w-5 h-5" />
 							Tạo sự kiện y tế
@@ -557,9 +557,9 @@ const MedicationEvent = () => {
 	const [search, setSearch] = useState('')
 	const [level, setLevel] = useState(null)
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
-	const [sendingEmails, setSendingEmails] = useState({})
 	const queryClient = useQueryClient()
 	const navigate = useNavigate()
+	const { sendEmailWithProgress, isSending } = useEmailToast()
 
 	const {
 		data: totalHealthEventStatus,
@@ -660,26 +660,60 @@ const MedicationEvent = () => {
 	}
 
 	const handleSendEmailNotification = async eventId => {
-		try {
-			setSendingEmails(prev => ({ ...prev, [eventId]: true }))
-
-			const response = await api.post(`/health-event/${eventId}/send-email-notifications`)
-
-			if (response.status === 200) {
-				const totalSent = response.data?.totalEmailsSent || response.data?.totalParentsNotified || 0
-				successToast(`Đã gửi thông báo thành công đến ${totalSent} phụ huynh`, 'bottom-center')
+		await sendEmailWithProgress(
+			eventId,
+			0,
+			async () => {
+				const response = await api.post(`/health-event/${eventId}/send-email-notifications`)
+				return {
+					...response,
+					data: {
+						...response.data,
+						actualCount: response.data.totalParentsNotified || response.data.totalEmailsSent || 0
+					}
+				}
 			}
-		} catch (error) {
-			const errorMessage = error.response?.data?.message || 'Không thể gửi thông báo email'
-			errorToast(errorMessage, 'bottom-center')
-		} finally {
-			setSendingEmails(prev => ({ ...prev, [eventId]: false }))
-		}
+		)
 	}
 
 	return (
-		<div className="font-inter">
-			<div className="flex md:flex-row flex-col md:gap-0 gap-10 max-w-full justify-between mb-10">
+		<>
+			<style>
+				{`
+					input:focus, textarea:focus {
+						border-color: #10b981 !important;
+						box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+						outline: none !important;
+					}
+					.ant-select-focused .ant-select-selector {
+						border-color: #10b981 !important;
+						box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+					}
+					.ant-select:hover .ant-select-selector {
+						border-color: #10b981 !important;
+					}
+					.ant-select-selection-search-input:focus {
+						outline: none !important;
+						border: none !important;
+						box-shadow: none !important;
+					}
+					.ant-select-selector input:focus {
+						outline: none !important;
+						border: none !important;
+						box-shadow: none !important;
+					}
+					.ant-select-dropdown .ant-select-item-option-selected {
+						background-color: #10b981 !important;
+						color: white !important;
+					}
+					.ant-select-dropdown .ant-select-item-option-active {
+						background-color: #10b981 !important;
+						color: white !important;
+					}
+				`}
+			</style>
+			<div className="font-inter">
+				<div className="flex md:flex-row flex-col md:gap-0 gap-10 max-w-full justify-between mb-10">
 				<DetailBox
 					title="Tổng cộng"
 					icon={<Bell size={28} />}
@@ -687,6 +721,7 @@ const MedicationEvent = () => {
 					width={350}
 					gap={20}
 					titleSize={22}
+					bgColor="bg-gradient-to-r from-teal-500 to-teal-600"
 				/>
 				<DetailBox
 					title="Ca bình thường"
@@ -695,6 +730,7 @@ const MedicationEvent = () => {
 					width={350}
 					gap={20}
 					titleSize={22}
+					bgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
 				/>
 				<DetailBox
 					title="Ca nguy hiểm"
@@ -703,6 +739,7 @@ const MedicationEvent = () => {
 					width={350}
 					gap={20}
 					titleSize={22}
+					bgColor="bg-gradient-to-r from-amber-500 to-orange-500"
 				/>
 			</div>
 			<h1 className="text-2xl font-bold mb-6">Danh sách sự kiện y tế</h1>
@@ -733,7 +770,7 @@ const MedicationEvent = () => {
 				<div className="flex gap-10">
 					<button
 						onClick={handleCreateHealthEvent}
-						className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-semibold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95 flex items-center gap-2"
+						className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-7 py-1.5 rounded-lg font-semibold text-base transition-all duration-200 ease-in-out hover:scale-105 hover:brightness-110 hover:shadow-lg hover:shadow-teal-500/50 active:scale-95 flex items-center gap-2"
 					>
 						<Plus size={18} />
 						Thêm sự kiện y tế
@@ -792,14 +829,14 @@ const MedicationEvent = () => {
 														</p>
 														<button
 															onClick={() => handleSendEmailNotification(event.id)}
-															disabled={sendingEmails[event.id]}
+															disabled={isSending(event.id)}
 															className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-																sendingEmails[event.id]
+																isSending(event.id)
 																	? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60'
-																	: 'bg-[#023E73] text-white hover:bg-[#01294d] hover:shadow-md active:scale-95 cursor-pointer'
+																	: 'bg-gradient-to-r from-teal-600 to-teal-700 text-white hover:scale-105 hover:brightness-110 hover:shadow-md hover:shadow-teal-500/50 active:scale-95 cursor-pointer'
 															}`}
 														>
-															{sendingEmails[event.id] ? (
+															{isSending(event.id) ? (
 																<>
 																	<div className="w-3 h-3 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
 																	Đang gửi...
@@ -816,12 +853,12 @@ const MedicationEvent = () => {
 														</p>
 													</div>
 													<button
-														onClick={() => navigate(`/nurse/medication-event/${event.id}`)}
+														onClick={() => navigate(`/manager/medication-event/${event.id}`)}
 														className="group cursor-pointer p-2 rounded-lg transition-all duration-300 ease-in-out"
 													>
 														<ChevronRight
 															size={20}
-															className="text-gray-500 transition-all duration-300 ease-in-out group-hover:text-[#023E73] group-hover:scale-110 group-hover:translate-x-1"
+															className="text-gray-500 transition-all duration-300 ease-in-out group-hover:text-teal-600 group-hover:scale-110 group-hover:translate-x-1"
 														/>
 													</button>
 												</div>
@@ -839,6 +876,7 @@ const MedicationEvent = () => {
 				)}
 			</div>
 		</div>
+		</>
 	)
 }
 

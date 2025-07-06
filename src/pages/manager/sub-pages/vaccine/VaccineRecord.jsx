@@ -1,25 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useQueries, useMutation, useQueryClient } from '@tanstack/react-query'
 import ReturnButton from '../../../../components/ReturnButton'
 import { useParams } from 'react-router-dom'
 import api from '../../../../utils/api'
 import Loading from '../../../../components/Loading'
 import { Table, Input, Tag, message, Select } from 'antd'
+import AbnormalDetailModal from '../../../../components/AbnormalDetailModal'
 import BulkActionBar from '../../../../components/BulkActionBar'
 import { formatDate } from '../../../../utils/dateparse'
 
-const VaccineRecord = ({ actor }) => {
+const VaccineRecord = () => {
 	const { id } = useParams()
-	const queryClient = useQueryClient()
-
-	const [selectedRowKeys, setSelectedRowKeys] = useState([])
-	const [editingRow, setEditingRow] = useState(null)
-	const [editingNoteRow, setEditingNoteRow] = useState(null)
-	const [editingNoteValue, setEditingNoteValue] = useState('')
-	const [rawVaccines, setRawVaccines] = useState([])
-	const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
-	const [abnormalFilter, setAbnormalFilter] = useState('Tất cả')
-
 	const [
 		{ data: vaccineEvent, isLoading: isVaccineEventLoading, isError: isVaccineEventError },
 		{ data: vaccineRecord, isLoading: isVaccineRecordLoading, isError: isVaccineRecordError }
@@ -42,103 +33,21 @@ const VaccineRecord = ({ actor }) => {
 		]
 	})
 
-	const isLoading = useMemo(
-		() => isVaccineEventLoading || isVaccineRecordLoading,
-		[isVaccineEventLoading, isVaccineRecordLoading]
-	)
+	const isLoading = isVaccineEventLoading || isVaccineRecordLoading
+	const isError = isVaccineEventError || isVaccineRecordError
 
-	const isError = useMemo(
-		() => isVaccineEventError || isVaccineRecordError,
-		[isVaccineEventError, isVaccineRecordError]
-	)
+	const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
-	const filteredVaccines = useMemo(() => {
-		const filtered = rawVaccines.filter(record => {
-			if (abnormalFilter === 'Tất cả') return true
-			if (abnormalFilter === 'Có') return record.abnormal === true
-			if (abnormalFilter === 'Không') return record.abnormal === false
-			return true
-		})
-		return filtered
-	}, [rawVaccines, abnormalFilter])
+	const [editingRow, setEditingRow] = useState(null)
+	const [editingNoteRow, setEditingNoteRow] = useState(null)
+	const [editingNoteValue, setEditingNoteValue] = useState('')
+	const [showAbModal, setShowAbModal] = useState(false)
+	const [pendingRowForNote, setPendingRowForNote] = useState(null)
 
-	const statusDisplay = useMemo(() => {
-		const getStatusDisplay = (status, date) => {
-			if (!status) return { text: 'Lỗi trạng thái', bgColor: 'bg-[#DAEAF7]' }
-
-			switch (status.toUpperCase()) {
-				case 'APPROVED':
-					if (date === new Date().toLocaleDateString()) {
-						return { text: 'Đang diễn ra', bgColor: 'bg-[#DAEAF7]' }
-					}
-					return { text: 'Đã duyệt', bgColor: 'bg-[#DAEAF7]' }
-				case 'PENDING':
-					return { text: 'Chờ duyệt', bgColor: 'bg-[#DAEAF7]' }
-				case 'CANCELLED':
-					return { text: 'Đã hủy', bgColor: 'bg-[#FFCCCC]' }
-				case 'COMPLETED':
-					return { text: 'Hoàn thành', bgColor: 'bg-[#D1FAE5]' }
-				default:
-					return { text: 'Trạng thái lạ', bgColor: 'bg-[#DAEAF7]' }
-			}
-		}
-		return getStatusDisplay(vaccineEvent?.status, vaccineEvent?.event_date)
-	}, [vaccineEvent?.status, vaccineEvent?.event_date])
-
-	const templates = useMemo(
-		() => [
-			{
-				id: 1,
-				name: 'Bình thường',
-				followUpNote:
-					'Theo dõi 30 phút sau tiêm, học sinh không có biểu hiện bất thường. Tình trạng sức khỏe ổn định.',
-				isAbnormal: false
-			},
-			{
-				id: 2,
-				name: 'Không có phản ứng phụ',
-				followUpNote:
-					'Quan sát 15 phút đầu và 30 phút sau tiêm, học sinh không có các triệu chứng bất thường như sốt, buồn nôn, chóng mặt.',
-				isAbnormal: false
-			},
-			{
-				id: 3,
-				name: 'Theo dõi 24h an toàn',
-				followUpNote:
-					'Đã theo dõi liên tục trong 24h đầu sau tiêm chủng, không phát hiện bất kỳ phản ứng bất lợi nào. Học sinh hoạt động bình thường.',
-				isAbnormal: false
-			},
-			{
-				id: 4,
-				name: 'Đau nhẹ tại chỗ tiêm',
-				followUpNote:
-					'Học sinh phàn nàn đau nhẹ tại vị trí tiêm chủng. Đã hướng dẫn chườm lạnh 10-15 phút và theo dõi. Triệu chứng đang giảm dần.',
-				isAbnormal: true
-			},
-			{
-				id: 5,
-				name: 'Sưng đỏ vùng tiêm',
-				followUpNote:
-					'Vùng tiêm chủng có dấu hiệu sưng đỏ nhẹ, đường kính khoảng 2-3cm. Không có mủ hay nhiệt độ cao. Đã tư vấn theo dõi và báo cáo nếu diễn biến xấu.',
-				isAbnormal: true
-			},
-			{
-				id: 6,
-				name: 'Mệt mỏi sau tiêm',
-				followUpNote:
-					'Học sinh cảm thấy mệt mỏi, uể oải sau khi tiêm 20-30 phút. Cho nghỉ ngơi tại phòng y tế, uống nước. Tình trạng đã cải thiện sau 1 giờ.',
-				isAbnormal: true
-			},
-			{
-				id: 7,
-				name: 'Sốt nhẹ sau tiêm',
-				followUpNote:
-					'Học sinh có biểu hiện sốt nhẹ 37.5-38°C sau tiêm 2-3 giờ. Đã tư vấn phụ huynh theo dõi, uống nhiều nước, nghỉ ngơi. Nếu sốt trên 38.5°C hoặc kéo dài cần đến bệnh viện.',
-				isAbnormal: true
-			}
-		],
-		[]
-	)
+	const [rawVaccines, setRawVaccines] = useState([])
+	const [filteredVaccines, setFilteredVaccines] = useState([])
+	const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+	const [abnormalFilter, setAbnormalFilter] = useState('Tất cả')
 
 	useEffect(() => {
 		if (vaccineEvent?.records) {
@@ -158,6 +67,18 @@ const VaccineRecord = ({ actor }) => {
 			setRawVaccines(flattened)
 		}
 	}, [vaccineRecord])
+
+	useEffect(() => {
+		const filtered = rawVaccines.filter(record => {
+			if (abnormalFilter === 'Tất cả') return true
+			if (abnormalFilter === 'Có') return record.abnormal === true
+			if (abnormalFilter === 'Không') return record.abnormal === false
+			return true
+		})
+		setFilteredVaccines(filtered)
+	}, [rawVaccines, abnormalFilter])
+
+	const queryClient = useQueryClient()
 
 	const updateMutation = useMutation({
 		mutationFn: ({ historyId, ...changes }) => api.patch(`/vaccination-history/${historyId}`, changes),
@@ -181,13 +102,14 @@ const VaccineRecord = ({ actor }) => {
 	})
 
 	const updateLocalRecord = (id, payload) => {
-		setRawVaccines(prev => prev.map(rec => (rec.historyId === id ? { ...rec, ...payload } : rec)))
+		setFilteredVaccines(prev => prev.map(rec => (rec.historyId === id ? { ...rec, ...payload } : rec)))
 	}
 
 	const handleUpdateRecord = (recordId, changes) => {
 		updateLocalRecord(recordId, changes)
 		updateMutation.mutate({ historyId: recordId, ...changes })
 	}
+
 
 	const handleCancelEdit = () => {
 		setEditingRow(null)
@@ -205,42 +127,66 @@ const VaccineRecord = ({ actor }) => {
 		setEditingNoteValue('')
 	}
 
-	const handleBulkNormal = () => {
-		const updates = selectedRowKeys.map(id => ({
-			historyId: id,
-			abnormal: false,
-			followUpNote: ''
-		}))
-
-		bulkUpdateMutation.mutate(updates)
-		setSelectedRowKeys([])
+	if (isLoading) {
+		return <Loading />
 	}
 
-	const handleBulkAbnormal = () => {
-		const updates = selectedRowKeys.map(id => ({
-			historyId: id,
-			abnormal: true
-		}))
-
-		bulkUpdateMutation.mutate(updates)
-		setSelectedRowKeys([])
+	if (isError) {
+		return <div>Error fetching api & load data</div>
 	}
 
-	const handleBulkTemplate = tpl => {
-		const updates = selectedRowKeys.map(id => ({
-			historyId: id,
-			abnormal: tpl.isAbnormal,
-			followUpNote: tpl.followUpNote
-		}))
+	const getStatusDisplay = (status, date) => {
+		if (!status)
+			return {
+				text: 'Lỗi trạng thái',
+				bgColor: 'bg-[#FFF694]',
+				textColor: 'text-yellow-800',
+				borderColor: 'border-yellow-800'
+			}
 
-		bulkUpdateMutation.mutate(updates)
-		setSelectedRowKeys([])
+		switch (status.toUpperCase()) {
+			case 'APPROVED':
+				if (date === new Date().toLocaleDateString()) {
+					return {
+						text: 'Đang diễn ra',
+						bgColor: 'bg-[#eefdf8]',
+						textColor: 'text-[#065f46]',
+						borderColor: 'border-teal-800'
+					}
+				}
+				return {
+					text: 'Đã duyệt',
+					bgColor: 'bg-[#eefdf8]',
+					textColor: 'text-[#065f46]',
+					borderColor: 'border-teal-800'
+				}
+			case 'PENDING':
+				return {
+					text: 'Chờ duyệt',
+					bgColor: 'bg-[#FFF694]',
+					textColor: 'text-yellow-800',
+					borderColor: 'border-yellow-800'
+				}
+			case 'CANCELLED':
+				return {
+					text: 'Đã hủy',
+					bgColor: 'bg-[#FFCCCC]',
+					textColor: 'text-red-800',
+					borderColor: 'border-red-300'
+				}
+			case 'COMPLETED':
+				return {
+					text: 'Hoàn thành',
+					bgColor: 'bg-[#D1FAE5]',
+					textColor: 'text-green-800',
+					borderColor: 'border-green-300'
+				}
+			default:
+				return { text: 'Trạng thái lạ', bgColor: 'bg-[#DAEAF7]' }
+		}
 	}
 
-	const rowSelection = {
-		selectedRowKeys,
-		onChange: keys => setSelectedRowKeys(keys)
-	}
+	const { text: statusText, bgColor, textColor, borderColor } = getStatusDisplay(vaccineEvent?.status, vaccineEvent?.event_date)
 
 	const columns = [
 		{
@@ -285,8 +231,8 @@ const VaccineRecord = ({ actor }) => {
 				if (isEditing) {
 					return (
 						<div className="flex gap-1 items-center justify-center min-w-[160px] h-8">
-							<button
-								className="px-2 py-1 text-xs bg-[#023E73] hover:bg-[#01294d] text-white rounded border border-blue-600 hover:border-blue-700 transition-colors duration-200"
+							<button 
+								className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded border border-green-600 hover:border-green-700 transition-colors duration-200"
 								onClick={() => {
 									handleUpdateRecord(record.historyId, { abnormal: true })
 									setEditingRow(null)
@@ -294,8 +240,8 @@ const VaccineRecord = ({ actor }) => {
 							>
 								Có
 							</button>
-							<button
-								className="px-2 py-1 text-xs bg-[#023E73] hover:bg-[#01294d] text-white rounded border border-blue-600 hover:border-blue-700 transition-colors duration-200"
+							<button 
+								className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded border border-green-600 hover:border-green-700 transition-colors duration-200"
 								onClick={() => {
 									handleUpdateRecord(record.historyId, { abnormal: false, followUpNote: '' })
 									setEditingRow(null)
@@ -303,7 +249,7 @@ const VaccineRecord = ({ actor }) => {
 							>
 								Không
 							</button>
-							<button
+							<button 
 								className="px-2 py-1 text-xs bg-gray-500 hover:bg-gray-600 text-white rounded border border-gray-500 hover:border-gray-600 transition-colors duration-200"
 								onClick={handleCancelEdit}
 							>
@@ -339,26 +285,26 @@ const VaccineRecord = ({ actor }) => {
 					return (
 						<div className="flex gap-1 items-center w-full min-h-[32px]">
 							<Input.TextArea
-								style={{
-									width: 180,
+								style={{ 
+									width: 180, 
 									minHeight: 30,
-									borderColor: '#2563eb',
-									'&:hover': { borderColor: '#1d4ed8' },
-									'&:focus': { borderColor: '#2563eb', boxShadow: '0 0 0 2px rgba(37, 99, 235, 0.2)' }
+									borderColor: '#16a34a',
+									'&:hover': { borderColor: '#15803d' },
+									'&:focus': { borderColor: '#16a34a', boxShadow: '0 0 0 2px rgba(22, 163, 74, 0.2)' }
 								}}
-								className="border-blue-600 hover:border-blue-700 focus:border-blue-600 focus:shadow-blue-200"
+								className="border-green-600 hover:border-green-700 focus:border-green-600 focus:shadow-green-200"
 								value={editingNoteValue}
 								autoSize={{ minRows: 1, maxRows: 3 }}
 								onChange={e => setEditingNoteValue(e.target.value)}
 							/>
 							<div className="flex flex-col gap-1">
-								<button
-									className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded border border-blue-600 hover:border-blue-700 transition-colors duration-200"
+								<button 
+									className="px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded border border-green-600 hover:border-green-700 transition-colors duration-200"
 									onClick={() => handleSaveNote(record)}
 								>
 									✓
 								</button>
-								<button
+								<button 
 									className="px-2 py-1 text-xs bg-gray-500 hover:bg-gray-600 text-white rounded border border-gray-500 hover:border-gray-600 transition-colors duration-200"
 									onClick={handleCancelNoteEdit}
 								>
@@ -385,12 +331,86 @@ const VaccineRecord = ({ actor }) => {
 		}
 	]
 
-	if (isLoading) {
-		return <Loading />
+	const handleBulkNormal = () => {
+		const updates = selectedRowKeys.map(id => ({
+			historyId: id,
+			abnormal: false,
+			followUpNote: ''
+		}))
+
+		bulkUpdateMutation.mutate(updates)
+		setSelectedRowKeys([])
 	}
 
-	if (isError) {
-		return <div>Error fetching api & load data</div>
+	const handleBulkAbnormal = () => {
+		const updates = selectedRowKeys.map(id => ({
+			historyId: id,
+			abnormal: true
+		}))
+
+		bulkUpdateMutation.mutate(updates)
+		setSelectedRowKeys([])
+	}
+
+	const templates = [
+		{
+			id: 1,
+			name: 'Bình thường',
+			followUpNote: 'Theo dõi 30 phút sau tiêm, học sinh không có biểu hiện bất thường. Tình trạng sức khỏe ổn định.',
+			isAbnormal: false
+		},
+		{
+			id: 2,
+			name: 'Không có phản ứng phụ',
+			followUpNote: 'Quan sát 15 phút đầu và 30 phút sau tiêm, học sinh không có các triệu chứng bất thường như sốt, buồn nôn, chóng mặt.',
+			isAbnormal: false
+		},
+		{
+			id: 3,
+			name: 'Theo dõi 24h an toàn',
+			followUpNote: 'Đã theo dõi liên tục trong 24h đầu sau tiêm chủng, không phát hiện bất kỳ phản ứng bất lợi nào. Học sinh hoạt động bình thường.',
+			isAbnormal: false
+		},
+		{
+			id: 4,
+			name: 'Đau nhẹ tại chỗ tiêm',
+			followUpNote: 'Học sinh phàn nàn đau nhẹ tại vị trí tiêm chủng. Đã hướng dẫn chườm lạnh 10-15 phút và theo dõi. Triệu chứng đang giảm dần.',
+			isAbnormal: true
+		},
+		{
+			id: 5,
+			name: 'Sưng đỏ vùng tiêm',
+			followUpNote: 'Vùng tiêm chủng có dấu hiệu sưng đỏ nhẹ, đường kính khoảng 2-3cm. Không có mủ hay nhiệt độ cao. Đã tư vấn theo dõi và báo cáo nếu diễn biến xấu.',
+			isAbnormal: true
+		},
+		{
+			id: 6,
+			name: 'Mệt mỏi sau tiêm',
+			followUpNote: 'Học sinh cảm thấy mệt mỏi, uể oải sau khi tiêm 20-30 phút. Cho nghỉ ngơi tại phòng y tế, uống nước. Tình trạng đã cải thiện sau 1 giờ.',
+			isAbnormal: true
+		},
+		{
+			id: 7,
+			name: 'Sốt nhẹ sau tiêm',
+			followUpNote: 'Học sinh có biểu hiện sốt nhẹ 37.5-38°C sau tiêm 2-3 giờ. Đã tư vấn phụ huynh theo dõi, uống nhiều nước, nghỉ ngơi. Nếu sốt trên 38.5°C hoặc kéo dài cần đến bệnh viện.',
+			isAbnormal: true
+		}
+	]
+
+	const handleBulkTemplate = tpl => {
+		const updates = selectedRowKeys.map(id => ({
+			historyId: id,
+			abnormal: tpl.isAbnormal,
+			followUpNote: tpl.followUpNote
+		}))
+
+		bulkUpdateMutation.mutate(updates)
+		setSelectedRowKeys([])
+	}
+
+	const rowSelection = {
+		selectedRowKeys,
+		onChange: keys => setSelectedRowKeys(keys)
 	}
 
 	return (
@@ -398,114 +418,107 @@ const VaccineRecord = ({ actor }) => {
 			<style>
 				{`
 					.ant-table-tbody > tr.ant-table-row-selected > td {
-						background-color: #dbeafe !important;
+						background-color: #dcfce7 !important;
 					}
 					.ant-table-tbody > tr.ant-table-row-selected:hover > td {
-						background-color: #bfdbfe !important;
+						background-color: #bbf7d0 !important;
 					}
 					.ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner {
-						background-color: #2563eb !important;
-						border-color: #2563eb !important;
+						background-color: #16a34a !important;
+						border-color: #16a34a !important;
 					}
 					.ant-checkbox-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner {
-						background-color: #2563eb !important;
-						border-color: #2563eb !important;
+						background-color: #16a34a !important;
+						border-color: #16a34a !important;
 					}
 					.ant-checkbox-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner::after {
 						background-color: white !important;
 						border-color: white !important;
 					}
 					.ant-checkbox-wrapper:hover .ant-checkbox-inner {
-						border-color: #2563eb !important;
+						border-color: #16a34a !important;
 					}
 					.ant-checkbox-wrapper .ant-checkbox:hover .ant-checkbox-inner {
-						border-color: #2563eb !important;
+						border-color: #16a34a !important;
 					}
 					.ant-checkbox-wrapper .ant-checkbox-input:focus + .ant-checkbox-inner {
-						border-color: #2563eb !important;
-						box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+						border-color: #16a34a !important;
+						box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
 					}
 					.ant-table-thead .ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner {
-						background-color: #2563eb !important;
-						border-color: #2563eb !important;
+						background-color: #16a34a !important;
+						border-color: #16a34a !important;
 					}
 					.ant-table-thead .ant-checkbox-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner {
-						background-color: #2563eb !important;
-						border-color: #2563eb !important;
+						background-color: #16a34a !important;
+						border-color: #16a34a !important;
 					}
 					.ant-table-thead .ant-checkbox-wrapper .ant-checkbox-indeterminate .ant-checkbox-inner::after {
 						background-color: white !important;
 						border-color: white !important;
 					}
 					.ant-table-thead .ant-checkbox-wrapper:hover .ant-checkbox-inner {
-						border-color: #2563eb !important;
+						border-color: #16a34a !important;
 					}
 					.ant-table-tbody > tr:hover > td {
-						background-color: #eff6ff !important;
+						background-color: #f0fdf4 !important;
 					}
-					.custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-selector {
-						border-color: #2563eb !important;
+                    .custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-selector {
+						border-color: #0d9488 !important;
 					}
 					.custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-arrow {
-						color: #2563eb !important;
+						color: #0d9488 !important;
 					}
 					.custom-pagination .ant-pagination-options-size-changer.ant-select-focused .ant-select-selector {
-						border-color: #2563eb !important;
-						box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
 					}
 					.custom-pagination .ant-pagination-options-quick-jumper input {
-						border-color: #2563eb !important;
+						border-color: #0d9488 !important;
 					}
 					.custom-pagination .ant-pagination-options-quick-jumper input:focus {
-						border-color: #2563eb !important;
-						box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
 					}
 					.ant-select-dropdown .ant-select-item-option-selected {
-						background-color: #2563eb !important;
+						background-color: #0d9488 !important;
 						color: white !important;
 					}
 					.ant-select-dropdown .ant-select-item-option-active {
-						background-color: #2563eb !important;
+						background-color: #0d9488 !important;
 						color: white !important;
 					}
 					.ant-select-dropdown .ant-select-item:hover {
-						background-color: #2563eb !important;
+						background-color: #0d9488 !important;
 						color: white !important;
 					}
 					
-					/* Custom Select Blue Styling */
-					.custom-select-blue .ant-select-selector {
-						border-color: #2563eb !important;
+					/* Custom Select Teal Styling */
+					.custom-select-teal .ant-select-selector {
+						border-color: #0d9488 !important;
 					}
-					.custom-select-blue .ant-select-selector:hover {
-						border-color: #1d4ed8 !important;
+					.custom-select-teal .ant-select-selector:hover {
+						border-color: #0f766e !important;
 					}
-					.custom-select-blue.ant-select-focused .ant-select-selector {
-						border-color: #2563eb !important;
-						box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+					.custom-select-teal.ant-select-focused .ant-select-selector {
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
 					}
-					.custom-select-blue .ant-select-arrow {
-						color: #2563eb !important;
+					.custom-select-teal .ant-select-arrow {
+						color: #0d9488 !important;
 					}
 				`}
 			</style>
-			<ReturnButton
-				linkNavigate={`${actor === 'manager' ? '/manager' : '/nurse'}/vaccination/vaccine-event/${id}`}
-			/>
+			<ReturnButton linkNavigate={`/manager/vaccination/vaccine-event/${id}`} actor="manager" />
 
 			<div className="flex flex-col mt-10 gap-4">
-				<h1 className="font-bold text-2xl">
-					Chiến dịch:
-					<span className="bg-gradient-to-b from-blue-600 to-blue-800 bg-clip-text text-transparent">
-						{' '}
-						{vaccineEvent?.eventTitle || 'N/A'}
-					</span>
-				</h1>
-				<p className={`text-center ${statusDisplay.bgColor} font-bold px-6 py-1 w-fit rounded-lg`}>
-					{statusDisplay.text}
-				</p>
+				<h1 className="font-bold text-2xl">Chiến dịch:
+                    <span className='bg-gradient-to-b from-teal-600 to-teal-800 bg-clip-text text-transparent'> {vaccineEvent?.eventTitle || 'N/A'}</span>
+                </h1>
+				<p className={`text-center ${bgColor} ${textColor} ${borderColor} border-1 font-bold px-6 py-1 w-fit rounded-lg`}>{statusText}</p>
 			</div>
 
+			{/* Filter Section */}
 			<div className="flex items-center justify-end gap-4 px-10 mt-6">
 				<div className="flex items-center gap-4">
 					<p className="font-medium">Bất thường</p>
@@ -516,7 +529,7 @@ const VaccineRecord = ({ actor }) => {
 						style={{
 							width: 180
 						}}
-						className="custom-select-blue"
+						className="custom-select-teal"
 						options={[
 							{ value: 'Tất cả', label: 'Tất cả' },
 							{ value: 'Có', label: 'Có' },
@@ -534,7 +547,6 @@ const VaccineRecord = ({ actor }) => {
 					onBulkTemplate={handleBulkTemplate}
 					templates={templates}
 					onCancel={() => setSelectedRowKeys([])}
-					theme="blue"
 				/>
 			)}
 
@@ -548,6 +560,27 @@ const VaccineRecord = ({ actor }) => {
 				pagination={pagination}
 				rowKey="historyId"
 				tableLayout="fixed"
+                components={{
+                    header: {
+                        cell: props => <th {...props} style={{ ...props.style, backgroundColor: '#a7f3d0' }} />
+                    }
+                }}
+			/>
+
+			<AbnormalDetailModal
+				open={showAbModal}
+				recordCount={1}
+				onCancel={() => setShowAbModal(false)}
+				onSubmit={note => {
+					if (pendingRowForNote) {
+						handleUpdateRecord(pendingRowForNote, {
+							abnormal: true,
+							followUpNote: note
+						})
+						setPendingRowForNote(null)
+					}
+					setShowAbModal(false)
+				}}
 			/>
 		</div>
 	)

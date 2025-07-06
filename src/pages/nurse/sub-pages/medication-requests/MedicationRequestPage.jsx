@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import MedicationRequestDetail from "src/components/MedicationRequestDetail.jsx";
+import MedicationRequestDetail from "../../../../components/MedicationRequestDetail";
 
 const MedicationRequestPage = () => {
 	const { id } = useParams();

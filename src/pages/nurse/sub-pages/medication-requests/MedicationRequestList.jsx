@@ -5,6 +5,7 @@ const statusOrder = {
     APPROVED: 2,
     DONE: 3,
     REJECTED: 4,
+    DISABLED: 5
 };
 
 export default function MedicationRequestList({ data, nurseId }) {

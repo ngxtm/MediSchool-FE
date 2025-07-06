@@ -114,10 +114,10 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 bg-black/60 data-[state=open]:animate-overlayShow" />
 				<Dialog.Content className="fixed left-1/2 top-1/2 max-h-[90vh] w-[90vw] max-w-[630px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-white py-12 px-24 shadow-lg focus:outline-none data-[state=open]:animate-contentShow">
-					<Dialog.Title className="m-0 text-2xl font-bold text-[#023E73] text-center">
+					<Dialog.Title className="m-0 text-2xl font-bold text-[#023E73] text-center font-inter">
 						Tạo lịch tiêm chủng mới
 					</Dialog.Title>
-					<Dialog.Description className="mb-5 mt-2.5 text-[15px] leading-normal text-gray-600 text-center">
+					<Dialog.Description className="mb-5 mt-2.5 text-[15px] leading-normal text-gray-600 text-center font-inter">
 						Điền thông tin để tạo lịch tiêm chủng mới cho học sinh
 					</Dialog.Description>
 
@@ -226,7 +226,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 
 					<div className="mt-[25px] flex justify-end gap-3">
 						<Dialog.Close asChild>
-							<button className="inline-flex h-[35px] items-center justify-center rounded bg-gray-200 px-[15px] font-medium leading-none text-gray-800 outline-none hover:bg-gray-300">
+							<button className="font-inter inline-flex h-[35px] items-center justify-center rounded bg-gray-200 px-[15px] font-medium leading-none text-gray-800 outline-none hover:bg-gray-300">
 								Hủy
 							</button>
 						</Dialog.Close>

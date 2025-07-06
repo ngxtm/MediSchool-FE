@@ -54,12 +54,12 @@ const ManagerTaskBar = ({ userData }) => {
 				aria-label="Chức năng của phụ huynh"
 			>
 				{[
-					{ value: 'home', label: 'Trang chủ' },
-					{ value: 'student', label: 'Học sinh' },
-					{ value: 'vaccination', label: 'Tiêm chủng' },
-					{ value: 'health-checkup', label: 'Khám sức khoẻ' },
-					{ value: 'medication-request', label: 'Dặn thuốc' },
-					{ value: 'medication-event', label: 'Sự kiện y tế' }
+					{ value: "medication-requests", label: "Dặn thuốc" },
+					{ value: "home", label: "Trang chủ" },
+					{ value: "student", label: "Học sinh" },
+					{ value: "vaccination", label: "Tiêm chủng" },
+					{ value: "health-checkup", label: "Khám sức khoẻ" },
+					{ value: "medication-event", label: "Sự kiện y tế" },
 				].map(({ value, label }) => {
 					const isActive = currentTab === value || (currentTab === 'manager' && value === 'home')
 					const isHovered = hoveredTab === value

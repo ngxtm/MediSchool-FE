@@ -7,7 +7,7 @@ import { toast, Zoom } from "react-toastify";
 
 const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) => {
 	const [open, setOpen] = useState(false);
-	const [reason, setReason] = useState("");
+	const [rejectReason, setRejectReason] = useState("");
 	const [selectedItemId, setSelectedItemId] = useState("");
 	const [dose, setDose] = useState("");
 	const [status, setStatus] = useState("");
@@ -25,7 +25,7 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 			if (actionType === "reject") {
 				return api.put(`/medication-requests/${requestId}/reject`, null, {
 					params: {
-						reason: reason.trim(),
+						rejectReason: rejectReason.trim(),
 					},
 				});
 			}
@@ -50,10 +50,10 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 				position: "bottom-center",
 			});
 			queryClient.invalidateQueries(["medication-requests/pending"]);
-			queryClient.invalidateQueries(["medication-request/stats"]);
+			queryClient.invalidateQueries(["medication-requests/stats"]);
 			queryClient.invalidateQueries(["approved-medication-requests"]);
 			setOpen(false);
-			setReason("");
+			setRejectReason("");
 			setSelectedItemId("");
 			setDose("");
 			setNote("");
@@ -96,8 +96,8 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 								rows={3}
 								className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm outline-none focus:ring-2 focus:ring-[#023E73]"
 								placeholder="Nhập lý do từ chối..."
-								value={reason}
-								onChange={(e) => setReason(e.target.value)}
+								value={rejectReason}
+								onChange={(e) => setRejectReason(e.target.value)}
 							/>
 						</div>
 					)}
@@ -174,7 +174,7 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 						<button
 							disabled={
 								mutation.isPending ||
-								(isReject && !reason.trim()) ||
+								(isReject && !rejectReason.trim()) ||
 								(isDeliver && (
 									!status ||
 									(status === "SUCCESS" && (!selectedItemId || !dose.trim()))

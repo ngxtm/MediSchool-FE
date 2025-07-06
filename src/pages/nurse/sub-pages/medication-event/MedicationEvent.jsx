@@ -1,4 +1,15 @@
-import { Bell, CircleAlert, CircleCheckBig, Search, Plus, Trash2, Package, Activity, ChevronRight } from 'lucide-react'
+import {
+	Bell,
+	CircleAlert,
+	CircleCheckBig,
+	Search,
+	Plus,
+	Trash2,
+	Package,
+	Activity,
+	ChevronRight,
+	Send
+} from 'lucide-react'
 import api from '../../../../utils/api'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import DetailBox from '../../components/DetailBox.jsx'
@@ -7,6 +18,7 @@ import { useState } from 'react'
 import { Input, Select } from 'antd'
 import { formatDate, formatDateTime } from '../../../../utils/dateparse.jsx'
 import { useNavigate } from 'react-router-dom'
+import { successToast, errorToast } from '../../../../components/ToastPopup.jsx'
 
 const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 	const [showSuggestions, setShowSuggestions] = useState(false)
@@ -545,6 +557,7 @@ const MedicationEvent = () => {
 	const [search, setSearch] = useState('')
 	const [level, setLevel] = useState(null)
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
+	const [sendingEmails, setSendingEmails] = useState({})
 	const queryClient = useQueryClient()
 	const navigate = useNavigate()
 
@@ -646,6 +659,24 @@ const MedicationEvent = () => {
 		}
 	}
 
+	const handleSendEmailNotification = async eventId => {
+		try {
+			setSendingEmails(prev => ({ ...prev, [eventId]: true }))
+
+			const response = await api.post(`/health-event/${eventId}/send-email-notifications`)
+
+			if (response.status === 200) {
+				const totalSent = response.data?.totalEmailsSent || response.data?.totalParentsNotified || 0
+				successToast(`Đã gửi thông báo thành công đến ${totalSent} phụ huynh`, 'bottom-center')
+			}
+		} catch (error) {
+			const errorMessage = error.response?.data?.message || 'Không thể gửi thông báo email'
+			errorToast(errorMessage, 'bottom-center')
+		} finally {
+			setSendingEmails(prev => ({ ...prev, [eventId]: false }))
+		}
+	}
+
 	return (
 		<div className="font-inter">
 			<div className="flex md:flex-row flex-col md:gap-0 gap-10 max-w-full justify-between mb-10">
@@ -700,10 +731,6 @@ const MedicationEvent = () => {
 				</div>
 
 				<div className="flex gap-10">
-					<button className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-semibold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95">
-						Gửi thông báo
-					</button>
-
 					<button
 						onClick={handleCreateHealthEvent}
 						className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-semibold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95 flex items-center gap-2"
@@ -729,20 +756,31 @@ const MedicationEvent = () => {
 						{filteredEvents.map((event, index) => {
 							const { text: statusText, bgColor } = handleExtent(event.extent)
 							return (
-								<div key={event.id || index} className="border-b p-4 ">
+								<div key={event.id || index} className="border-b p-4">
 									<div className="flex justify-between items-start">
 										<div className="flex flex-col w-full gap-3">
 											<div className="flex justify-between w-full">
-												<div className="flex items-center justify-center gap-10">
-													<div className="ml-6">
-														<Activity size={55} />
+												<div className="flex flex-col gap-3">
+													<div className="flex gap-6 items-center">
+														<div className="ml-4">
+															<Activity size={55} />
+														</div>
+														<div className="flex flex-col gap-3">
+															<h3 className="font-bold text-lg text-gray-900">
+																Sự kiện: {event.problem}
+															</h3>
+															<p>Học sinh: {event.student.fullName}</p>
+															<p>Địa điểm: {event.location}</p>
+														</div>
 													</div>
 													<div className="flex flex-col gap-3">
-														<h3 className="font-bold text-lg text-gray-900">
-															Sự kiện: {event.problem}
-														</h3>
-														<p>Học sinh: {event.student.fullName}</p>
-														<p>Địa điểm: {event.location}</p>
+														<p className="max-w-2xl break-words">
+															<span className="font-bold">Xử lý:</span> {event.solution}
+														</p>
+														<p className="max-w-2xl break-words">
+															<span className="font-bold">Mô tả:</span>{' '}
+															{event.description}
+														</p>
 													</div>
 												</div>
 												<div className="flex gap-8 items-center">
@@ -752,27 +790,41 @@ const MedicationEvent = () => {
 														>
 															{statusText}
 														</p>
+														<button
+															onClick={() => handleSendEmailNotification(event.id)}
+															disabled={sendingEmails[event.id]}
+															className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+																sendingEmails[event.id]
+																	? 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-60'
+																	: 'bg-[#023E73] text-white hover:bg-[#01294d] hover:shadow-md active:scale-95 cursor-pointer'
+															}`}
+														>
+															{sendingEmails[event.id] ? (
+																<>
+																	<div className="w-3 h-3 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+																	Đang gửi...
+																</>
+															) : (
+																<>
+																	<Send size={12} />
+																	Gửi thông báo
+																</>
+															)}
+														</button>
 														<p className="text-sm italic text-gray-500">
 															Thời gian: {formatDateTime(event.eventTime)}
 														</p>
 													</div>
 													<button
-													onClick={() => navigate(`/nurse/medication-event/${event.id}`)}
-													className="group cursor-pointer p-2 rounded-lg transition-all duration-300 ease-in-out">
+														onClick={() => navigate(`/nurse/medication-event/${event.id}`)}
+														className="group cursor-pointer p-2 rounded-lg transition-all duration-300 ease-in-out"
+													>
 														<ChevronRight
 															size={20}
 															className="text-gray-500 transition-all duration-300 ease-in-out group-hover:text-[#023E73] group-hover:scale-110 group-hover:translate-x-1"
 														/>
 													</button>
 												</div>
-											</div>
-											<div className="flex flex-col gap-3">
-												<p className="max-w-2xl break-words">
-													<span className="font-bold">Xử lý:</span> {event.solution}
-												</p>
-												<p className="max-w-2xl break-words">
-													<span className="font-bold">Mô tả:</span> {event.description}
-												</p>
 											</div>
 										</div>
 									</div>

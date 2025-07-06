@@ -1,9 +1,9 @@
 import { toast, Zoom } from "react-toastify";
 
-export const successToast = (message, position = "top-right") => {
+export const successToast = (message, position = "top-right", timeClose = 3000) => {
     toast.success(message, {
         position: position,
-        autoClose: 3000,
+        autoClose: timeClose,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -15,10 +15,10 @@ export const successToast = (message, position = "top-right") => {
 };
 
 
-export const errorToast = (message, position = "top-right") => {
+export const errorToast = (message, position = "top-right", timeClose = 3000) => {
     toast.error(message, {
         position: position,
-        autoClose: 3000,
+        autoClose: timeClose,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,

@@ -1,151 +1,205 @@
-import ReturnButton from "../../../../components/ReturnButton";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQueries } from "@tanstack/react-query";
-import api from "../../../../utils/api";
-import Loading from "../../../../components/Loading";
-import { CircleAlert, CircleCheckBig, CircleX, FileText } from "lucide-react";
+import ReturnButton from '../../../../components/ReturnButton'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useQueries } from '@tanstack/react-query'
+import api from '../../../../utils/api'
+import Loading from '../../../../components/Loading'
+import { CircleAlert, CircleCheckBig, CircleX, FileText } from 'lucide-react'
 
 const VaccineEventDetail = () => {
-	const navigate = useNavigate();
-	const paddingCustomBlue =
-		"bg-[#DAEAF7] py-3 px-6 rounded-lg flex flex-row justify-between";
-	const paddingCustom = "p-6 rounded-lg flex flex-row justify-between";
-	const { id } = useParams();
+	const navigate = useNavigate()
+	const paddingCustomBlue = 'bg-[#DAEAF7] py-3 px-6 rounded-lg flex flex-row justify-between'
+	const paddingCustom = 'p-6 rounded-lg flex flex-row justify-between'
+	const { id } = useParams()
 
 	const [
-		{
-			data: vaccineEvent,
-			isLoading: isVaccineEventLoading,
-			isError: isVaccineEventError,
-		},
-		{ data: vaccineEventConsent, isLoading: isConsentLoading },
+		{ data: vaccineEvent, isLoading: isVaccineEventLoading, isError: isVaccineEventError },
+		{ data: vaccineEventConsent, isLoading: isConsentLoading }
 	] = useQueries({
 		queries: [
 			{
-				queryKey: ["vaccine-event", id],
+				queryKey: ['vaccine-event', id],
 				queryFn: async () => {
-					const response = await api.get(`/vaccine-events/${id}`);
-					return response.data;
-				},
+					const response = await api.get(`/vaccine-events/${id}`)
+					return response.data
+				}
 			},
 			{
-				queryKey: ["vaccine-event", id, "consent"],
+				queryKey: ['vaccine-event', id, 'consent'],
 				retry: false,
 				queryFn: async () => {
-					const response = await api.get(`/vaccine-consents/event/${id}/results`);
-					return response.data;
-				},
-			},
-		],
-	});
+					const response = await api.get(`/vaccine-consents/event/${id}/results`)
+					return response.data
+				}
+			}
+		]
+	})
 
-	const isLoading = isVaccineEventLoading || isConsentLoading;
-	const isError = isVaccineEventError;
+	const isLoading = isVaccineEventLoading || isConsentLoading
+	const isError = isVaccineEventError
 
 	if (isLoading) {
-		return <Loading bgColor="#00bc92" />;
+		return <Loading bgColor="#00bc92" />
 	}
 
 	if (isError) {
-		return <div>Error fetching api & load data</div>;
+		return <div>Error fetching api & load data</div>
 	}
 
-	const formatDate = (input) => {
-		if (!input) return "";
+	const formatDate = input => {
+		if (!input) return ''
 
-		let date;
+		let date
 		if (Array.isArray(input)) {
-			const [y, m, d, hh = 0, mm = 0, ss = 0] = input;
-			date = new Date(y, m - 1, d, hh, mm, ss);
+			const [y, m, d, hh = 0, mm = 0, ss = 0] = input
+			date = new Date(y, m - 1, d, hh, mm, ss)
 		} else {
-			date = new Date(input);
+			date = new Date(input)
 		}
 
-		return date.toLocaleDateString("vi-VN");
-	};
+		return date.toLocaleDateString('vi-VN')
+	}
 
 	const getStatusDisplay = (status, date) => {
-		if (!status) return { text: "Lỗi trạng thái", bgColor: "bg-[#FFF694]", textColor: "text-yellow-800", borderColor: "border-yellow-800" };
-
-		switch (status.toUpperCase()) {
-			case "APPROVED":
-				if (date === new Date().toLocaleDateString()) {
-					return { text: "Đang diễn ra", bgColor: "bg-[#eefdf8]", textColor: "text-[#065f46]", borderColor: "border-teal-800" };
-				}
-				return { text: "Đã duyệt", bgColor: "bg-[#eefdf8]", textColor: "text-[#065f46]", borderColor: "border-teal-800" };
-			case "PENDING":
-				return { text: "Chờ duyệt", bgColor: "bg-[#FFF694]", textColor: "text-yellow-800", borderColor: "border-yellow-800" };
-			case "CANCELLED":
-				return { text: "Đã hủy", bgColor: "bg-[#FFCCCC]", textColor: "text-red-800", borderColor: "border-red-300" };
-			case "COMPLETED":
-				return { text: "Hoàn thành", bgColor: "bg-[#D1FAE5]", textColor: "text-green-800", borderColor: "border-green-300" };
-			default:
-				return { text: "Trạng thái lạ", bgColor: "bg-[#DAEAF7]" };
-		}
-	};
-
-	const { text: statusText, bgColor, textColor, borderColor } = getStatusDisplay(
-		vaccineEvent?.status,
-		vaccineEvent?.event_date
-	);
-
-	const getStatusEventDisplay = (status) => {
 		if (!status)
 			return {
-				text: "Lỗi trạng thái",
-				bgColor: "bg-[#FFAEAF]",
-				icon: <CircleAlert />,
-			};
+				text: 'Lỗi trạng thái',
+				bgColor: 'bg-[#FFF694]',
+				textColor: 'text-yellow-800',
+				borderColor: 'border-yellow-800'
+			}
 
 		switch (status.toUpperCase()) {
-			case "APPROVED":
+			case 'APPROVED':
+				if (date === new Date().toLocaleDateString()) {
+					return {
+						text: 'Đang diễn ra',
+						bgColor: 'bg-[#eefdf8]',
+						textColor: 'text-[#065f46]',
+						borderColor: 'border-teal-800'
+					}
+				}
 				return {
-					text: "Đơn đề nghị đã được duyệt",
-					bgColor: "bg-[#C1DF8E]",
-					icon: <CircleCheckBig />,
-				};
-			case "PENDING":
+					text: 'Đã duyệt',
+					bgColor: 'bg-[#eefdf8]',
+					textColor: 'text-[#065f46]',
+					borderColor: 'border-teal-800'
+				}
+			case 'PENDING':
 				return {
-					text: "Đơn đề nghị đang chờ duyệt",
-					bgColor: "bg-[#FFF694]",
-					icon: <CircleAlert />,
-				};
-			case "CANCELLED":
+					text: 'Chờ duyệt',
+					bgColor: 'bg-[#FFF694]',
+					textColor: 'text-yellow-800',
+					borderColor: 'border-yellow-800'
+				}
+			case 'CANCELLED':
 				return {
-					text: "Đơn đề nghị đã bị hủy",
-					bgColor: "bg-[#FFAEAF]",
-					icon: <CircleX />,
-				};
-			case "COMPLETED":
+					text: 'Đã hủy',
+					bgColor: 'bg-[#FFCCCC]',
+					textColor: 'text-red-800',
+					borderColor: 'border-red-300'
+				}
+			case 'COMPLETED':
 				return {
-					text: "Đơn đề nghị đã hoàn thành",
-					bgColor: "bg-[#DAEAF7]",
-					icon: <CircleCheckBig />,
-				};
+					text: 'Hoàn thành',
+					bgColor: 'bg-[#D1FAE5]',
+					textColor: 'text-green-800',
+					borderColor: 'border-green-300'
+				}
 			default:
-				return {
-					text: "Trạng thái lạ",
-					bgColor: "bg-[#D9D9D9]",
-					icon: <CircleAlert />,
-				};
+				return { text: 'Trạng thái lạ', bgColor: 'bg-[#DAEAF7]' }
 		}
-	};
+	}
 
 	const {
-		text: statusEventText,
-		bgColor: statusEventBgColor,
-		icon,
-	} = getStatusEventDisplay(vaccineEvent?.status);
+		text: statusText,
+		bgColor,
+		textColor,
+		borderColor
+	} = getStatusDisplay(vaccineEvent?.status, vaccineEvent?.event_date)
+
+	const getStatusEventDisplay = status => {
+		if (!status)
+			return {
+				text: 'Lỗi trạng thái',
+				bgColor: 'bg-[#FFAEAF]',
+				icon: <CircleAlert />
+			}
+
+		switch (status.toUpperCase()) {
+			case 'APPROVED':
+				return {
+					text: 'Đơn đề nghị đã được duyệt',
+					bgColor: 'bg-[#C1DF8E]',
+					icon: <CircleCheckBig />
+				}
+			case 'PENDING':
+				return {
+					text: 'Đơn đề nghị đang chờ duyệt',
+					bgColor: 'bg-[#FFF694]',
+					icon: <CircleAlert />
+				}
+			case 'CANCELLED':
+				return {
+					text: 'Đơn đề nghị đã bị hủy',
+					bgColor: 'bg-[#FFAEAF]',
+					icon: <CircleX />
+				}
+			case 'COMPLETED':
+				return {
+					text: 'Đơn đề nghị đã hoàn thành',
+					bgColor: 'bg-[#DAEAF7]',
+					icon: <CircleCheckBig />
+				}
+			default:
+				return {
+					text: 'Trạng thái lạ',
+					bgColor: 'bg-[#D9D9D9]',
+					icon: <CircleAlert />
+				}
+		}
+	}
+
+	const { text: statusEventText, bgColor: statusEventBgColor, icon } = getStatusEventDisplay(vaccineEvent?.status)
 
 	return (
 		<div className="font-inter">
-			<ReturnButton linkNavigate={"/manager/vaccination"} actor="manager"/>
+			<style>
+				{`
+					.custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-selector {
+						border-color: #0d9488 !important;
+					}
+					.custom-pagination .ant-pagination-options-size-changer.ant-select .ant-select-arrow {
+						color: #0d9488 !important;
+					}
+					.custom-pagination .ant-pagination-options-size-changer.ant-select-focused .ant-select-selector {
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
+					}
+					.custom-pagination .ant-pagination-options-quick-jumper input {
+						border-color: #0d9488 !important;
+					}
+					.custom-pagination .ant-pagination-options-quick-jumper input:focus {
+						border-color: #0d9488 !important;
+						box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
+					}
+					.ant-select-dropdown .ant-select-item-option-selected {
+						background-color: #0d9488 !important;
+						color: white !important;
+					}
+					.ant-select-dropdown .ant-select-item-option-active {
+						background-color: #0d9488 !important;
+						color: white !important;
+					}
+					.ant-select-dropdown .ant-select-item:hover {
+						background-color: #0d9488 !important;
+						color: white !important;
+					}`}
+			</style>
+			<ReturnButton linkNavigate={'/manager/vaccination'} actor="manager" />
 			<div className="grid grid-cols-12 gap-20 mt-10">
 				<div className="col-span-5">
 					<div className="flex flex-col gap-4">
-						<h1 className="font-bold text-2xl">
-							Chiến dịch: {vaccineEvent?.eventTitle || "N/A"}
-						</h1>
+						<h1 className="font-bold text-2xl">Chiến dịch: {vaccineEvent?.eventTitle || 'N/A'}</h1>
 						<p
 							className={`text-center border-1 ${borderColor} ${bgColor} ${textColor} font-bold px-6 py-1 w-fit rounded-lg`}
 						>
@@ -156,27 +210,23 @@ const VaccineEventDetail = () => {
 						<h1 className="font-bold text-xl mb-6">Thông tin chung</h1>
 						<div className={`${paddingCustomBlue} bg-gradient-to-r from-teal-500 to-teal-600 text-white`}>
 							<p className="font-semibold">Vaccine</p>
-							<p>{vaccineEvent?.vaccine?.name || "N/A"}</p>
+							<p>{vaccineEvent?.vaccine?.name || 'N/A'}</p>
 						</div>
 						<div className={`${paddingCustom}`}>
 							<p className="font-semibold">Đối tượng</p>
-							<p>
-								{vaccineEvent?.event_scope === "SCHOOL"
-									? "Toàn trường"
-									: "Theo lớp"}
-							</p>
+							<p>{vaccineEvent?.event_scope === 'SCHOOL' ? 'Toàn trường' : 'Theo lớp'}</p>
 						</div>
 						<div className={`${paddingCustomBlue} bg-gradient-to-r from-teal-500 to-teal-600 text-white`}>
 							<p className="font-semibold">Địa điểm</p>
-							<p>{vaccineEvent?.location || "N/A"}</p>
+							<p>{vaccineEvent?.location || 'N/A'}</p>
 						</div>
 						<div className={`${paddingCustom}`}>
 							<p className="font-semibold">Ngày tạo sự kiện</p>
-							<p>{formatDate(vaccineEvent?.createdAt || "N/A")}</p>
+							<p>{formatDate(vaccineEvent?.createdAt || 'N/A')}</p>
 						</div>
 						<div className={`${paddingCustomBlue} bg-gradient-to-r from-teal-500 to-teal-600 text-white`}>
 							<p className="font-semibold">Phụ trách</p>
-							<p>{vaccineEvent?.createdBy?.fullName || "N/A"}</p>
+							<p>{vaccineEvent?.createdBy?.fullName || 'N/A'}</p>
 						</div>
 					</div>
 				</div>
@@ -198,7 +248,7 @@ const VaccineEventDetail = () => {
 									<FileText />
 								</div>
 								<p className="font-semibold text-2xl italic">
-									{vaccineEventConsent?.totalConsents ?? "N/A"}
+									{vaccineEventConsent?.totalConsents ?? 'N/A'}
 								</p>
 							</div>
 							<div className="bg-gradient-to-r from-emerald-100 to-emerald-200 rounded-xl flex flex-col gap-5 px-10 py-4">
@@ -207,7 +257,7 @@ const VaccineEventDetail = () => {
 									<CircleCheckBig />
 								</div>
 								<p className="font-semibold text-2xl italic">
-									{vaccineEventConsent?.respondedConsents ?? "N/A"}
+									{vaccineEventConsent?.respondedConsents ?? 'N/A'}
 								</p>
 							</div>
 							<div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl flex flex-col gap-5 px-10 py-4">
@@ -216,7 +266,7 @@ const VaccineEventDetail = () => {
 									<CircleAlert />
 								</div>
 								<p className="font-semibold text-2xl italic">
-									{vaccineEventConsent?.pendingConsents ?? "N/A"}
+									{vaccineEventConsent?.pendingConsents ?? 'N/A'}
 								</p>
 							</div>
 							<div className="bg-gradient-to-r from-red-100 to-red-200 rounded-xl flex flex-col gap-5 px-10 py-4">
@@ -225,7 +275,7 @@ const VaccineEventDetail = () => {
 									<CircleX />
 								</div>
 								<p className="font-semibold text-2xl italic">
-									{vaccineEventConsent?.rejectedConsents ?? "N/A"}
+									{vaccineEventConsent?.rejectedConsents ?? 'N/A'}
 								</p>
 							</div>
 							<button
@@ -245,7 +295,7 @@ const VaccineEventDetail = () => {
 				</div>
 			</div>
 		</div>
-	);
-};
+	)
+}
 
-export default VaccineEventDetail;
+export default VaccineEventDetail

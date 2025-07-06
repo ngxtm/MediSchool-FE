@@ -4,13 +4,19 @@ import { Search, Users2, AlertCircle, Package } from "lucide-react";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import api from "../../../../utils/api";
 import Loading from "../../../../components/Loading";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function MedicationLayout() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [search, setSearch] = useState("");
-	const isDetailPage = /^\/nurse\/medication-requests\/\d+$/.test(location.pathname);
+	const isDetailPage = /^\/(nurse|manager)\/medication-requests\/\d+$/.test(location.pathname);
+
+	useEffect(() => {
+		if (/^\/(nurse|manager)\/medication-requests\/?$/.test(location.pathname)) {
+			navigate(`${location.pathname.replace(/\/$/, "")}/pending`, { replace: true });
+		}
+	}, [location.pathname, navigate]);
 
 	const currentTab = location.pathname.split("/").pop(); // pending | approved | all
 

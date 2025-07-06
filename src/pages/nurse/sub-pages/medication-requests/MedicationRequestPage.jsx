@@ -1,21 +1,18 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { useParams } from "react-router-dom";
 import MedicationRequestDetail from "../../../../components/MedicationRequestDetail";
+import ReturnButton from "../../../../components/ReturnButton";
 
 const MedicationRequestDetailPage = () => {
-	const navigate = useNavigate();
 	const { id } = useParams();
 
 	return (
 		<div className="p-6">
-			<button
-				onClick={() => navigate(-1)}
-				className="flex items-center gap-2 mb-6 px-4 py-2 border border-black rounded-full text-sm text-black"
-			>
-				<ArrowLeft className="w-4 h-4" />
-				Trở về
-			</button>
-
+			<div className="space-y-3 mb-6">
+			<ReturnButton
+				linkNavigate="/nurse/medication-requests/pending"
+				actor="nurse"
+			/>
+			</div>
 			<MedicationRequestDetail id={id} />
 		</div>
 	);

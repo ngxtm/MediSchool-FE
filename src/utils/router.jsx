@@ -159,7 +159,18 @@ const router = createBrowserRouter([
 				]
 			},
 			{ path: 'medication-event', element: <ManagerHealthEvent /> },
-			{ path: 'medication-event/:id', element: <ManagerHealthEventDetail /> }
+			{ path: 'medication-event/:id', element: <ManagerHealthEventDetail /> },
+			{
+				path: "medication-requests",
+				element: <MedicationLayout />,
+				children: [
+					{ index: true, element: <MedicationRequestAll /> },
+					{ path: "all", element: <MedicationRequestAll /> },
+					{ path: "pending", element: <MedicationRequestPending /> },
+					{ path: "approved", element: <MedicationRequestApproved /> },
+					{ path: ":id", element: <MedicationRequestPage /> },
+				],
+			}
 		]
 	},
 	{

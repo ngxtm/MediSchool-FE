@@ -44,15 +44,14 @@ import {
 } from '../pages/manager/sub-pages/health-event/index.js'
 import ManagerHome from '../pages/manager/sub-pages/Home'
 import { HealthCheckup as NurseHealthCheck } from '../pages/nurse/sub-pages/health-checkup/index'
-import MedicationRequestPending from '../pages/nurse/sub-pages/medication-request/MedicationRequestPending.jsx'
-import MedicationRequestApproved from '../pages/nurse/sub-pages/medication-request/MedicationRequestApproved.jsx'
-import MedicationRequestAll from '../pages/nurse/sub-pages/medication-request/MedicationRequestAll.jsx'
-import MedicationLayout from '../pages/nurse/sub-pages/medication-request/MedicationLayout.jsx'
-import MedicationEvent from "../pages/nurse/sub-pages/medication-event/MedicationEvent";
+import MedicationRequestAll from '../pages/nurse/sub-pages/medication-requests/MedicationRequestAll.jsx'
+import MedicationRequestPending from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPending.jsx'
+import MedicationRequestApproved from '../pages/nurse/sub-pages/medication-requests/MedicationRequestApproved.jsx'
+import MedicationRequestPage from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPage.jsx'
+import MedicationLayout from '../pages/nurse/sub-pages/medication-requests/MedicationLayout.jsx'
 import MedicationRequestDetail from '../components/MedicationRequestDetail.jsx'
 import MedicationRequestCreate from '../pages/parent/MedicationRequestCreate.jsx'
 import MedicationRequestUpdate from '../pages/parent/MedicationRequestUpdate.jsx'
-import MedicationRequestPage from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPage.jsx'
 const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
@@ -92,17 +91,13 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: '/nurse/medication-request',
-				path: "/nurse/medication-requests",
+				path: "medication-requests",
 				element: <MedicationLayout />,
 				children: [
-					{ path: 'pending', element: <MedicationRequestPending /> },
-					{ path: 'approved', element: <MedicationRequestApproved /> },
-					{ path: 'all', element: <MedicationRequestAll /> }
-				]
+					{ index: true, element: <MedicationRequestAll /> },
+					{ path: "all", element: <MedicationRequestAll /> },
 					{ path: "pending", element: <MedicationRequestPending /> },
 					{ path: "approved", element: <MedicationRequestApproved /> },
-					{ path: "all", element: <MedicationRequestAll /> },
 					{ path: ":id", element: <MedicationRequestPage /> },
 				],
 			},
@@ -119,12 +114,6 @@ const router = createBrowserRouter([
 		),
 		children: [
 			{ index: true, element: <StudentInfo /> },
-			{ path: 'info', element: <StudentInfo /> },
-			{ path: 'medical-record', element: <MedicalRecord /> },
-			{ path: 'vaccination', element: <Vaccination /> },
-			{ path: 'health-check', element: <HealthCheck /> },
-			{ path: 'medication-request', element: <MedicationRequest /> }
-		]
 			{ path: "info", element: <StudentInfo /> },
 			{ path: "medical-record", element: <MedicalRecord /> },
 			{ path: "vaccination", element: <Vaccination /> },
@@ -181,15 +170,11 @@ const router = createBrowserRouter([
 			</PrivateRouter>
 		)
 	},
-	{ path: '/no-role', element: <NoRole /> },
-	{ path: '/auth/callback', element: <AuthCallback /> },
-	{ path: 'medication-request/:id', element: <MedicationRequestDetail /> }
-])
 	{ path: "/no-role", element: <NoRole /> },
 	{ path: "/auth/callback", element: <AuthCallback /> },
-	{ path: "medication-requests/:id", element:<MedicationRequestDetail/>},
-	{ path: "medication-requests/create", element: <MedicationRequestCreate /> },
-	{ path: "medication-requests/:id/update", element: <MedicationRequestUpdate /> }
+	{ path: "/medication-requests/:id", element: <MedicationRequestDetail /> },
+	{ path: "/medication-requests/create", element: <MedicationRequestCreate /> },
+	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> }
 ]);
 
 export default router

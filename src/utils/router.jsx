@@ -43,7 +43,6 @@ import {
 	HealthEventDetail as ManagerHealthEventDetail
 } from '../pages/manager/sub-pages/health-event/index.js'
 import ManagerHome from '../pages/manager/sub-pages/Home'
-import { HealthCheckup as NurseHealthCheck } from '../pages/nurse/sub-pages/health-checkup/index'
 import MedicationRequestAll from '../pages/nurse/sub-pages/medication-requests/MedicationRequestAll.jsx'
 import MedicationRequestPending from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPending.jsx'
 import MedicationRequestApproved from '../pages/nurse/sub-pages/medication-requests/MedicationRequestApproved.jsx'
@@ -57,6 +56,9 @@ import ManagerRequestAll from '../pages/manager/sub-pages/medication-requests/Ma
 import ManagerRequestPending from '../pages/manager/sub-pages/medication-requests/ManagerRequestPending.jsx'
 import ManagerRequestPage from '../pages/manager/sub-pages/medication-requests/ManagerRequestPage.jsx'
 import ManagerRequestApproved from '../pages/manager/sub-pages/medication-requests/ManagerRequestApproved.jsx'
+import HealthCheckupList from '../pages/nurse/sub-pages/health-checkup/HealthCheckupList.jsx'
+import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'
+import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
 const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
@@ -73,7 +75,17 @@ const router = createBrowserRouter([
 		children: [
 			{ index: true, element: <NurseStudent /> },
 			{ path: 'student', element: <NurseStudent /> },
-			{ path: 'health-checkup', element: <NurseHealthCheck /> },
+			{
+				path: "/nurse/health-checkup",
+				element: <HealthCheckupLayout />,
+				children: [
+					{
+						index: true,
+						element: <HealthCheckupList />,
+					},
+					{ path: 'create', element: <HealthCheckupForm/>}
+				],
+			},
 			{
 				path: 'vaccination',
 				element: <VaccinationLayout />,

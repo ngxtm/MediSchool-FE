@@ -1,5 +1,5 @@
 const DetailBox = ({ title, icon, number, subText, width, height, gap, titleSize, bgColor, textColor }) => {
-	const backgroundClass = bgColor || "bg-[#E8F4FB]";
+	const backgroundClass = bgColor || "bg-[#DAEAF7]";
 	
 	const isGradientOrDark = bgColor && (bgColor.includes('gradient') || bgColor.includes('teal-500') || bgColor.includes('teal-600'));
 	const defaultTextColor = isGradientOrDark ? 'text-white' : 'text-black';

@@ -50,7 +50,7 @@ export default function MedicationLayout() {
 				statsLoading ? (
 					<div className="text-center py-10 text-gray-500">Đang tải thống kê...</div>
 				) : (
-					<div className="flex max-w-full justify-center gap-x-10 mb-12 mt-6">
+					<div className="flex max-w-full justify-center gap-x-10 mb-12">
 						{[
 							{ label: "Tổng số đơn", icon: <Package />, value: stats?.total ?? 0, note: "toàn trường" },
 							{ label: "Chờ duyệt", icon: <Users2 />, value: stats?.pending ?? 0, note: "đơn thuốc" },
@@ -72,15 +72,16 @@ export default function MedicationLayout() {
 
 			{!isDetailPage && (
 				<div className="flex px-[100px] justify-between items-center mb-6 font-inter">
-					<Input
-						style={{ fontFamily: "Inter", width: 300 }}
-						prefix={<Search size={16} className="text-gray-400 mr-4 font-inter" />}
-						placeholder="Tìm kiếm đơn thuốc"
-						className="h-[38px] rounded-[8px] !border-[#d9d9d9] font-inter"
-						allowClear
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-					/>
+					<div className="relative w-[300px]">
+						<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+						<input
+							type="text"
+							placeholder="Tìm kiếm đơn thuốc"
+							className="pl-9 pr-4 py-2 border rounded-md w-full text-sm"
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+						/>
+					</div>
 
 					<div className="flex gap-2">
 						{tabButtons.map((btn) => (

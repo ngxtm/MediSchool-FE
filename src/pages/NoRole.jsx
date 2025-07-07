@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../utils/api";
+import { clearExpiredSession } from "../utils/auth";
 
 const NoRole = () => {
 	const [userRole, setUserRole] = useState(null);
@@ -12,6 +13,7 @@ const NoRole = () => {
 				setUserRole(data.role);
 			} catch (error) {
 				console.error("Error fetching user role:", error);
+				clearExpiredSession()
 			} finally {
 				setLoading(false);
 			}

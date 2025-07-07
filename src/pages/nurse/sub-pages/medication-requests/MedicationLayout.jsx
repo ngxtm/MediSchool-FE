@@ -1,13 +1,14 @@
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Input } from "antd";
 import { Search, Users2, AlertCircle, Package } from "lucide-react";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import api from "../../../../utils/api";
 import Loading from "../../../../components/Loading";
 import { useState } from "react";
+import useActorNavigation from "../../../../hooks/useActorNavigation";
 
 export default function MedicationLayout() {
-	const navigate = useNavigate();
+	const { navigateWithHistory } = useActorNavigation('nurse');
 	const location = useLocation();
 	const [search, setSearch] = useState("");
 	const isDetailPage = /^\/nurse\/medication-requests\/\d+$/.test(location.pathname);
@@ -80,7 +81,7 @@ export default function MedicationLayout() {
 						{tabButtons.map((btn) => (
 							<button
 								key={btn.value}
-								onClick={() => navigate(`/nurse/medication-requests/${btn.value}`)}
+								onClick={() => navigateWithHistory(`/nurse/medication-requests/${btn.value}`)}
 								className={`px-4 py-2 rounded-md ${
 									currentTab === btn.value ? "bg-[#023E73] text-white font-bold" : "bg-white text-black"
 								}`}

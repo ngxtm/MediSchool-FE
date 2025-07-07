@@ -49,9 +49,14 @@ import MedicationRequestPending from '../pages/nurse/sub-pages/medication-reques
 import MedicationRequestApproved from '../pages/nurse/sub-pages/medication-requests/MedicationRequestApproved.jsx'
 import MedicationRequestPage from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPage.jsx'
 import MedicationLayout from '../pages/nurse/sub-pages/medication-requests/MedicationLayout.jsx'
-import MedicationRequestDetail from '../components/MedicationRequestDetail.jsx'
+import MedicationRequestDetail from '../pages/nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx'
 import MedicationRequestCreate from '../pages/parent/MedicationRequestCreate.jsx'
 import MedicationRequestUpdate from '../pages/parent/MedicationRequestUpdate.jsx'
+import ManagerMedicationLayout from '../pages/manager/sub-pages/medication-requests/ManagerMedicationLayout.jsx'
+import ManagerRequestAll from '../pages/manager/sub-pages/medication-requests/ManagerRequestAll.jsx'
+import ManagerRequestPending from '../pages/manager/sub-pages/medication-requests/ManagerRequestPending.jsx'
+import ManagerRequestPage from '../pages/manager/sub-pages/medication-requests/ManagerRequestPage.jsx'
+import ManagerRequestApproved from '../pages/manager/sub-pages/medication-requests/ManagerRequestApproved.jsx'
 const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
@@ -162,13 +167,13 @@ const router = createBrowserRouter([
 			{ path: 'medication-event/:id', element: <ManagerHealthEventDetail /> },
 			{
 				path: "medication-requests",
-				element: <MedicationLayout />,
+				element: <ManagerMedicationLayout />,
 				children: [
-					{ index: true, element: <MedicationRequestAll /> },
-					{ path: "all", element: <MedicationRequestAll /> },
-					{ path: "pending", element: <MedicationRequestPending /> },
-					{ path: "approved", element: <MedicationRequestApproved /> },
-					{ path: ":id", element: <MedicationRequestPage /> },
+					{ index: true, element: <ManagerRequestPending /> },
+					{ path: "all", element: <ManagerRequestAll /> },
+					{ path: "pending", element: <ManagerRequestPending /> },
+					{ path: "approved", element: <ManagerRequestApproved /> },
+					{ path: ":id", element: <ManagerRequestPage /> },
 				],
 			}
 		]

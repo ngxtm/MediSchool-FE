@@ -1,9 +1,9 @@
 import { useOutletContext } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import api from "../../../../utils/api";
-import MedicationRequestList from "./MedicationRequestList";
-import Loading from "../../../../components/Loading";
+import api from "../../../../utils/api.js";
+import MedicationRequestList from "./MedicationRequestList.jsx";
+import Loading from "../../../../components/Loading.jsx";
 
 const MedicationRequestApproved = () => {
 	const { search } = useOutletContext();
@@ -23,7 +23,7 @@ const MedicationRequestApproved = () => {
 			}
 			const res = await api.get(`/medication-requests/search?keyword=${debouncedSearch}`);
 
-			return res.data.filter((r) => r.medicationStatus === "APPROVED");
+			return res.data.filter((r) => r.medicationStatus === "APPROVED" || "DISPENSING");
 		},
 		enabled: true,
 	});

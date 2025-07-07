@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../utils/api.js";
+import api from "../../../../utils/api.js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -67,6 +67,8 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 										navigate("/parent/medication-requests");
 									} else if (role === "NURSE") {
 										navigate("/nurse/medication-requests/pending");
+									} else if (role === "MANAGER") {
+										navigate("/manager/medication-requests/pending");
 									} else {
 										navigate("/");
 									}

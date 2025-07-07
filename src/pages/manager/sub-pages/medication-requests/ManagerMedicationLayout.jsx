@@ -6,17 +6,17 @@ import api from "../../../../utils/api.js";
 import Loading from "../../../../components/Loading.jsx";
 import { useEffect, useState } from "react";
 
-export default function MedicationLayout() {
+export default function ManagerMedicationLayout() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [search, setSearch] = useState("");
 
-	const basePath = "nurse";
-	const isDetailPage = /^\/nurse\/medication-requests\/\d+$/.test(location.pathname);
+	const basePath = "manager";
+	const isDetailPage = /^\/manager\/medication-requests\/\d+$/.test(location.pathname);
 
 	useEffect(() => {
-		if (/^\/nurse\/medication-requests\/?$/.test(location.pathname)) {
-			navigate(`/nurse/medication-requests/pending`, { replace: true });
+		if (/^\/manager\/medication-requests\/?$/.test(location.pathname)) {
+			navigate(`/manager/medication-requests/pending`, { replace: true });
 		}
 	}, [location.pathname, navigate]);
 
@@ -86,7 +86,7 @@ export default function MedicationLayout() {
 						{tabButtons.map((btn) => (
 							<button
 								key={btn.value}
-								onClick={() => navigate(`/nurse/medication-requests/${btn.value}`)}
+								onClick={() => navigate(`/manager/medication-requests/${btn.value}`)}
 								className={`px-4 py-2 rounded-md ${
 									currentTab === btn.value ? "bg-[#023E73] text-white font-bold" : "bg-white text-black"
 								}`}

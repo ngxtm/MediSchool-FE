@@ -6,13 +6,13 @@ import Loading from '../../../../components/Loading'
 import { ChevronRight, Search } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import { Input, Table, Select } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import { successToast, errorToast } from '../../../../components/ToastPopup'
 import { useEmailToast } from '../../../../hooks/useEmailToast'
 import BulkActionBar from '../../../../components/BulkActionBar'
+import useActorNavigation from '../../../../hooks/useActorNavigation'
 
 const StudentListInEvent = ({ actor }) => {
-	const navigate = useNavigate()
+	const { navigateWithHistory } = useActorNavigation(actor)
 	const queryClient = useQueryClient()
 	const { id } = useParams()
 	const [search, setSearch] = useState('')
@@ -277,7 +277,7 @@ const StudentListInEvent = ({ actor }) => {
 				return (
 					<button
 						onClick={() =>
-							navigate(
+							navigateWithHistory(
 								`${actor === 'manager' ? '/manager' : '/nurse'}/vaccination/vaccine-event/consent/${
 									record.consentId
 								}`

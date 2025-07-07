@@ -1,5 +1,4 @@
 import { DatePicker } from "antd";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -17,9 +16,10 @@ import DetailBox from "../../components/DetailBox"
 import Loading from "../../../../components/Loading";
 import { toast, Zoom } from "react-toastify";
 import { formatDate, parseDate } from "../../../../utils/dateparse";
+import useActorNavigation from "../../../../hooks/useActorNavigation";
 
 const HealthCheckup = () => {
-    const navigate = useNavigate();
+    const { navigateWithHistory } = useActorNavigation('nurse');
     const [selectedYear, setSelectedYear] = useState(null);
 
     const toastError = (message) => {
@@ -105,13 +105,13 @@ const HealthCheckup = () => {
                 <div className="flex gap-10">
                     <button
                         className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95"
-                        onClick={() => navigate("/nurse/checkup-item")}
+                        onClick={() => navigateWithHistory("/nurse/checkup-item")}
                     >
                         Xem danh sách Hạng mục
                     </button>
                     <button
                         className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95"
-                        onClick={() => navigate("/nurse/checkup-create")}
+                        onClick={() => navigateWithHistory("/nurse/checkup-create")}
                     >
                         Tạo lịch khám mới
                     </button>
@@ -127,7 +127,7 @@ const HealthCheckup = () => {
                             return (
                                 <button
                                     key={event.id}
-                                    onClick={() => navigate(`/nurse/checkup-event/${event.id}`)}
+                                    onClick={() => navigateWithHistory(`/nurse/checkup-event/${event.id}`)}
                                     className="flex w-full justify-between max-w-[80rem] mx-auto border-gray-300 border-b-1 border-t-1 p-6 transition-colors hover:bg-gray-50 cursor-pointer group"
                                 >
                                     <div className="flex justify-center gap-10 items-center">

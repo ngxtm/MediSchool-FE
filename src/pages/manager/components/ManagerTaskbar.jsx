@@ -2,7 +2,7 @@ import { ChevronDown, CircleUserRound, Settings, LogOut } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import useSignOut from '../../../utils/signout'
 import { ToggleGroup } from 'radix-ui'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import heartIcon from '../../../assets/heart.png'
 import useActorNavigation from '../../../hooks/useActorNavigation'
@@ -11,7 +11,6 @@ const ManagerTaskBar = ({ userData }) => {
 	const [hoveredTab, setHoveredTab] = useState(null)
 	const username = userData?.fullName || 'N/A'
 	const signout = useSignOut()
-	const navigate = useNavigate()
 	const location = useLocation()
 
 	const { navigateWithHistory } = useActorNavigation('manager')

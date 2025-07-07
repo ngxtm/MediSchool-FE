@@ -1,12 +1,13 @@
 import ReturnButton from "../../../../components/ReturnButton";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import api from "../../../../utils/api";
 import Loading from "../../../../components/Loading";
 import { CircleAlert, CircleCheckBig, CircleX, FileText } from "lucide-react";
+import useActorNavigation from "../../../../hooks/useActorNavigation";
 
 const VaccineEventDetail = ({ actor }) => {
-	const navigate = useNavigate();
+	const { navigateWithHistory } = useActorNavigation(actor);
 	const paddingCustomBlue =
 		"bg-[#DAEAF7] py-3 px-6 rounded-lg flex flex-row justify-between";
 	const paddingCustom = "p-6 rounded-lg flex flex-row justify-between";
@@ -229,13 +230,13 @@ const VaccineEventDetail = ({ actor }) => {
 								</p>
 							</div>
 							<button
-								onClick={() => navigate(`students`)}
+								onClick={() => navigateWithHistory(`students`)}
 								className="rounded-lg text-white bg-[#023E73] px-6 py-2 w-full font-semibold mt-8 transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95"
 							>
 								Xem danh sách đơn
 							</button>
 							<button
-								onClick={() => navigate(`records`)}
+								onClick={() => navigateWithHistory(`records`)}
 								className="rounded-lg bg-[#F5F5F5] px-6 py-2 w-full font-semibold mt-8 transition-all duration-200 ease-in-out hover:bg-[#f5f5f5a5] hover:scale-105 hover:shadow-lg active:scale-95"
 							>
 								Xem hồ sơ tiêm chủng

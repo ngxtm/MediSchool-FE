@@ -7,9 +7,10 @@ import { useEffect, useState } from 'react'
 import { Dialog } from 'radix-ui'
 import { Select } from 'antd'
 import { Zoom, toast } from 'react-toastify'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { parseDate, formatDate } from '../../../../utils/dateparse'
 import Loading from '../../../../components/Loading'
+import useActorNavigation from '../../../../hooks/useActorNavigation'
 
 const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 	const [formData, setFormData] = useState({
@@ -256,7 +257,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 }
 
 const Vaccination = () => {
-	const navigate = useNavigate()
+	const { navigateWithHistory } = useActorNavigation('nurse')
 	const [search, setSearch] = useState('')
 	const [selectedYear, setSelectedYear] = useState(null)
 	const queryClient = useQueryClient()
@@ -379,7 +380,7 @@ const Vaccination = () => {
 				<div className="flex gap-10">
 					<button
 						className="bg-[#023E73] text-white px-7 py-1.5 rounded-lg font-bold text-base transition-all duration-200 ease-in-out hover:bg-[#01294d] hover:scale-105 hover:shadow-lg active:scale-95"
-						onClick={() => navigate('vaccine-list')}
+						onClick={() => navigateWithHistory('vaccine-list')}
 					>
 						Xem danh sách Vaccine
 					</button>

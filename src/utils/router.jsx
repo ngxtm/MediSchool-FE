@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import Login from '../pages/Login'
 import Signup from '../pages/Signup'
 import Nurse from '../pages/nurse/Nurse'
@@ -52,8 +52,10 @@ import MedicationLayout from '../pages/nurse/sub-pages/medication-requests/Medic
 import MedicationRequestDetail from '../components/MedicationRequestDetail.jsx'
 import MedicationRequestCreate from '../pages/parent/MedicationRequestCreate.jsx'
 import MedicationRequestUpdate from '../pages/parent/MedicationRequestUpdate.jsx'
+import AuthRedirect from '../components/AuthRedirect'
+
 const router = createBrowserRouter([
-	{ path: '/', element: <Navigate to="/login" replace /> },
+	{ path: '/', element: <AuthRedirect /> },
 	{ path: '/login', element: <Login /> },
 	{ path: '/signup', element: <Signup /> },
 	{ path: '/forgot-password', element: <ForgotPassword /> },

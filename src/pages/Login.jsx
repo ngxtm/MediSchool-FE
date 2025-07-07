@@ -1,10 +1,12 @@
 import '../styles/login.css'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import LoginImage from '../assets/login-image.png'
 import { Eye, EyeOff, User, Lock } from 'lucide-react'
 import { UserAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
+import api from '../utils/api'
+import { clearExpiredSession } from '../utils/auth'
 
 const Login = () => {
 	const [showPassword, setShowPassword] = useState(false)
@@ -12,18 +14,69 @@ const Login = () => {
 	const [password, setPassword] = useState('')
 	const [error, setError] = useState('')
 	const [loading, setLoading] = useState(false)
+	const [checkingAuth, setCheckingAuth] = useState(true)
 	const [rememberMe, setRememberMe] = useState(false)
 	const navigate = useNavigate()
 
 	const { signInWithEmail, signInWithGoogle } = UserAuth()
+
+	useEffect(() => {
+		const checkExistingSession = async () => {
+			try {
+				const projectRef = supabase.supabaseUrl.split('https://')[1].split('.')[0]
+				const session = localStorage.getItem(`sb-${projectRef}-auth-token`)
+				const tempSession = sessionStorage.getItem('tempSession')
+
+				if (session || tempSession) {
+					const { data: userData } = await api.get('/me')
+					if (userData && userData.role) {
+						
+						switch (userData.role) {
+							case 'NURSE':
+								navigate('/nurse', { replace: true })
+								break
+							case 'MANAGER':
+								navigate('/manager', { replace: true })
+								break
+							case 'ADMIN':
+								navigate('/admin', { replace: true })
+								break
+							case 'PARENT':
+								navigate('/parent', { replace: true })
+								break
+							default:
+								navigate('/no-role', { replace: true })
+						}
+						return
+					}
+				}
+			} catch (error) {
+				console.error('Error checking existing session:', error)
+				clearExpiredSession()
+			} finally {
+				setCheckingAuth(false)
+			}
+		}
+
+		checkExistingSession()
+	}, [navigate])
+
+	if (checkingAuth) {
+		return (
+			<div className="min-h-screen w-full bg-[#E8F4FB] flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A3D62] mx-auto"></div>
+					<p className="mt-4 text-gray-600">Đang kiểm tra đăng nhập...</p>
+				</div>
+			</div>
+		)
+	}
 
 	const handleSignInWithEmail = async e => {
 		e.preventDefault()
 		setLoading(true)
 		try {
 			const result = await signInWithEmail(email, password, rememberMe)
-			console.log('TESTING: ')
-			console.log('Data: ', result.data)
 			if (result.success) {
 				const { user } = result.data
 				const { data: userData, error: roleError } = await supabase
@@ -46,11 +99,14 @@ const Login = () => {
 						PARENT: '/parent'
 					}
 					if (intendedUrl.startsWith(roleBasePaths[userData.role])) {
+						sessionStorage.setItem('cameFromLogin', 'true')
 						navigate(intendedUrl, { replace: true })
 						return
 					}
 				}
 
+				sessionStorage.setItem('cameFromLogin', 'true')
+				
 				switch (userData.role) {
 					case 'NURSE':
 						navigate('/nurse', { replace: true })
@@ -81,6 +137,7 @@ const Login = () => {
 	const handleSignInWithGoogle = async () => {
 		try {
 			setLoading(true)
+			sessionStorage.setItem('cameFromLogin', 'true')
 			await signInWithGoogle(rememberMe)
 			setLoading(false)
 		} catch (error) {

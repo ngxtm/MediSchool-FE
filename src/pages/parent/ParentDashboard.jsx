@@ -12,7 +12,7 @@ const ParentDashboard = () => {
 	const [user, setUser] = useState(null)
 	const [loading, setLoading] = useState(true)
 
-	useActorNavigation()
+	useActorNavigation('parent')
 
 	const fetchUser = async () => {
 		try {

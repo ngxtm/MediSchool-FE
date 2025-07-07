@@ -1,10 +1,10 @@
 import { Activity, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
 import MedicationDialog from "./MedicationDialog";
-import { useNavigate } from "react-router-dom";
+import useActorNavigation from "../../../../hooks/useActorNavigation";
 
 export default function MedicationRequestCard({ data, nurseId }) {
-    const navigate = useNavigate();
+    const { navigateWithHistory } = useActorNavigation('nurse');
     return (
         <div className="flex items-center justify-between border-b py-8 gap-6 font-inter">
             <div className="flex items-center gap-5 w-[40%]">
@@ -111,7 +111,7 @@ export default function MedicationRequestCard({ data, nurseId }) {
 
             <div
                 className="cursor-pointer"
-                onClick={() => navigate(`/nurse/medication-requests/${data.requestId}`)}
+                onClick={() => navigateWithHistory(`/nurse/medication-requests/${data.requestId}`)}
             >
                 <ChevronRight className="text-black hover:scale-110 transition-transform" />
             </div>

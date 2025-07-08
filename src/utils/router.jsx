@@ -59,6 +59,7 @@ import ManagerRequestApproved from '../pages/manager/sub-pages/medication-reques
 import HealthCheckupList from '../pages/nurse/sub-pages/health-checkup/HealthCheckupList.jsx'
 import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'
 import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
+import HealthCheckupDetail from '../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'
 const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
@@ -83,7 +84,6 @@ const router = createBrowserRouter([
 						index: true,
 						element: <HealthCheckupList />,
 					},
-					{ path: 'create', element: <HealthCheckupForm/>}
 				],
 			},
 			{
@@ -202,7 +202,9 @@ const router = createBrowserRouter([
 	{ path: "/auth/callback", element: <AuthCallback /> },
 	{ path: "/medication-requests/:id", element: <MedicationRequestDetail /> },
 	{ path: "/medication-requests/create", element: <MedicationRequestCreate /> },
-	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> }
+	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> },
+	{ path: "/nurse/health-checkup/create", element: <HealthCheckupForm/>},
+	{ path: "/nurse/health-checkup/:id", element: <HealthCheckupDetail/>}
 ]);
 
 export default router

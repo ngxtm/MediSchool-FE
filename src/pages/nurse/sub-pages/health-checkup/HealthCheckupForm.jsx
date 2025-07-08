@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ArrowLeft } from 'lucide-react'
 
 const CATEGORY_OPTIONS = [
 	"Chiều cao - Cân nặng",
@@ -45,11 +46,57 @@ export default function HealthCheckupForm() {
 		}
 	};
 
+	const validateForm = () => {
+		let errorCount = 0;
+		let firstError = "";
+
+		if (!title.trim()) {
+			errorCount++;
+			firstError = "Vui lòng nhập tên sự kiện.";
+		}
+		if (!schoolYear) {
+			errorCount++;
+			if (!firstError) firstError = "Vui lòng chọn năm học.";
+		}
+		if (!startDate) {
+			errorCount++;
+			if (!firstError) firstError = "Vui lòng chọn ngày bắt đầu.";
+		}
+		if (!endDate) {
+			errorCount++;
+			if (!firstError) firstError = "Vui lòng chọn ngày kết thúc.";
+		}
+		if (selectedCategories.length === 0) {
+			errorCount++;
+			if (!firstError) firstError = "Vui lòng chọn ít nhất 1 hạng mục khám.";
+		}
+
+		if (startDate && endDate) {
+			const start = new Date(startDate);
+			const end = new Date(endDate);
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+			const minStart = new Date(today);
+			minStart.setDate(minStart.getDate() + 3);
+
+			if (start < minStart) {
+				return "Ngày bắt đầu phải sau hôm nay ít nhất 3 ngày.";
+			}
+			if (end < start) {
+				return "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.";
+			}
+		}
+
+		if (errorCount >= 2) return "Vui lòng điền đầy đủ các mục.";
+		return firstError || null;
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		if (!title || !schoolYear || !startDate || !endDate || selectedCategories.length === 0) {
-			toast.error("Vui lòng điền đầy đủ thông tin!");
+		const err = validateForm();
+		if (err) {
+			toast.error(err);
 			return;
 		}
 
@@ -61,29 +108,37 @@ export default function HealthCheckupForm() {
 			categoryNames: selectedCategories,
 		};
 
-		// await api.post("/checkup-events", payload);
-		toast.success("Tạo đợt khám thành công!");
 		navigate("/nurse/health-checkup");
 	};
 
 	return (
-		<div className="max-w-2xl mx-auto px-6 py-10 font-inter">
-			<h1 className="text-2xl font-bold mb-6 text-center">THÔNG TIN SỰ KIỆN KHÁM SỨC KHỎE ĐỊNH KỲ</h1>
+		<div className="max-w-5xl mx-auto px-6 py-10 font-inter">
+			<button
+				onClick={() => navigate(-1)}
+				className={`group border px-8 py-1 rounded-3xl font-bold text-base flex items-center gap-4 mb-8 transition-all duration-200 bg-[#023E73] text-white`}
+			>
+				<ArrowLeft
+					size={20}
+					className="transition-transform duration-200 group-hover:-translate-x-1 text-white"
+				/>
+				Trở về
+			</button>
+			<h1 className="text-3xl font-bold mb-8 text-center">THÔNG TIN SỰ KIỆN KHÁM SỨC KHỎE ĐỊNH KỲ</h1>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				<div>
-					<label className="font-medium block mb-1">Tên sự kiện</label>
+					<label className="text-xl font-bold block mb-2">Tên sự kiện</label>
 					<input
 						type="text"
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						placeholder="Ví dụ: Khám sức khỏe đầu/giữa/cuối năm học"
+						placeholder="Ví dụ: Khám sức khỏe đầu/giữa/cuối năm học,..."
 						className="border rounded px-4 py-2 w-full"
 					/>
 				</div>
 
 				<div>
-					<label className="font-medium block mb-1">Năm học</label>
+					<label className="text-xl font-bold block mb-2">Năm học</label>
 					<select
 						value={schoolYear}
 						onChange={(e) => setSchoolYear(e.target.value)}
@@ -98,7 +153,7 @@ export default function HealthCheckupForm() {
 
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="font-medium block mb-1">Ngày bắt đầu</label>
+						<label className="text-xl font-bold block mb-2">Ngày bắt đầu</label>
 						<input
 							type="date"
 							value={startDate}
@@ -107,7 +162,7 @@ export default function HealthCheckupForm() {
 						/>
 					</div>
 					<div>
-						<label className="font-medium block mb-1">Ngày kết thúc</label>
+						<label className="text-xl font-bold block mb-2">Ngày kết thúc</label>
 						<input
 							type="date"
 							value={endDate}
@@ -119,10 +174,10 @@ export default function HealthCheckupForm() {
 
 				<div>
 					<div className="flex justify-between items-center mb-2">
-						<label className="font-medium">Hạng mục khám</label>
+						<label className="font-lg text-xl font-bold mb-2">Hạng mục khám</label>
 						<button
 							type="button"
-							className="text-sm text-blue-600 hover:underline"
+							className="text-m text-[#023E73] hover:underline"
 							onClick={selectAll}
 						>
 							Chọn tất cả
@@ -131,7 +186,7 @@ export default function HealthCheckupForm() {
 
 					<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
 						{CATEGORY_OPTIONS.map((c) => (
-							<label key={c} className="text-sm flex items-center gap-2">
+							<label key={c} className="text-m flex items-center gap-2 mb-1">
 								<input
 									type="checkbox"
 									checked={selectedCategories.includes(c)}
@@ -145,15 +200,8 @@ export default function HealthCheckupForm() {
 
 				<div className="flex justify-center gap-4 pt-4">
 					<button
-						type="button"
-						onClick={() => navigate(-1)}
-						className="bg-gray-100 border rounded px-6 py-2 font-semibold"
-					>
-						Huỷ
-					</button>
-					<button
 						type="submit"
-						className="bg-[#023E73] text-white rounded px-6 py-2 font-semibold hover:bg-[#034a8a]"
+						className="bg-[#023E73] text-white rounded px-6 py-3 rounded-xl text-lg font-bold hover:bg-[#034a8a]"
 					>
 						Xác nhận
 					</button>

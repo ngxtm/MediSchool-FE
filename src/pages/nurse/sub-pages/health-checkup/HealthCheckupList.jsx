@@ -4,7 +4,6 @@ import HealthCheckupCard from "./HealthCheckupCard.jsx";
 import api from "../../../../utils/api.js";
 import { Search } from 'lucide-react'
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
 
 export default function HealthCheckupList() {
 	const [search, setSearch] = useState("");
@@ -12,7 +11,7 @@ export default function HealthCheckupList() {
 
 	const { data: events, isLoading } = useQuery({
 		queryKey: ["checkup-events"],
-		queryFn: async () => (await api.get("/checkup-events")).data,
+		queryFn: async () => (await api.get("/health-checkup")).data,
 	});
 
 	const normalizedSearch = search.toLowerCase();

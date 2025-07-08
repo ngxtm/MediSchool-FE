@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, Outlet } from "react-router-dom";
 import { FileText, CheckCheck, AlertTriangle, Calendar } from "lucide-react";
+import api from '../../../../utils/api.js'
 
 export default function HealthCheckupLayout() {
 	const location = useLocation();
@@ -12,7 +13,7 @@ export default function HealthCheckupLayout() {
 	});
 
 	return (
-		<div className="font-inter">
+		<div className="font-inter items-center justify-center min-h-[90%]">
 			{!isDetailPage && (
 				<div className="grid grid-cols-4 gap-15 mb-8">
 					{[

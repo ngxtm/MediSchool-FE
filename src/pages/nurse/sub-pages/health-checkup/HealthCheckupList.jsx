@@ -34,7 +34,9 @@ export default function HealthCheckupList() {
 				</div>
 
 				<div className="flex gap-4">
-					<button className="bg-[#023E73] text-white font-semibold px-5 py-3 rounded-xl text-m rounded-lg hover:bg-[#034a8a]">
+					<button
+						onClick={() => navigate("/nurse/checkup-categories")}
+						className="bg-[#023E73] text-white font-semibold px-5 py-3 rounded-xl text-m rounded-lg hover:bg-[#034a8a]">
 						Xem danh sách Hạng mục
 					</button>
 					<button

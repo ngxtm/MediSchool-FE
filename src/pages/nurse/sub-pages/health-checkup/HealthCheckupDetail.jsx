@@ -53,25 +53,25 @@ export default function HealthCheckupDetail() {
 				</button>
 			</div>
 				<h1 className="text-2xl font-bold mb-2">{eventTitle}</h1>
-				<p className="text-gray-600 mb-2">Năm học: {schoolYear}</p>
-				<span className="inline-block mt-2 px-4 py-1 bg-[#E3F2FD] text-[#1565C0] rounded-full text-md font-semibold">
+				<p className="text-gray-600 mb-2 text-md">Năm học: {schoolYear}</p>
+				<span className="inline-block mt-2 px-4 py-1 bg-[#E3F2FD] text-[#1565C0] rounded-full text-sm font-semibold">
           		Đang diễn ra</span>
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 				<div>
 					<h2 className="text-base text-xl font-bold mb-3">Thông tin chung</h2>
-					<div className="space-y-4">
+					<div className="space-y-4 w-[80%]">
 						<div className="flex items-center justify-between bg-[#E3F2FD] px-6 py-3 rounded-md">
-							<span className="text-m font-semibold text-black">Ngày bắt đầu</span>
+							<span className="text-m font-bold text-black">Ngày bắt đầu</span>
 							<span>{formatDate(startDate)}</span>
 						</div>
 						<div className="flex items-center justify-between bg-[#E3F2FD] px-6 py-3 rounded-md">
-							<span className="text-m font-semibold text-black">Ngày kết thúc</span>
+							<span className="text-m font-bold text-black">Ngày kết thúc</span>
 							<span>{formatDate(endDate)}</span>
 						</div>
 						<div className="flex items-center justify-between bg-[#E3F2FD] px-6 py-3 rounded-lg">
-							<span className="text-m font-semibold text-black">Ngày tạo sự kiện</span>
+							<span className="text-m font-bold text-black">Ngày tạo sự kiện</span>
 							<span>{formatDate(createdAt)}</span>
 						</div>
 					</div>
@@ -90,13 +90,13 @@ export default function HealthCheckupDetail() {
 				</div>
 
 				<div>
-					<h2 className="text-base text-xl font-bold mb-3 mb-2">Mức độ phản hồi</h2>
+					<h2 className="text-base text-xl rounded-lg font-bold mb-3 mb-2">Mức độ phản hồi</h2>
 					<div className="bg-yellow-100 text-yellow-900 font-bold px-4 py-3 rounded-md mb-4 flex items-center gap-2">
 						<AlertCircle size={18} />
 						<span>Chưa có phản hồi từ {notReplied}/{totalSent} phụ huynh</span>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mb-8">
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3 mb-5">
 						{[
 							{
 								label: "Đã gửi",
@@ -134,10 +134,10 @@ export default function HealthCheckupDetail() {
 					</div>
 
 					<div className="flex gap-4 justify-center">
-						<button className="bg-[#023E73] text-white rounded px-14 py-3 rounded-xl text-lg font-semibold hover:bg-[#034a8a]">
+						<button className="bg-[#023E73] text-white rounded px-14 py-3 rounded-xl text-md font-semibold hover:bg-[#034a8a]">
 							Xem danh sách đơn
 						</button>
-						<button className="bg-[#023E73] text-white rounded px-6 py-3 rounded-xl text-lg font-semibold hover:bg-[#034a8a]">
+						<button className="bg-[#023E73] text-white rounded px-6 py-3 rounded-xl text-md font-semibold hover:bg-[#034a8a]">
 							Xem hồ sơ khám sức khỏe
 						</button>
 					</div>

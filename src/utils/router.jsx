@@ -60,6 +60,7 @@ import HealthCheckupList from '../pages/nurse/sub-pages/health-checkup/HealthChe
 import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'
 import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
 import HealthCheckupDetail from '../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'
+import CheckupCategoryList from '../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'
 const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
 						element: <HealthCheckupList />,
 					},
 				],
+			},
+			{
+				path: "/nurse/checkup-categories",
+				element: <CheckupCategoryList/>,
 			},
 			{
 				path: 'vaccination',
@@ -204,7 +209,7 @@ const router = createBrowserRouter([
 	{ path: "/medication-requests/create", element: <MedicationRequestCreate /> },
 	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> },
 	{ path: "/nurse/health-checkup/create", element: <HealthCheckupForm/>},
-	{ path: "/nurse/health-checkup/:id", element: <HealthCheckupDetail/>}
+	{ path: '/nurse/health-checkup/:id', element: <HealthCheckupDetail /> }
 ]);
 
 export default router

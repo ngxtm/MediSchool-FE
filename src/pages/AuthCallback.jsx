@@ -53,11 +53,14 @@ const AuthCallback = () => {
 					}
 
 					if (intendedUrl.startsWith(roleBasePaths[role])) {
+						sessionStorage.setItem('cameFromLogin', 'true')
 						navigate(intendedUrl, { replace: true })
 						return
 					}
 				}
 
+				sessionStorage.setItem('cameFromLogin', 'true')
+				
 				switch (role) {
 					case 'NURSE':
 						navigate('/nurse', { replace: true })

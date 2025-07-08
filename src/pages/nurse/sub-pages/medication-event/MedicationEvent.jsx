@@ -17,8 +17,8 @@ import Loading from '../../../../components/Loading.jsx'
 import { useState } from 'react'
 import { Input, Select } from 'antd'
 import { formatDate, formatDateTime } from '../../../../utils/dateparse.jsx'
-import { useNavigate } from 'react-router-dom'
 import { successToast, errorToast } from '../../../../components/ToastPopup.jsx'
+import useActorNavigation from '../../../../hooks/useActorNavigation'
 
 const DialogCreate = ({ classes, students, onClose, onCreateSuccess }) => {
 	const [showSuggestions, setShowSuggestions] = useState(false)
@@ -559,7 +559,7 @@ const MedicationEvent = () => {
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const [sendingEmails, setSendingEmails] = useState({})
 	const queryClient = useQueryClient()
-	const navigate = useNavigate()
+	const { navigateWithHistory } = useActorNavigation('nurse')
 
 	const {
 		data: totalHealthEventStatus,
@@ -816,7 +816,7 @@ const MedicationEvent = () => {
 														</p>
 													</div>
 													<button
-														onClick={() => navigate(`/nurse/medication-event/${event.id}`)}
+														onClick={() => navigateWithHistory(`/nurse/medication-event/${event.id}`)}
 														className="group cursor-pointer p-2 rounded-lg transition-all duration-300 ease-in-out"
 													>
 														<ChevronRight

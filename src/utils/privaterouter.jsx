@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import api from '../utils/api'
 import Loading from '../components/Loading'
+import { clearExpiredSession } from '../utils/auth'
 
 const PrivateRouter = ({ children, requiredRole }) => {
 	const [loading, setLoading] = useState(true)
@@ -26,6 +27,8 @@ const PrivateRouter = ({ children, requiredRole }) => {
 				setLoading(false)
 			} catch (error) {
 				console.error('Error checking user role:', error)
+				clearExpiredSession()
+				setUser(null)
 				setLoading(false)
 			}
 		}

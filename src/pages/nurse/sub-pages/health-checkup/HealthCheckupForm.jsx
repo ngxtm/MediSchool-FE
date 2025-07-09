@@ -72,8 +72,7 @@ export default function HealthCheckupForm() {
 		let classCodes = [];
 
 		if (scope === "GRADE" && selectedGrade) {
-			const res = await api.get(`/classes/by-grade?grade=${selectedGrade}`);
-			classCodes = res.data.map(c => c.classCode);
+			classCodes = classes.map(c => c.classCode);
 		} else if (scope === "CLASS") {
 			classCodes = [...selectedClasses];
 		}

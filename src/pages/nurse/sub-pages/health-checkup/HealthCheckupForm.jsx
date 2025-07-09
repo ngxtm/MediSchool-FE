@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft } from "lucide-react";
-import api from '../../../../utils/api.js'
+import api from "../../../../utils/api.js";
 
 export default function HealthCheckupForm() {
 	const navigate = useNavigate();
@@ -11,18 +11,41 @@ export default function HealthCheckupForm() {
 	const [schoolYear, setSchoolYear] = useState(() => {
 		const now = new Date();
 		const year = now.getFullYear();
-		return `${year} - ${year + 1}`;
+		return `${year}-${year + 1}`;
 	});
 	const [startDate, setStartDate] = useState("");
 	const [endDate, setEndDate] = useState("");
+	const [scope, setScope] = useState("SCHOOL"); // default
 	const [categories, setCategories] = useState([]);
 	const [selectedCategories, setSelectedCategories] = useState([]);
 
+	const [grades, setGrades] = useState([]);
+	const [selectedGrade, setSelectedGrade] = useState("");
+	const [classes, setClasses] = useState([]);
+	const [selectedClasses, setSelectedClasses] = useState([]);
+
+	// fetch categories
 	useEffect(() => {
 		api.get("/checkup-categories")
 			.then((res) => setCategories(res.data))
 			.catch(() => toast.error("Không thể tải danh sách hạng mục khám"));
 	}, []);
+
+	// fetch all grades
+	useEffect(() => {
+		api.get("/classes/grades")
+			.then((res) => setGrades(res.data))
+			.catch(() => toast.error("Không thể tải danh sách khối"));
+	}, []);
+
+	// fetch classes of selected grade
+	useEffect(() => {
+		if (scope === "GRADE" && selectedGrade) {
+			api.get(`/classes/by-grade?grade=${selectedGrade}`)
+				.then((res) => setSelectedClasses(res.data.map(c => c.classCode)))
+				.catch(() => toast.error("Không thể tải danh sách lớp theo khối"));
+		}
+	}, [selectedGrade, scope]);
 
 	const toggleCategory = (id) => {
 		setSelectedCategories((prev) =>
@@ -30,7 +53,7 @@ export default function HealthCheckupForm() {
 		);
 	};
 
-	const selectAll = () => {
+	const selectAllCategories = () => {
 		if (selectedCategories.length === categories.length) {
 			setSelectedCategories([]);
 		} else {
@@ -38,36 +61,21 @@ export default function HealthCheckupForm() {
 		}
 	};
 
-	const validateForm = () => {
-		let errors = [];
-
-		if (!eventTitle.trim()) errors.push("Vui lòng nhập tên sự kiện.");
-		if (!startDate) errors.push("Vui lòng chọn ngày bắt đầu.");
-		if (!endDate) errors.push("Vui lòng chọn ngày kết thúc.");
-		if (selectedCategories.length === 0) errors.push("Vui lòng chọn ít nhất 1 hạng mục khám.");
-
-		const start = new Date(startDate);
-		const end = new Date(endDate);
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		const minStart = new Date(today);
-		minStart.setDate(minStart.getDate() + 3);
-
-		if (startDate && endDate) {
-			if (start < minStart) errors.push("Ngày bắt đầu phải sau hôm nay ít nhất 3 ngày.");
-			if (end < start) errors.push("Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.");
-		}
-
-		if (errors.length >= 2) return "Vui lòng điền đầy đủ các mục.";
-		return errors[0] || null;
-	};
-
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const error = validateForm();
-		if (error) {
-			toast.error(error);
+
+		if (!eventTitle || !startDate || !endDate || selectedCategories.length === 0) {
+			toast.error("Vui lòng điền đầy đủ thông tin và chọn ít nhất 1 hạng mục.");
 			return;
+		}
+
+		let classCodes = [];
+
+		if (scope === "GRADE" && selectedGrade) {
+			const res = await api.get(`/classes/by-grade?grade=${selectedGrade}`);
+			classCodes = res.data.map(c => c.classCode);
+		} else if (scope === "CLASS") {
+			classCodes = [...selectedClasses];
 		}
 
 		const payload = {
@@ -75,8 +83,9 @@ export default function HealthCheckupForm() {
 			schoolYear,
 			startDate,
 			endDate,
+			scope,
 			categoryIds: selectedCategories,
-			scope: "SCHOOL_WIDE",
+			classCodes
 		};
 
 		try {
@@ -99,33 +108,80 @@ export default function HealthCheckupForm() {
 				Trở về
 			</button>
 
-			<h1 className="text-3xl font-bold mb-8 text-center">THÔNG TIN SỰ KIỆN KHÁM SỨC KHỎE ĐỊNH KỲ</h1>
+			<h1 className="text-3xl font-bold mb-8 text-center">THÔNG TIN SỰ KIỆN KHÁM SỨC KHỎE</h1>
 
 			<form onSubmit={handleSubmit} className="space-y-6">
 				<div>
-					<label className="text-xl font-bold block mb-2">Tên sự kiện</label>
+					<label className="text-lg font-semibold block mb-2">Tên sự kiện</label>
 					<input
 						type="text"
 						value={eventTitle}
 						onChange={(e) => setEventTitle(e.target.value)}
-						placeholder="VD: Khám sức khỏe đầu năm học..."
 						className="border rounded px-4 py-2 w-full"
-					/>
-				</div>
-
-				<div>
-					<label className="text-xl font-bold block mb-2">Năm học</label>
-					<input
-						type="text"
-						value={schoolYear}
-						readOnly
-						className="border rounded px-4 py-2 w-full bg-gray-100"
+						placeholder="VD: Khám sức khỏe đầu năm học"
 					/>
 				</div>
 
 				<div className="grid grid-cols-2 gap-4">
 					<div>
-						<label className="text-xl font-bold block mb-2">Ngày bắt đầu</label>
+						<label className="text-lg font-semibold block mb-2">Năm học</label>
+						<input type="text" value={schoolYear} readOnly className="border rounded px-4 py-2 w-full bg-gray-100" />
+					</div>
+					<div>
+						<label className="text-lg font-semibold block mb-2">Phạm vi</label>
+						<select
+							value={scope}
+							onChange={(e) => {
+								setScope(e.target.value);
+								setSelectedGrade("");
+								setSelectedClasses([]);
+							}}
+							className="border rounded px-4 py-2 w-full"
+						>
+							<option value="SCHOOL">Toàn trường</option>
+							<option value="GRADE">Theo khối</option>
+							<option value="CLASS">Theo lớp</option>
+						</select>
+					</div>
+				</div>
+
+				{scope === "GRADE" && (
+					<div>
+						<label className="text-lg font-semibold block mb-2">Chọn khối</label>
+						<select
+							value={selectedGrade}
+							onChange={(e) => setSelectedGrade(e.target.value)}
+							className="border rounded px-4 py-2 w-full"
+						>
+							<option value="">-- Chọn khối --</option>
+							{grades.map((g) => (
+								<option key={g} value={g}>{g}</option>
+							))}
+						</select>
+					</div>
+				)}
+
+				{scope === "CLASS" && (
+					<div>
+						<label className="text-lg font-semibold block mb-2">Chọn lớp</label>
+						<select
+							multiple
+							value={selectedClasses}
+							onChange={(e) =>
+								setSelectedClasses(Array.from(e.target.selectedOptions, (opt) => opt.value))
+							}
+							className="border rounded px-4 py-2 w-full h-40"
+						>
+							{classes.map((c) => (
+								<option key={c.classCode} value={c.classCode}>{c.classCode}</option>
+							))}
+						</select>
+					</div>
+				)}
+
+				<div className="grid grid-cols-2 gap-4">
+					<div>
+						<label className="text-lg font-semibold block mb-2">Ngày bắt đầu</label>
 						<input
 							type="date"
 							value={startDate}
@@ -134,7 +190,7 @@ export default function HealthCheckupForm() {
 						/>
 					</div>
 					<div>
-						<label className="text-xl font-bold block mb-2">Ngày kết thúc</label>
+						<label className="text-lg font-semibold block mb-2">Ngày kết thúc</label>
 						<input
 							type="date"
 							value={endDate}
@@ -146,16 +202,15 @@ export default function HealthCheckupForm() {
 
 				<div>
 					<div className="flex justify-between items-center mb-2">
-						<label className="text-xl font-bold">Hạng mục khám</label>
+						<label className="text-lg font-semibold">Hạng mục khám</label>
 						<button
 							type="button"
-							onClick={selectAll}
+							onClick={selectAllCategories}
 							className="text-sm text-[#023E73] hover:underline"
 						>
 							{selectedCategories.length === categories.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
 						</button>
 					</div>
-
 					<div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
 						{categories.map((c) => (
 							<label key={c.id} className="flex items-center gap-2">

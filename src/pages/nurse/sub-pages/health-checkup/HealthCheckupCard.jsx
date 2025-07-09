@@ -15,7 +15,9 @@ export default function HealthCheckupCard({ event }) {
 					<p className="font-semibold text-[15px] text-black">{event.eventTitle || "Không có tiêu đề"}</p>
 					<p className="text-sm text-black">Năm học: {event.schoolYear || "Không rõ"}</p>
 					<p className="text-sm text-gray-500 italic">
-						Ngày tạo: {event.createdAt ? dayjs(event.createdAt).format("DD/MM/YYYY") : "Không rõ"}
+						Ngày tạo: {Array.isArray(event.createdAt)
+						? dayjs(new Date(...event.createdAt)).format("DD/MM/YYYY")
+						: "Không rõ"}
 					</p>
 				</div>
 			</div>

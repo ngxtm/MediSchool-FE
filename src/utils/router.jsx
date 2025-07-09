@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import Login from '../pages/Login'
 import Signup from '../pages/Signup'
 import Nurse from '../pages/nurse/Nurse'
@@ -43,19 +43,26 @@ import {
 	HealthEventDetail as ManagerHealthEventDetail
 } from '../pages/manager/sub-pages/health-event/index.js'
 import ManagerHome from '../pages/manager/sub-pages/Home'
-import { HealthCheckup as NurseHealthCheck } from '../pages/nurse/sub-pages/health-checkup/index'
 import MedicationRequestAll from '../pages/nurse/sub-pages/medication-requests/MedicationRequestAll.jsx'
 import MedicationRequestPending from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPending.jsx'
 import MedicationRequestApproved from '../pages/nurse/sub-pages/medication-requests/MedicationRequestApproved.jsx'
 import MedicationRequestPage from '../pages/nurse/sub-pages/medication-requests/MedicationRequestPage.jsx'
 import MedicationLayout from '../pages/nurse/sub-pages/medication-requests/MedicationLayout.jsx'
-import MedicationRequestDetail from '../components/MedicationRequestDetail.jsx'
+import MedicationRequestDetail from '../pages/nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx'
 import MedicationRequestCreate from '../pages/parent/MedicationRequestCreate.jsx'
 import MedicationRequestUpdate from '../pages/parent/MedicationRequestUpdate.jsx'
-import AuthRedirect from '../components/AuthRedirect'
-
+import ManagerMedicationLayout from '../pages/manager/sub-pages/medication-requests/ManagerMedicationLayout.jsx'
+import ManagerRequestAll from '../pages/manager/sub-pages/medication-requests/ManagerRequestAll.jsx'
+import ManagerRequestPending from '../pages/manager/sub-pages/medication-requests/ManagerRequestPending.jsx'
+import ManagerRequestPage from '../pages/manager/sub-pages/medication-requests/ManagerRequestPage.jsx'
+import ManagerRequestApproved from '../pages/manager/sub-pages/medication-requests/ManagerRequestApproved.jsx'
+import HealthCheckupList from '../pages/nurse/sub-pages/health-checkup/HealthCheckupList.jsx'
+import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'
+import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
+import HealthCheckupDetail from '../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'
+import CheckupCategoryList from '../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'
 const router = createBrowserRouter([
-	{ path: '/', element: <AuthRedirect /> },
+	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
 	{ path: '/signup', element: <Signup /> },
 	{ path: '/forgot-password', element: <ForgotPassword /> },
@@ -70,7 +77,20 @@ const router = createBrowserRouter([
 		children: [
 			{ index: true, element: <NurseStudent /> },
 			{ path: 'student', element: <NurseStudent /> },
-			{ path: 'health-checkup', element: <NurseHealthCheck /> },
+			{
+				path: "/nurse/health-checkup",
+				element: <HealthCheckupLayout />,
+				children: [
+					{
+						index: true,
+						element: <HealthCheckupList />,
+					},
+				],
+			},
+			{
+				path: "/nurse/checkup-categories",
+				element: <CheckupCategoryList/>,
+			},
 			{
 				path: 'vaccination',
 				element: <VaccinationLayout />,
@@ -161,7 +181,18 @@ const router = createBrowserRouter([
 				]
 			},
 			{ path: 'medication-event', element: <ManagerHealthEvent /> },
-			{ path: 'medication-event/:id', element: <ManagerHealthEventDetail /> }
+			{ path: 'medication-event/:id', element: <ManagerHealthEventDetail /> },
+			{
+				path: "medication-requests",
+				element: <ManagerMedicationLayout />,
+				children: [
+					{ index: true, element: <ManagerRequestPending /> },
+					{ path: "all", element: <ManagerRequestAll /> },
+					{ path: "pending", element: <ManagerRequestPending /> },
+					{ path: "approved", element: <ManagerRequestApproved /> },
+					{ path: ":id", element: <ManagerRequestPage /> },
+				],
+			}
 		]
 	},
 	{
@@ -176,7 +207,9 @@ const router = createBrowserRouter([
 	{ path: "/auth/callback", element: <AuthCallback /> },
 	{ path: "/medication-requests/:id", element: <MedicationRequestDetail /> },
 	{ path: "/medication-requests/create", element: <MedicationRequestCreate /> },
-	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> }
+	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> },
+	{ path: "/nurse/health-checkup/create", element: <HealthCheckupForm/>},
+	{ path: '/nurse/health-checkup/:id', element: <HealthCheckupDetail /> }
 ]);
 
 export default router

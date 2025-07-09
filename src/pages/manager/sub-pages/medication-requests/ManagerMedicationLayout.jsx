@@ -6,17 +6,17 @@ import api from "../../../../utils/api.js";
 import Loading from "../../../../components/Loading.jsx";
 import { useEffect, useState } from "react";
 
-export default function MedicationLayout() {
+export default function ManagerMedicationLayout() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [search, setSearch] = useState("");
 
-	const basePath = "nurse";
-	const isDetailPage = /^\/nurse\/medication-requests\/\d+$/.test(location.pathname);
+	const basePath = "manager";
+	const isDetailPage = /^\/manager\/medication-requests\/\d+$/.test(location.pathname);
 
 	useEffect(() => {
-		if (/^\/nurse\/medication-requests\/?$/.test(location.pathname)) {
-			navigate(`/nurse/medication-requests/pending`, { replace: true });
+		if (/^\/manager\/medication-requests\/?$/.test(location.pathname)) {
+			navigate(`/manager/medication-requests/pending`, { replace: true });
 		}
 	}, [location.pathname, navigate]);
 
@@ -50,7 +50,7 @@ export default function MedicationLayout() {
 				statsLoading ? (
 					<div className="text-center py-10 text-gray-500">Đang tải thống kê...</div>
 				) : (
-					<div className="flex max-w-full justify-center gap-x-10 mb-12">
+					<div className="flex max-w-full justify-center gap-x-10 mb-12 mt-6">
 						{[
 							{ label: "Tổng số đơn", icon: <Package />, value: stats?.total ?? 0, note: "toàn trường" },
 							{ label: "Chờ duyệt", icon: <Users2 />, value: stats?.pending ?? 0, note: "đơn thuốc" },
@@ -72,22 +72,21 @@ export default function MedicationLayout() {
 
 			{!isDetailPage && (
 				<div className="flex px-[100px] justify-between items-center mb-6 font-inter">
-					<div className="relative w-[300px]">
-						<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-						<input
-							type="text"
-							placeholder="Tìm kiếm đơn thuốc"
-							className="pl-9 pr-4 py-2 border rounded-md w-full text-sm"
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-						/>
-					</div>
+					<Input
+						style={{ fontFamily: "Inter", width: 300 }}
+						prefix={<Search size={16} className="text-gray-400 mr-4 font-inter" />}
+						placeholder="Tìm kiếm đơn thuốc"
+						className="h-[38px] rounded-[8px] !border-[#d9d9d9] font-inter"
+						allowClear
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+					/>
 
 					<div className="flex gap-2">
 						{tabButtons.map((btn) => (
 							<button
 								key={btn.value}
-								onClick={() => navigate(`/nurse/medication-requests/${btn.value}`)}
+								onClick={() => navigate(`/manager/medication-requests/${btn.value}`)}
 								className={`px-4 py-2 rounded-md ${
 									currentTab === btn.value ? "bg-[#023E73] text-white font-bold" : "bg-white text-black"
 								}`}

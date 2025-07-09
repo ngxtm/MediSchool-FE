@@ -1,7 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../../../utils/api";
+import api from "../utils/api.js";
 import { useState } from "react";
 import { toast, Zoom } from "react-toastify";
 

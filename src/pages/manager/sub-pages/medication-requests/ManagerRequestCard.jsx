@@ -1,10 +1,10 @@
 import { Activity, ChevronRight } from "lucide-react";
 import dayjs from "dayjs";
-import MedicationDialog from "../../../../components/MedicationDialog.jsx";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../utils/api.js";
 import { toast } from "react-toastify";
-export default function MedicationRequestCard({ data, nurseId }) {
+import MedicationDialog from '../../../../components/MedicationDialog.jsx'
+export default function ManagerRequestCard({ data, managerId }) {
     const navigate = useNavigate();
     const handleReceive = async () => {
         try {
@@ -50,12 +50,12 @@ export default function MedicationRequestCard({ data, nurseId }) {
             </div>
 
             <div className="w-[25%] flex flex-col gap-3 items-center">
-                {data.medicationStatus === "PENDING" && (
+                {(data.medicationStatus === "PENDING" || data.medicationStatus === "REVIEWED") && (
                     <>
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="approve"
-                            nurseId={nurseId}
+                            managerId={managerId}
                             triggerButton={
                                 <button className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
                                     Duyệt
@@ -65,7 +65,7 @@ export default function MedicationRequestCard({ data, nurseId }) {
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="reject"
-                            nurseId={nurseId}
+                            managerId={managerId}
                             triggerButton={
                                 <button className="bg-[#EDF3F8] text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]">
                                     Từ chối
@@ -80,7 +80,7 @@ export default function MedicationRequestCard({ data, nurseId }) {
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="deliver"
-                            nurseId={nurseId}
+                            managerId={managerId}
                             items={data.items}
                             triggerButton={
                                 <button className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
@@ -91,7 +91,7 @@ export default function MedicationRequestCard({ data, nurseId }) {
                         <MedicationDialog
                             requestId={data.requestId}
                             actionType="done"
-                            nurseId={nurseId}
+                            managerId={managerId}
                             triggerButton={
                                 <button className="bg-[#EDF3F8] text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]">
                                     Đánh dấu đã xong
@@ -101,7 +101,7 @@ export default function MedicationRequestCard({ data, nurseId }) {
                     </>
                 )}
 
-                {["REJECTED", "DONE", "DISABLED", "REVIEWED", "APPROVED"].includes(data.medicationStatus) && (
+                {["REJECTED", "DONE", "DISABLED", "APPROVED"].includes(data.medicationStatus) && (
                     <div className="flex flex-col items-center gap-2">
                 <span
                     className={`px-4 py-[6px] rounded-md font-semibold text-center ${
@@ -116,8 +116,6 @@ export default function MedicationRequestCard({ data, nurseId }) {
                 >
                 {data.medicationStatus === "DISABLED"
                 ? "Đã hủy"
-                : data.medicationStatus === "REVIEWED"
-                    ? "Chờ xác nhận"
                     : data.medicationStatus === "REJECTED"
                         ? "Đã từ chối"
                         : data.medicationStatus === "APPROVED"
@@ -141,7 +139,7 @@ export default function MedicationRequestCard({ data, nurseId }) {
 
             <div
                 className="cursor-pointer"
-                onClick={() => navigate(`/nurse/medication-requests/${data.requestId}`)}
+                onClick={() => navigate(`/manager/medication-requests/${data.requestId}`)}
             >
                 <ChevronRight className="text-black hover:scale-110 transition-transform" />
             </div>

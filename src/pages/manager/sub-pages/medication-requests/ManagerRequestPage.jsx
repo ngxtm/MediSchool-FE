@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import MedicationRequestDetail from "./MedicationRequestDetail.jsx";
 import ReturnButton from "../../../../components/ReturnButton";
+import MedicationRequestDetail from '../../../nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx'
 
 const MedicationRequestDetailPage = () => {
 	const { id } = useParams();
@@ -9,7 +9,7 @@ const MedicationRequestDetailPage = () => {
 		<div className="p-6">
 			<div className="space-y-3 mb-6">
 			<ReturnButton
-				linkNavigate="/nurse/medication-requests/pending"
+				linkNavigate="/manager/medication-requests/pending"
 				actor="nurse"
 			/>
 			</div>

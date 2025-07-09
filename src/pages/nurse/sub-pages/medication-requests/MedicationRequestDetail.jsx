@@ -1,8 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../utils/api.js";
-import { ArrowLeft } from "lucide-react";
+import api from "../../../../utils/api.js";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -68,6 +67,8 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 										navigate("/parent/medication-requests");
 									} else if (role === "NURSE") {
 										navigate("/nurse/medication-requests/pending");
+									} else if (role === "MANAGER") {
+										navigate("/manager/medication-requests/pending");
 									} else {
 										navigate("/");
 									}
@@ -117,6 +118,12 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 						Đã từ chối
 					</span>
 				);
+			case "DISABLED":
+				return (
+					<span className="inline-block bg-gray-100 text-black px-4 py-2 rounded text-m font-lg font-bold">
+						Đã hủy
+					</span>
+				);
 			default:
 				return (
 					<span className="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded text-m font-lg font-bold">
@@ -128,17 +135,6 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 
 	return (
 		<div className="min-h-screen font-inter">
-			<div className={`${inline ? "" : "max-w-7xl mx-auto p-6"}`}>
-				{!inline && (
-					<button
-						onClick={() => navigate(-1)}
-						className="flex items-center gap-2 mb-6 px-4 py-2 border border-black rounded-full text-sm text-black"
-					>
-						<ArrowLeft className="w-4 h-4" />
-						Trở về
-					</button>
-				)}
-
 				<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 					<div className="lg:col-span-2 space-y-6">
 						<div>
@@ -276,6 +272,5 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 					</div>
 				</div>
 			</div>
-		</div>
 	);
 }

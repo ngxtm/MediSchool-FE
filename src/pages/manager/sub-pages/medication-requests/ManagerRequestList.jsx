@@ -1,4 +1,4 @@
-import MedicationRequestCard from "./MedicationRequestCard.jsx";
+import ManagerRequestCard from "./ManagerRequestCard.jsx";
 
 const statusOrder = {
     PENDING: 1,
@@ -10,7 +10,7 @@ const statusOrder = {
     DISABLED: 7
 };
 
-export default function MedicationRequestList({ data, nurseId }) {
+export default function ManagerRequestList({ data, nurseId }) {
     const sortedData = [...data].sort(
         (a, b) => statusOrder[a.medicationStatus] - statusOrder[b.medicationStatus]
     );
@@ -20,7 +20,7 @@ export default function MedicationRequestList({ data, nurseId }) {
             {sortedData && sortedData.length > 0 ? (
                 <div className="flex flex-col divide-y">
                     {sortedData.map((request, index) => (
-                        <MedicationRequestCard key={request.requestId || index} data={request} nurseId={nurseId} />
+                        <ManagerRequestCard key={request.requestId || index} data={request} nurseId={nurseId} />
                     ))}
                 </div>
             ) : (

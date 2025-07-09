@@ -2,10 +2,10 @@ import { useOutletContext } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import api from "../../../../utils/api.js";
-import MedicationRequestList from "./MedicationRequestList.jsx";
+import ManagerRequestList from "./ManagerRequestList.jsx";
 import Loading from "../../../../components/Loading.jsx";
 
-const MedicationRequestPending = () => {
+const ManagerRequestAll = () => {
 	const { search } = useOutletContext();
 	const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -15,20 +15,20 @@ const MedicationRequestPending = () => {
 	}, [search]);
 
 	const { data: requests = [], isLoading } = useQuery({
-		queryKey: ["pending-medication-requests", debouncedSearch],
+		queryKey: ["all-medication-requests", debouncedSearch],
 		queryFn: async () => {
 			if (!debouncedSearch.trim()) {
-				const res = await api.get("/medication-requests/pending");
+				const res = await api.get("/medication-requests/all");
 				return res.data;
 			}
 			const res = await api.get(`/medication-requests/search?keyword=${debouncedSearch}`);
-			return res.data.filter((r) => r.medicationStatus === "PENDING");
+			return res.data;
 		},
 		enabled: true,
 	});
 
 	if (isLoading) return <Loading />;
-	return <MedicationRequestList data={requests} />;
+	return <ManagerRequestList data={requests} />;
 };
 
-export default MedicationRequestPending;
+export default ManagerRequestAll;

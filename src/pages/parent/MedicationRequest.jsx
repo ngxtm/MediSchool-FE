@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useStudent } from "../../context/StudentContext";
-import MedicationRequestDetail from "../../components/MedicationRequestDetail";
+import MedicationRequestDetail from "../nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx";
 import api from "../../utils/api";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";

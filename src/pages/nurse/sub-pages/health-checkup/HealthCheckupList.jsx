@@ -9,10 +9,12 @@ export default function HealthCheckupList() {
 	const [search, setSearch] = useState("");
 	const navigate = useNavigate();
 
-	const { data: events, isLoading } = useQuery({
+	const { data: eventsRaw, isLoading } = useQuery({
 		queryKey: ["checkup-events"],
 		queryFn: async () => (await api.get("/health-checkup")).data,
 	});
+
+	const events = Array.isArray(eventsRaw) ? eventsRaw : eventsRaw?.data ?? [];
 
 	const normalizedSearch = search.toLowerCase();
 	const filtered = (events ?? []).filter((e) =>

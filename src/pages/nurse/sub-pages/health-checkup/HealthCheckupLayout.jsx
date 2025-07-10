@@ -13,7 +13,7 @@ export default function HealthCheckupLayout() {
 	});
 
 	return (
-		<div className="font-inter items-center justify-center min-h-[90%]">
+		<div className="font-inter items-center justify-center max-h-[90%]">
 			{!isDetailPage && (
 				<div className="grid grid-cols-4 gap-15 mb-8">
 					{[

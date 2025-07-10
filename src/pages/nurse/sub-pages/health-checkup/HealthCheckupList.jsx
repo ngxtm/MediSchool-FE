@@ -23,13 +23,13 @@ export default function HealthCheckupList() {
 
 	return (
 		<div>
-			<div className="flex justify-between items-center mb-6">
-				<div className="relative w-[300px]">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+			<div className="flex items-center justify-between px-6 py-4 w-full max-w-[1200px] mx-auto">
+				<div className="relative w-[400px]">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
 					<input
 						type="text"
 						placeholder="Tìm kiếm đợt khám sức khoẻ"
-						className="pl-9 pr-4 py-3 border rounded-md w-full text-sm"
+						className="pl-9 pr-4 py-3 border rounded-md w-full text-md"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
 					/>
@@ -50,7 +50,7 @@ export default function HealthCheckupList() {
 				</div>
 			</div>
 
-			<div className="border rounded-lg divide-y">
+			<div>
 				{isLoading ? (
 					<p className="text-center py-10">Đang tải danh sách...</p>
 				) : filtered.length === 0 ? (

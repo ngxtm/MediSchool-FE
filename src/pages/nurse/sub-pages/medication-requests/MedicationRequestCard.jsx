@@ -24,17 +24,17 @@ export default function MedicationRequestCard({ data, nurseId }) {
                     <Activity size={30} />
                 </div>
                 <div className="flex flex-col gap-2 leading-relaxed">
-                    <p className="font-bold text-[15px]">
+                    <p className="font-bold text-lg">
                         {data.student?.studentCode || "N/A"} - {data.student?.fullName || "Không có tên"}
                     </p>
-                    <p className="text-[14px] text-black">{data.title || "Không có tiêu đề"}</p>
-                    <p className="text-[12px] italic text-black">
+                    <p className="text-md text-black">{data.title || "Không có tiêu đề"}</p>
+                    <p className="text-md italic text-black">
                         Ngày tạo: {data.createAt ? dayjs.unix(data.createAt).format("DD/MM/YYYY") : "Không rõ"}
                     </p>
                 </div>
             </div>
 
-            <div className="text-sm w-[30%] space-y-2 leading-relaxed text-left text-black">
+            <div className="text-md w-[30%] space-y-2 leading-relaxed text-left text-black">
                 <p>
                     <span className="font-semibold">Ngày bắt đầu:</span>{" "}
                     {data.startDate ? dayjs(data.startDate).format("DD/MM/YYYY") : "N/A"}

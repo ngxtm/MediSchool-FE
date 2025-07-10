@@ -17,17 +17,17 @@ export default function HealthCheckupCard({ event }) {
 		)).format("DD/MM/YYYY")
 		: "Không rõ";
 
-	const statusLabel = event.status === "PLANNING"
-		? "Đã lên lịch"
-		: event.status === "ONGOING"
-			? "Đang diễn ra"
+	const status = event.status === "PENDING"
+		? "Chờ duyệt"
+		: event.status === "APPROVED"
+			? "Đã duyệt"
 			: event.status === "DONE"
 				? "Đã hoàn thành"
 				: "Không xác định";
 
 	return (
 		<div
-			className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-50 cursor-pointer w-full max-w-[1000px] mx-auto"
+			className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-100 cursor-pointer w-full max-w-[1000px] mx-auto"
 			onClick={() => navigate(`/nurse/health-checkup/${event.id}`)}
 		>
 		<div className="flex items-center justify-between items-start gap-5 py-3">
@@ -45,8 +45,8 @@ export default function HealthCheckupCard({ event }) {
 
 			<div className="flex items-center gap-10">
 				<div className="flex flex-col items-center text-right gap-2">
-					<span className="bg-[#E5F0FA] text-[#023E73] text-md font-semibold px-4 py-1 rounded-full mb-1">
-						{statusLabel}
+					<span className="bg-[#E5F0FA] text-[#023E73] text-md font-bold px-4 py-1 rounded-full mb-1">
+						{status}
 					</span>
 					<p className="text-md italic text-black">
 						Phản hồi: {totalResponses}/{totalStudents} học sinh

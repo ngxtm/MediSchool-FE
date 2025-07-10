@@ -6,6 +6,8 @@ import api from '../../../../utils/api.js'
 export default function HealthCheckupLayout() {
 	const location = useLocation();
 	const isDetailPage = /^\/nurse\/health-checkup\/\d+$/.test(location.pathname);
+	const isConsent = location.pathname.endsWith("/consents");
+	const isResult = location.pathname.endsWith("/results");
 
 	const { data, isLoading } = useQuery({
 		queryKey: ["checkup-summary"],
@@ -14,7 +16,7 @@ export default function HealthCheckupLayout() {
 
 	return (
 		<div className="font-inter items-center justify-center max-h-[90%]">
-			{!isDetailPage && (
+			{!isDetailPage && !isConsent && !isResult && (
 				<div className="grid grid-cols-4 gap-15 mb-8">
 					{[
 						{ label: "Đã gửi", icon: <FileText />, value: data?.sent || 0 },

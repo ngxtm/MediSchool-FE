@@ -88,9 +88,9 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				path: "/nurse/checkup-categories",
-				element: <CheckupCategoryList/>,
+				path: "/nurse/checkup-categories", element: <CheckupCategoryList/>,
 			},
+			{ path: '/nurse/health-checkup/:id', element: <HealthCheckupDetail /> },
 			{
 				path: 'vaccination',
 				element: <VaccinationLayout />,
@@ -209,7 +209,6 @@ const router = createBrowserRouter([
 	{ path: "/medication-requests/create", element: <MedicationRequestCreate /> },
 	{ path: "/medication-requests/:id/update", element: <MedicationRequestUpdate /> },
 	{ path: "/nurse/health-checkup/create", element: <HealthCheckupForm/>},
-	{ path: '/nurse/health-checkup/:id', element: <HealthCheckupDetail /> }
 ]);
 
 export default router

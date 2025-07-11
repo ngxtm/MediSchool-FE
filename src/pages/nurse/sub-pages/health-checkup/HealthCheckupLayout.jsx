@@ -5,7 +5,7 @@ import api from '../../../../utils/api.js'
 
 export default function HealthCheckupLayout() {
 	const location = useLocation();
-	const isDetailPage = /^\/nurse\/health-checkup\/\d+$/.test(location.pathname);
+	const isDetailPage = /^\/nurse\/health-checkup(\/consent)?\/\d+$/.test(location.pathname);
 	const isConsent = location.pathname.endsWith("/consents");
 	const isResult = location.pathname.endsWith("/results");
 

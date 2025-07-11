@@ -10,7 +10,7 @@ import {
 	AlertCircle,
 	CheckCircle,
 	AlertTriangle,
-	Search,
+	Search, ChevronRight,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import ReturnButton from "../../../../components/ReturnButton.jsx";
@@ -54,7 +54,7 @@ export default function HealthCheckupDetail() {
 	const { data: resultList = [] } = useQuery({
 		queryKey: ["checkup-result", id],
 		enabled: isResult,
-		queryFn: () => api.get(`/checkup-results/${id}`).then((res) => res.data),
+		queryFn: () => api.get(`/checkup-results/event/${id}`).then((res) => res.data),
 	});
 
 	if (isLoading || !eventData) return <Loading />;
@@ -213,7 +213,7 @@ export default function HealthCheckupDetail() {
 						</div>
 
 						<h2 className="text-xl font-bold mt-6 mb-3">Hạng mục khám</h2>
-						<div className="flex flex-wrap gap-2">
+						<div className="flex flex-wrap gap-2 w-[80%]">
 							{categoryList.map((cat) => (
 								<span key={cat.id} className="bg-[#E3F2FD] text-[#0D47A1] px-4 py-1 rounded-full text-sm font-medium">
 									{cat.name}
@@ -278,6 +278,7 @@ export default function HealthCheckupDetail() {
 							<th className="p-3">Phụ huynh</th>
 							<th className="p-3">Liên lạc</th>
 							<th className="p-3">Trạng thái</th>
+							<th></th>
 						</tr>
 						</thead>
 						<tbody>
@@ -291,6 +292,12 @@ export default function HealthCheckupDetail() {
 								<td className="p-3 font-semibold text-yellow-600">
 									{renderStatusBadge(row.consentStatus)}
 								</td>
+								<td><div
+									className="cursor-pointer"
+									onClick={() => navigate(`/nurse/health-checkup/consent/${row.id}`)}
+								>
+									<ChevronRight className="text-black hover:scale-110 transition-transform" />
+								</div></td>
 							</tr>
 						))}
 						</tbody>

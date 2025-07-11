@@ -13,7 +13,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard'
 import StudentInfo from '../pages/parent/StudentInfo'
 import MedicalRecord from '../pages/parent/MedicalRecord'
 import Vaccination from '../pages/parent/Vaccination'
-import HealthCheck from '../pages/parent/HealthCheck'
+import HealthCheckup from '../pages/parent/HealthCheckup.jsx'
 import MedicationRequest from '../pages/parent/MedicationRequest.jsx'
 import { Student as NurseStudent } from '../pages/nurse/sub-pages/student/index'
 import {
@@ -61,6 +61,7 @@ import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthC
 import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
 import HealthCheckupDetail from '../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'
 import CheckupCategoryList from '../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'
+import CheckupConsentDetail from '../pages/nurse/sub-pages/health-checkup/CheckupConsentDetail.jsx'
 const router = createBrowserRouter([
 	{ path: '/', element: <Navigate to="/login" replace /> },
 	{ path: '/login', element: <Login /> },
@@ -90,6 +91,9 @@ const router = createBrowserRouter([
 							{ path: "consents", element: <HealthCheckupDetail /> },
 							{ path: "results", element: <HealthCheckupDetail /> },
 						],
+					},
+					{
+						path: "consent/:id", element: <CheckupConsentDetail />,
 					},
 				],
 			},
@@ -142,7 +146,7 @@ const router = createBrowserRouter([
 			{ path: "info", element: <StudentInfo /> },
 			{ path: "medical-record", element: <MedicalRecord /> },
 			{ path: "vaccination", element: <Vaccination /> },
-			{ path: "health-check", element: <HealthCheck /> },
+			{ path: "health-check", element: <HealthCheckup /> },
 			{ path: "medication-requests", element: <MedicationRequest /> }
 		],
 	},

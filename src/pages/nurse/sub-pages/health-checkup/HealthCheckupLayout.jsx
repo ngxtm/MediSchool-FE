@@ -9,7 +9,7 @@ export default function HealthCheckupLayout() {
 
 	const { data, isLoading } = useQuery({
 		queryKey: ["checkup-summary"],
-		queryFn: async () => (await api.get("/checkup-events/stats")).data,
+		queryFn: async () => (await api.get("/health-checkup/stats")).data,
 	});
 
 	return (

@@ -93,6 +93,8 @@ const router = createBrowserRouter([
         path: 'checkup-categories',
         element: <CheckupCategoryList/>,
       },
+      { path: 'health-checkup/create', element: <HealthCheckupForm/>},
+      { path: 'health-checkup/:id', element: <HealthCheckupDetail /> },
       {
         path: 'vaccination',
         element: <VaccinationLayout />,
@@ -213,9 +215,7 @@ const router = createBrowserRouter([
   { path: '/auth/callback', element: <AuthCallback /> },
   { path: '/medication-requests/:id', element: <MedicationRequestDetail /> },
   { path: '/medication-requests/create', element: <MedicationRequestCreate /> },
-  { path: '/medication-requests/:id/update', element: <MedicationRequestUpdate /> },
-  { path: '/nurse/health-checkup/create', element: <HealthCheckupForm/>},
-  { path: '/nurse/health-checkup/:id', element: <HealthCheckupDetail /> }
+  { path: '/medication-requests/:id/update', element: <MedicationRequestUpdate /> }
 ]);
 
 export default router

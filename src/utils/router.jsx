@@ -62,7 +62,7 @@ import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthC
 import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
 import HealthCheckupDetail from '../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'
 import CheckupCategoryList from '../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'
-import UserManagement from '../pages/admin/UserManagement.jsx'
+import { UserManagement, StudentManagement, EmailSending, PdfExport, UserGuide, ApiDocumentation } from '../pages/admin'
 const router = createBrowserRouter([
   { path: '/', element: <AuthRedirect /> },
   { path: '/login', element: <Login /> },
@@ -85,15 +85,15 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <HealthCheckupList />,
-          },
-        ],
+            element: <HealthCheckupList />
+          }
+        ]
       },
       {
         path: 'checkup-categories',
-        element: <CheckupCategoryList/>,
+        element: <CheckupCategoryList />
       },
-      { path: 'health-checkup/create', element: <HealthCheckupForm/>},
+      { path: 'health-checkup/create', element: <HealthCheckupForm /> },
       { path: 'health-checkup/:id', element: <HealthCheckupDetail /> },
       {
         path: 'vaccination',
@@ -124,8 +124,8 @@ const router = createBrowserRouter([
           { path: 'all', element: <MedicationRequestAll /> },
           { path: 'pending', element: <MedicationRequestPending /> },
           { path: 'approved', element: <MedicationRequestApproved /> },
-          { path: ':id', element: <MedicationRequestPage /> },
-        ],
+          { path: ':id', element: <MedicationRequestPage /> }
+        ]
       },
       { path: 'medication-event', element: <NurseMedicationEvent /> },
       { path: 'medication-event/:id', element: <NurseHealthEventDetail /> }
@@ -145,7 +145,7 @@ const router = createBrowserRouter([
       { path: 'vaccination', element: <Vaccination /> },
       { path: 'health-check', element: <HealthCheck /> },
       { path: 'medication-requests', element: <MedicationRequest /> }
-    ],
+    ]
   },
   {
     path: '/manager',
@@ -194,8 +194,8 @@ const router = createBrowserRouter([
           { path: 'all', element: <ManagerRequestAll /> },
           { path: 'pending', element: <ManagerRequestPending /> },
           { path: 'approved', element: <ManagerRequestApproved /> },
-          { path: ':id', element: <ManagerRequestPage /> },
-        ],
+          { path: ':id', element: <ManagerRequestPage /> }
+        ]
       }
     ]
   },
@@ -208,7 +208,12 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <UserManagement /> },
-      { path: 'user-management', element: <UserManagement /> }
+      { path: 'user-management', element: <UserManagement /> },
+      { path: 'student-management', element: <StudentManagement /> },
+      { path: 'email-sending', element: <EmailSending /> },
+      { path: 'pdf-export', element: <PdfExport /> },
+      { path: 'user-guide', element: <UserGuide /> },
+      { path: 'api-documentation', element: <ApiDocumentation /> }
     ]
   },
   { path: '/no-role', element: <NoRole /> },
@@ -216,6 +221,6 @@ const router = createBrowserRouter([
   { path: '/medication-requests/:id', element: <MedicationRequestDetail /> },
   { path: '/medication-requests/create', element: <MedicationRequestCreate /> },
   { path: '/medication-requests/:id/update', element: <MedicationRequestUpdate /> }
-]);
+])
 
 export default router

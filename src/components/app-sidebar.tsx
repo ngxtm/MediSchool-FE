@@ -40,6 +40,14 @@ const data = {
         {
           title: 'Cài đặt',
           url: '#'
+        },
+        {
+          title: 'Gửi email',
+          url: '/admin/email-sending'
+        },
+        {
+          title: 'Xuất pdf',
+          url: '/admin/pdf-export'
         }
       ]
     },
@@ -47,6 +55,7 @@ const data = {
       title: 'Quản lý người dùng',
       url: '/admin/user-management',
       icon: Users,
+      isActive: true,
       items: [
         {
           title: 'Tài khoản',
@@ -54,7 +63,7 @@ const data = {
         },
         {
           title: 'Học sinh',
-          url: '/admin/user-management'
+          url: '/admin/student-management'
         }
       ]
     },
@@ -62,14 +71,15 @@ const data = {
       title: 'Tài liệu hướng dẫn',
       url: '#',
       icon: BookOpen,
+      isActive: true,
       items: [
         {
-          title: 'Gửi email',
-          url: '#'
+          title: 'Hướng dẫn sử dụng',
+          url: '/admin/user-guide'
         },
         {
-          title: 'Xuất pdf',
-          url: '#'
+          title: 'API Documentation',
+          url: '/admin/api-documentation'
         }
       ]
     }

@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import api from '@/utils/api'
 
 const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' }) => {
   const [file, setFile] = useState(null)
@@ -69,16 +70,11 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' })
 
   const handleDownloadTemplate = async () => {
     try {
-      // Use api instance to handle authentication automatically
-      const response = await fetch('/api/admin/users/import/template', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('tempSession') ? JSON.parse(sessionStorage.getItem('tempSession')).access_token : ''}`
-        }
+      const { data: blob } = await api.get('/admin/users/import/template', {
+        responseType: 'blob'
       })
 
-      if (response.ok) {
-        const blob = await response.blob()
+      if (blob) {
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
@@ -88,10 +84,6 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' })
         window.URL.revokeObjectURL(url)
         document.body.removeChild(a)
         message.success('Template đã được tải xuống thành công!')
-      } else {
-        const errorText = await response.text()
-        console.error('Template download failed:', response.status, errorText)
-        message.error(`Không thể tải template: ${response.status}`)
       }
     } catch (error) {
       console.error('Download template error:', error)

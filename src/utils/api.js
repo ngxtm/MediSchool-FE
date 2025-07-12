@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { supabase } from './supabase'
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -76,7 +78,7 @@ api.interceptors.response.use(
           headers: { Authorization: `Bearer ${currentToken}` }
         }
 
-        const { data } = await axios.post('/api/auth/refresh-token', {}, config)
+        const { data } = await axios.post(`${API_BASE}/auth/refresh-token`, {}, config)
 
         const rememberMe = localStorage.getItem('rememberMePreference') === 'true'
         if (rememberMe && localSession) {

@@ -2,57 +2,48 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeft } from "lucide-react";
-import Select from "react-select";
 import api from "../../../../utils/api.js";
 
 export default function HealthCheckupForm() {
 	const navigate = useNavigate();
 
 	const [eventTitle, setEventTitle] = useState("");
-	const [schoolYear] = useState(() => {
+	const [schoolYear, setSchoolYear] = useState(() => {
 		const now = new Date();
 		const year = now.getFullYear();
 		return `${year}-${year + 1}`;
 	});
 	const [startDate, setStartDate] = useState("");
 	const [endDate, setEndDate] = useState("");
-	const [scope, setScope] = useState("SCHOOL");
-
+	const [scope, setScope] = useState("SCHOOL"); // default
 	const [categories, setCategories] = useState([]);
 	const [selectedCategories, setSelectedCategories] = useState([]);
 
 	const [grades, setGrades] = useState([]);
 	const [selectedGrade, setSelectedGrade] = useState("");
-
 	const [classes, setClasses] = useState([]);
 	const [selectedClasses, setSelectedClasses] = useState([]);
 
+	// fetch categories
 	useEffect(() => {
 		api.get("/checkup-categories")
 			.then((res) => setCategories(res.data))
 			.catch(() => toast.error("Không thể tải danh sách hạng mục khám"));
 	}, []);
 
+	// fetch all grades
 	useEffect(() => {
 		api.get("/classes/grades")
 			.then((res) => setGrades(res.data))
 			.catch(() => toast.error("Không thể tải danh sách khối"));
 	}, []);
 
-	useEffect(() => {
-		if (scope === "CLASS") {
-			api.get("/classes")
-				.then((res) => setClasses(res.data))
-				.catch(() => toast.error("Không thể tải danh sách lớp học"));
-		}
-	}, [scope]);
-
-	const [gradeClasses, setGradeClasses] = useState([]);
+	// fetch classes of selected grade
 	useEffect(() => {
 		if (scope === "GRADE" && selectedGrade) {
 			api.get(`/classes/by-grade?grade=${selectedGrade}`)
-				.then((res) => setGradeClasses(res.data))
-				.catch(() => toast.error("Không thể tải lớp theo khối"));
+				.then((res) => setSelectedClasses(res.data.map(c => c.classCode)))
+				.catch(() => toast.error("Không thể tải danh sách lớp theo khối"));
 		}
 	}, [selectedGrade, scope]);
 
@@ -80,14 +71,10 @@ export default function HealthCheckupForm() {
 
 		let classCodes = [];
 
-		if (scope === "GRADE" && gradeClasses.length > 0) {
-			classCodes = gradeClasses.map((c) => c.classCode);
+		if (scope === "GRADE" && selectedGrade) {
+			classCodes = classes.map(c => c.classCode);
 		} else if (scope === "CLASS") {
-			classCodes = selectedClasses;
-			if (classCodes.length === 0) {
-				toast.error("Vui lòng chọn ít nhất 1 lớp.");
-				return;
-			}
+			classCodes = [...selectedClasses];
 		}
 
 		const payload = {
@@ -97,7 +84,7 @@ export default function HealthCheckupForm() {
 			endDate,
 			scope,
 			categoryIds: selectedCategories,
-			classCodes,
+			classCodes
 		};
 
 		try {
@@ -176,20 +163,20 @@ export default function HealthCheckupForm() {
 				{scope === "CLASS" && (
 					<div>
 						<label className="text-lg font-semibold block mb-2">Chọn lớp</label>
-						<Select
-							isMulti
-							options={classes.map((c) => ({ value: c.name, label: c.name }))}
-							value={selectedClasses.map((name) => ({ value: name, label: name }))}
-							onChange={(selected) =>
-								setSelectedClasses(selected.map((opt) => opt.value))
+						<select
+							multiple
+							value={selectedClasses}
+							onChange={(e) =>
+								setSelectedClasses(Array.from(e.target.selectedOptions, (opt) => opt.value))
 							}
-							className="react-select-container border rounded w-full"
-							classNamePrefix="select"
-							placeholder="-- Chọn lớp --"
-						/>
+							className="border rounded px-4 py-2 w-full h-40"
+						>
+							{classes.map((c) => (
+								<option key={c.classCode} value={c.classCode}>{c.classCode}</option>
+							))}
+						</select>
 					</div>
 				)}
-
 
 				<div className="grid grid-cols-2 gap-4">
 					<div>

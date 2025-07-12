@@ -13,7 +13,7 @@ import AdminLayout from '../pages/admin/AdminLayout.jsx'
 import StudentInfo from '../pages/parent/StudentInfo'
 import MedicalRecord from '../pages/parent/MedicalRecord'
 import Vaccination from '../pages/parent/Vaccination'
-import HealthCheck from '../pages/parent/HealthCheck'
+import HealthCheckup from '../pages/parent/HealthCheckup.jsx'
 import MedicationRequest from '../pages/parent/MedicationRequest.jsx'
 import { Student as NurseStudent } from '../pages/nurse/sub-pages/student/index'
 import {
@@ -62,6 +62,7 @@ import HealthCheckupLayout from '../pages/nurse/sub-pages/health-checkup/HealthC
 import HealthCheckupForm from '../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'
 import HealthCheckupDetail from '../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'
 import CheckupCategoryList from '../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'
+import CheckupConsentDetail from '../pages/nurse/sub-pages/health-checkup/CheckupConsentDetail.jsx'
 import UserManagement from '../pages/admin/UserManagement.jsx'
 const router = createBrowserRouter([
   { path: '/', element: <AuthRedirect /> },
@@ -80,21 +81,25 @@ const router = createBrowserRouter([
       { index: true, element: <NurseStudent /> },
       { path: 'student', element: <NurseStudent /> },
       {
-        path: 'health-checkup',
-        element: <HealthCheckupLayout />,
-        children: [
-          {
-            index: true,
-            element: <HealthCheckupList />,
-          },
-        ],
-      },
-      {
-        path: 'checkup-categories',
-        element: <CheckupCategoryList/>,
-      },
-      { path: 'health-checkup/create', element: <HealthCheckupForm/>},
-      { path: 'health-checkup/:id', element: <HealthCheckupDetail /> },
+				path: "/nurse/health-checkup",
+				element: <HealthCheckupLayout />,
+				children: [
+					{ index: true, element: <HealthCheckupList /> },
+					{
+						path: ":id",
+						element: <HealthCheckupDetail />,
+						children: [
+							{ index: true, element: <HealthCheckupDetail /> },
+							{ path: "consents", element: <HealthCheckupDetail /> },
+							{ path: "results", element: <HealthCheckupDetail /> },
+						],
+					},
+					{
+						path: "consent/:id", element: <CheckupConsentDetail />,
+					},
+				],
+			},
+			{ path: "/nurse/checkup-categories", element: <CheckupCategoryList/>},
       {
         path: 'vaccination',
         element: <VaccinationLayout />,

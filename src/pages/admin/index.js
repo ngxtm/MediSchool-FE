@@ -1,0 +1,6 @@
+export { default as UserManagement } from './UserManagement'
+export { default as StudentManagement } from './StudentManagement'
+export { default as EmailSending } from './EmailSending'
+export { default as PdfExport } from './PdfExport'
+export { default as UserGuide } from './UserGuide'
+export { default as ApiDocumentation } from './ApiDocumentation'

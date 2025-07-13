@@ -119,14 +119,14 @@ const HealthCheckupDetail = lazy(() => import('../pages/nurse/sub-pages/health-c
 const CheckupCategoryList = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'))
 const CheckupConsentDetail = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupConsentDetail.jsx'))
 
-const AdminDashboard = lazy(() => import('../pages/admin').then(module => ({ default: module.AdminDashboard })))
-const UserManagement = lazy(() => import('../pages/admin').then(module => ({ default: module.UserManagement })))
-const StudentManagement = lazy(() => import('../pages/admin').then(module => ({ default: module.StudentManagement })))
-const EmailSending = lazy(() => import('../pages/admin').then(module => ({ default: module.EmailSending })))
-const PdfExport = lazy(() => import('../pages/admin').then(module => ({ default: module.PdfExport })))
-const UserGuide = lazy(() => import('../pages/admin').then(module => ({ default: module.UserGuide })))
-const ApiDocumentation = lazy(() => import('../pages/admin').then(module => ({ default: module.ApiDocumentation })))
-const LoginHistory = lazy(() => import('../pages/admin').then(module => ({ default: module.LoginHistory })))
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'))
+const UserManagement = lazy(() => import('../pages/admin/UserManagement'))
+const StudentManagement = lazy(() => import('../pages/admin/StudentManagement'))
+const EmailSending = lazy(() => import('../pages/admin/EmailSending'))
+const PdfExport = lazy(() => import('../pages/admin/PdfExport'))
+const UserGuide = lazy(() => import('../pages/admin/UserGuide'))
+const ApiDocumentation = lazy(() => import('../pages/admin/ApiDocumentation'))
+const LoginHistory = lazy(() => import('../pages/admin/LoginHistory'))
 
 const router = createBrowserRouter([
   { path: '/', element: <LazyComponent component={AuthRedirect} /> },

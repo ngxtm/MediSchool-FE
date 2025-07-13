@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import {
   Clock,
   User,
@@ -37,15 +36,7 @@ const LoginHistory = () => {
   const [dateFilter, setDateFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState('all')
 
-  useEffect(() => {
-    fetchLoginHistory()
-  }, [fetchLoginHistory])
-
-  useEffect(() => {
-    filterHistory()
-  }, [filterHistory])
-
-  const fetchLoginHistory = useCallback(async () => {
+  const fetchLoginHistory = async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -66,9 +57,13 @@ const LoginHistory = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  useEffect(() => {
+    fetchLoginHistory()
   }, [currentPage, pageSize])
 
-  const filterHistory = useCallback(() => {
+  const filterHistory = () => {
     let filtered = [...loginHistory]
 
     if (searchTerm) {
@@ -113,6 +108,10 @@ const LoginHistory = () => {
     }
 
     setFilteredHistory(filtered)
+  }
+
+  useEffect(() => {
+    filterHistory()
   }, [loginHistory, searchTerm, statusFilter, dateFilter, selectedUser])
 
   const getStatusBadge = status => {

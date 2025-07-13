@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { BookOpen, Frame, Home, LifeBuoy, Map, PieChart, Send, Settings2, SquareTerminal, Users } from 'lucide-react'
+import { BookOpen, Home, LifeBuoy, SquareTerminal, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import logoNoText from '../assets/logo-notext.png'
 import { NavMain } from '@/components/nav-main'
@@ -35,11 +36,19 @@ const data = {
       items: [
         {
           title: 'Lịch sử đăng nhập',
-          url: '#'
+          url: '/admin/login-history'
         },
         {
           title: 'Cài đặt',
           url: '#'
+        },
+        {
+          title: 'Gửi email',
+          url: '/admin/email-sending'
+        },
+        {
+          title: 'Xuất pdf',
+          url: '/admin/pdf-export'
         }
       ]
     },
@@ -47,6 +56,7 @@ const data = {
       title: 'Quản lý người dùng',
       url: '/admin/user-management',
       icon: Users,
+      isActive: true,
       items: [
         {
           title: 'Tài khoản',
@@ -54,7 +64,7 @@ const data = {
         },
         {
           title: 'Học sinh',
-          url: '/admin/user-management'
+          url: '/admin/student-management'
         }
       ]
     },
@@ -62,14 +72,15 @@ const data = {
       title: 'Tài liệu hướng dẫn',
       url: '#',
       icon: BookOpen,
+      isActive: true,
       items: [
         {
-          title: 'Gửi email',
-          url: '#'
+          title: 'Hướng dẫn sử dụng',
+          url: '/admin/user-guide'
         },
         {
-          title: 'Xuất pdf',
-          url: '#'
+          title: 'API Documentation',
+          url: '/admin/api-documentation'
         }
       ]
     }
@@ -90,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to="/admin">
                 <div className="flex aspect-square size-12 items-center justify-center">
                   <img src={logoNoText} alt="Medischool" className="size-10 object-contain" />
                 </div>
@@ -98,7 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-medium">Medischool</span>
                   <span className="truncate text-xs">Admin Portal</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -108,7 +119,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

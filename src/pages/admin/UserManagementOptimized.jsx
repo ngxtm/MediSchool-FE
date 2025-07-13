@@ -11,7 +11,6 @@ import DeleteUserModal from '@/components/modals/DeleteUserModal'
 import { useUserManagement } from '@/hooks/useUserManagement'
 
 const UserManagementOptimized = () => {
-  // Main business logic from custom hook
   const {
     users,
     loading,
@@ -26,7 +25,6 @@ const UserManagementOptimized = () => {
     importUsersFromExcel
   } = useUserManagement()
 
-  // Modal states
   const [modals, setModals] = useState({
     userForm: { isVisible: false, isEdit: false, currentUser: null },
     delete: { isVisible: false, currentUser: null },
@@ -34,10 +32,8 @@ const UserManagementOptimized = () => {
     import: { isVisible: false }
   })
 
-  // Form instance
   const [form] = Form.useForm()
 
-  // Modal handlers
   const openModal = (modalName, data = {}) => {
     setModals(prev => ({
       ...prev,
@@ -51,14 +47,17 @@ const UserManagementOptimized = () => {
       [modalName]: { ...prev[modalName], isVisible: false }
     }))
 
-    // Reset form when closing user form modal
     if (modalName === 'userForm') {
       form.resetFields()
+      setModals(prev => ({
+        ...prev,
+        userForm: { isVisible: false, isEdit: false, currentUser: null }
+      }))
     }
   }
 
-  // User operations
   const handleCreateUser = () => {
+    form.resetFields()
     openModal('userForm', { isEdit: false, currentUser: null })
   }
 
@@ -73,11 +72,15 @@ const UserManagementOptimized = () => {
   }
 
   const handleSoftDelete = user => {
+    console.log('handleSoftDelete called with user:', user)
     openModal('delete', { currentUser: user })
   }
 
   const handleDeleteConfirm = async (userId, reason) => {
-    return await softDeleteUser(userId, reason)
+    console.log('handleDeleteConfirm called with userId:', userId, 'reason:', reason)
+    const result = await softDeleteUser(userId, reason)
+    console.log('softDeleteUser result:', result)
+    return result
   }
 
   const handleRestore = async user => {
@@ -95,7 +98,6 @@ const UserManagementOptimized = () => {
     if (result.success) {
       closeModal('hardDelete')
     } else if (result.showDetailedModal) {
-      // Show detailed error modal for Supabase issues
       Modal.error({
         title: 'Chi tiết lỗi xóa user',
         content: (
@@ -141,7 +143,6 @@ const UserManagementOptimized = () => {
     return await importUsersFromExcel(formData)
   }
 
-  // Create columns with handlers
   const columns = createColumns({
     onEdit: handleEditUser,
     onSoftDelete: handleSoftDelete,
@@ -172,7 +173,6 @@ const UserManagementOptimized = () => {
         </CardContent>
       </Card>
 
-      {/* User Form Modal */}
       <UserFormModal
         isVisible={modals.userForm.isVisible}
         onClose={() => closeModal('userForm')}
@@ -182,7 +182,6 @@ const UserManagementOptimized = () => {
         loading={loading}
       />
 
-      {/* Delete User Modal */}
       <DeleteUserModal
         isVisible={modals.delete.isVisible}
         onClose={() => closeModal('delete')}
@@ -191,7 +190,6 @@ const UserManagementOptimized = () => {
         loading={loading}
       />
 
-      {/* Hard Delete Confirmation */}
       <ConfirmDialog
         open={modals.hardDelete.isVisible}
         onOpenChange={open => !open && closeModal('hardDelete')}
@@ -224,7 +222,6 @@ const UserManagementOptimized = () => {
         </div>
       </ConfirmDialog>
 
-      {/* Import Excel Modal */}
       <ImportExcelModal
         isOpen={modals.import.isVisible}
         onClose={() => closeModal('import')}

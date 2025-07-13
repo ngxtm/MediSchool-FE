@@ -1,7 +1,3 @@
-// import { createClient } from "@supabase/supabase-js";
-// import { useState } from "react";
-// import { toast } from "react-toastify";
-// import { Zoom } from "react-toastify";
 import { AppSidebar } from '@/components/app-sidebar'
 import {
   Breadcrumb,
@@ -16,49 +12,8 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 
 import AdminTaskbar from './components/AdminTaskbar'
 import { Outlet } from 'react-router-dom'
-const AdminLayout = () => {
-  // const adminSupabase = createClient(
-  // 	import.meta.env.VITE_SUPABASE_URL,
-  // 	import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY,
-  // 	{
-  // 		auth: {
-  // 			autoRefreshToken: false,
-  // 			persistSession: false,
-  // 		},
-  // 	}
-  // );
-  // const [userId, setUserId] = useState("");
-  // const handleDeleteUser = async () => {
-  // 	const { error } = await adminSupabase.auth.admin.deleteUser(userId);
-  // 	if (!error) {
-  // 		toast.success("User deleted successfully", {
-  // 			position: "bottom-center",
-  // 			autoClose: 2000,
-  // 			hideProgressBar: false,
-  // 			closeOnClick: true,
-  // 			pauseOnHover: true,
-  // 			draggable: true,
-  // 			progress: undefined,
-  // 			theme: "light",
-  // 			transition: Zoom,
-  // 		});
-  // 	}
-  // 	if (error) {
-  // 		console.error("Error deleting user:", error);
-  // 		toast.error("Error deleting user: " + error.message, {
-  // 			position: "bottom-center",
-  // 			autoClose: 2000,
-  // 			hideProgressBar: false,
-  // 			closeOnClick: true,
-  // 			pauseOnHover: true,
-  // 			draggable: true,
-  // 			progress: undefined,
-  // 			theme: "light",
-  // 			transition: Zoom,
-  // 		});
-  // 	}
-  // };
 
+const AdminLayout = () => {
   return (
     <div className="font-inter">
       <SidebarProvider>

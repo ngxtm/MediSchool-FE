@@ -94,7 +94,9 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
     },
     cell: ({ row }) => {
       const user = row.original
-      if (!user.isActive) {
+      const isDeleted = !user.isActive || user.deletedAt
+
+      if (isDeleted) {
         return (
           <div className="px-2">
             <Tooltip>
@@ -139,7 +141,6 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
     cell: ({ row }) => {
       const createdAt = row.getValue('createdAt')
 
-      // Debug logging
       console.log('CreatedAt raw value:', createdAt)
       console.log('CreatedAt type:', typeof createdAt)
 
@@ -158,26 +159,19 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
       try {
         let date: Date
 
-        // Check if createdAt is an array (Java LocalDateTime format)
         if (Array.isArray(createdAt) && createdAt.length >= 6) {
-          // Array format: [year, month, day, hour, minute, second, nanosecond]
           const [year, month, day, hour, minute, second, nanosecond = 0] = createdAt
 
-          // Convert nanoseconds to milliseconds
           const millisecond = Math.floor(nanosecond / 1000000)
 
-          // Note: month in Java is 1-indexed, but JavaScript Date is 0-indexed
           date = new Date(year, month - 1, day, hour, minute, second, millisecond)
 
           console.log('Parsed from array:', { year, month, day, hour, minute, second, nanosecond, millisecond })
         } else if (typeof createdAt === 'string') {
-          // String format
           date = new Date(createdAt)
         } else if (typeof createdAt === 'number') {
-          // Timestamp format
           date = new Date(createdAt)
         } else {
-          // Invalid format
           console.log('Unknown createdAt format:', createdAt)
           return (
             <div className="px-2">
@@ -189,7 +183,6 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
           )
         }
 
-        // Check if date is valid
         if (isNaN(date.getTime())) {
           console.log('Invalid date created from:', createdAt)
           return (
@@ -245,46 +238,83 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
         <div className="px-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0"
+                onClick={e => {
+                  console.log('Dropdown trigger clicked for user:', user)
+                }}
+              >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(user)}>
+            <DropdownMenuContent align="end" className="z-[100]">
+              <DropdownMenuItem
+                onClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('Edit button clicked for user:', user)
+                  onEdit(user)
+                }}
+              >
                 <Edit className="mr-2 h-4 w-4" />
                 Sửa
               </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(user.email)}>
+              <DropdownMenuItem
+                onClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('Copy email button clicked for user:', user)
+                  navigator.clipboard.writeText(user.email)
+                }}
+              >
                 <Copy className="mr-2 h-4 w-4" />
                 Sao chép email
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
 
-              {user.isActive ? (
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onClick={() => onSoftDelete(user)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Xóa
-                </DropdownMenuItem>
-              ) : (
+              {!user.isActive || user.deletedAt ? (
                 <>
-                  <DropdownMenuItem onClick={() => onRestore(user)}>
+                  <DropdownMenuItem
+                    onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('Restore button clicked for user:', user)
+                      onRestore(user)
+                    }}
+                  >
                     <Undo2 className="mr-2 h-4 w-4" />
                     Khôi phục
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive"
-                    onClick={() => onHardDelete(user)}
+                    onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('Hard delete button clicked for user:', user)
+                      onHardDelete(user)
+                    }}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Xóa vĩnh viễn
                   </DropdownMenuItem>
                 </>
+              ) : (
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={e => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    console.log('Delete button clicked for user:', user)
+                    onSoftDelete(user)
+                  }}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Xóa
+                </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

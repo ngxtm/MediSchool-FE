@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Modal, Form, message, Select, Input as AntInput, Space } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import api from '../../utils/api'
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
 import ImportExcelModal from '@/components/ImportExcelModal'
+import UserFormModal from '@/components/modals/UserFormModal'
 
 const { TextArea } = AntInput
 
@@ -27,8 +28,7 @@ const UserManagement = () => {
   const [userToHardDelete, setUserToHardDelete] = useState(null)
   const [isImportModalVisible, setIsImportModalVisible] = useState(false)
 
-  // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await api.get('/admin/users', {
         params: {
@@ -41,32 +41,57 @@ const UserManagement = () => {
       message.error('Lỗi khi tải danh sách người dùng')
       console.error('Error fetching users:', error)
     }
-  }
+  }, [searchText, includeDeleted])
 
   useEffect(() => {
     fetchUsers()
-  }, [searchText, includeDeleted])
+  }, [fetchUsers])
 
-  // Handle create/edit user
   const handleSubmit = async values => {
     try {
       if (isEdit) {
-        await api.put(`/admin/users/${currentUser.id}`, values)
+        const { password: _password, ...updateData } = values
+        await api.put(`/admin/users/${currentUser.id}`, updateData)
         message.success('Cập nhật người dùng thành công')
       } else {
-        await api.post('/admin/users', values)
-        message.success('Tạo người dùng thành công')
+        if (values.password && values.password.trim() !== '') {
+          await api.post('/admin/users/with-password', values)
+          message.success('Tạo người dùng thành công')
+          try {
+            await api.post('/activity-log', {
+              actionType: 'CREATE',
+              entityType: 'USER',
+              description: `Tạo tài khoản cho người dùng mới`,
+              details: `Tên: ${values.fullName}, Email: ${values.email}`
+            })
+          } catch (logErr) {
+            console.error('Ghi log hoạt động thất bại:', logErr)
+          }
+        } else {
+          const { password: _password, ...createData } = values
+          await api.post('/admin/users', createData)
+          message.success('Tạo người dùng thành công')
+          try {
+            await api.post('/activity-log', {
+              actionType: 'CREATE',
+              entityType: 'USER',
+              description: `Tạo tài khoản cho người dùng mới`,
+              details: `Tên: ${values.fullName}, Email: ${values.email}`
+            })
+          } catch (logErr) {
+            console.error('Ghi log hoạt động thất bại:', logErr)
+          }
+        }
       }
-      setIsModalVisible(false)
-      form.resetFields()
       fetchUsers()
+      return { success: true }
     } catch (error) {
       message.error('Lỗi khi lưu người dùng')
       console.error('Error saving user:', error)
+      return { success: false }
     }
   }
 
-  // Handle soft delete
   const handleSoftDelete = user => {
     console.log('handleSoftDelete called for user:', user)
     setUserToDelete(user)
@@ -74,7 +99,6 @@ const UserManagement = () => {
     setIsDeleteModalVisible(true)
   }
 
-  // Handle delete confirmation
   const handleDeleteConfirm = async () => {
     console.log('Delete confirm clicked, reason:', deleteReason)
 
@@ -113,7 +137,6 @@ const UserManagement = () => {
     }
   }
 
-  // Handle delete cancel
   const handleDeleteCancel = () => {
     console.log('Delete cancelled')
     setIsDeleteModalVisible(false)
@@ -121,7 +144,6 @@ const UserManagement = () => {
     setDeleteReason('')
   }
 
-  // Handle restore user
   const handleRestore = async user => {
     try {
       await api.post(`/admin/users/${user.id}/restore`)
@@ -133,14 +155,12 @@ const UserManagement = () => {
     }
   }
 
-  // Handle hard delete
   const handleHardDelete = user => {
     console.log('🔥 handleHardDelete called with user:', user)
     setUserToHardDelete(user)
     setIsHardDeleteModalVisible(true)
   }
 
-  // Handle hard delete confirmation
   const handleHardDeleteConfirm = async () => {
     const user = userToHardDelete
     console.log('🚀 === HARD DELETE CONFIRMED === onOk called for user:', user.id)
@@ -148,7 +168,6 @@ const UserManagement = () => {
     try {
       console.log('📡 Making API call to:', `/admin/users/${user.id}/hard`)
 
-      // Add timestamp for timing
       const startTime = Date.now()
 
       const response = await api.delete(`/admin/users/${user.id}/hard`)
@@ -158,7 +177,6 @@ const UserManagement = () => {
       console.log('✅ Response status:', response.status)
       console.log('✅ Response data:', response.data)
 
-      // More detailed response checking
       const { data } = response
       if (data && data.success === true) {
         console.log('✅ Explicit success from backend:', data.message)
@@ -197,7 +215,6 @@ const UserManagement = () => {
       let showDetailedModal = false
 
       if (error.response?.data?.message) {
-        // Use specific error message from backend
         errorMessage = error.response.data.message
         console.log('🔍 Using backend error message:', errorMessage)
 
@@ -233,7 +250,6 @@ const UserManagement = () => {
         errorMessage = 'Timeout - Server phản hồi quá chậm'
       }
 
-      // Show detailed error modal for Supabase-related errors
       if (showDetailedModal) {
         console.log('🔍 Showing detailed error modal')
         Modal.error({
@@ -279,7 +295,6 @@ const UserManagement = () => {
         message.error(errorMessage)
       }
 
-      // Always try to refresh the user list in case the deletion actually succeeded
       console.log('🔄 Refreshing user list despite error...')
       try {
         await fetchUsers()
@@ -290,25 +305,20 @@ const UserManagement = () => {
     }
   }
 
-  // Handle hard delete cancel
   const handleHardDeleteCancel = () => {
     console.log('❌ User cancelled hard delete confirmation')
     setIsHardDeleteModalVisible(false)
     setUserToHardDelete(null)
   }
 
-  // Handle Excel import
   const handleImportExcel = async formData => {
     try {
-      // Don't set Content-Type header - let browser set it automatically for multipart/form-data
-      // axios interceptor will handle Authorization header
       const response = await api.post('/admin/users/import', formData)
-      fetchUsers() // Refresh the user list after import
+      fetchUsers()
       return response.data
     } catch (error) {
       console.error('Import error:', error)
 
-      // Detailed error handling
       let errorMessage = 'Import thất bại. Vui lòng kiểm tra lại file Excel.'
 
       if (error.response?.status === 400) {
@@ -328,7 +338,6 @@ const UserManagement = () => {
     }
   }
 
-  // Create columns with handlers
   const columns = createColumns({
     onEdit: user => {
       setCurrentUser(user)
@@ -370,57 +379,18 @@ const UserManagement = () => {
         </CardContent>
       </Card>
 
-      {/* Create/Edit Modal */}
-      <Modal
-        title={isEdit ? 'Sửa người dùng' : 'Thêm người dùng mới'}
-        open={isModalVisible}
-        onCancel={() => {
+      <UserFormModal
+        isVisible={isModalVisible}
+        onClose={() => {
           setIsModalVisible(false)
           form.resetFields()
         }}
-        footer={null}
-      >
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item name="fullName" label="Họ tên" rules={[{ required: true, message: 'Vui lòng nhập họ tên' }]}>
-            <AntInput />
-          </Form.Item>
+        onSubmit={handleSubmit}
+        isEdit={isEdit}
+        form={form}
+        loading={false}
+      />
 
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              { required: true, message: 'Vui lòng nhập email' },
-              { type: 'email', message: 'Email không hợp lệ' }
-            ]}
-          >
-            <AntInput />
-          </Form.Item>
-
-          <Form.Item name="phone" label="Số điện thoại">
-            <AntInput />
-          </Form.Item>
-
-          <Form.Item name="role" label="Vai trò" rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}>
-            <Select>
-              <Select.Option value="ADMIN">Admin</Select.Option>
-              <Select.Option value="MANAGER">Manager</Select.Option>
-              <Select.Option value="NURSE">Nurse</Select.Option>
-              <Select.Option value="PARENT">Parent</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
-            <Space>
-              <Button variant="outline" onClick={() => setIsModalVisible(false)}>
-                Hủy
-              </Button>
-              <Button type="submit">{isEdit ? 'Cập nhật' : 'Tạo mới'}</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Delete Modal */}
       <Modal
         title="Xác nhận xóa người dùng"
         open={isDeleteModalVisible}
@@ -455,7 +425,6 @@ const UserManagement = () => {
         </div>
       </Modal>
 
-      {/* Hard Delete Confirmation Dialog */}
       <ConfirmDialog
         open={isHardDeleteModalVisible}
         onOpenChange={setIsHardDeleteModalVisible}
@@ -488,7 +457,6 @@ const UserManagement = () => {
         </div>
       </ConfirmDialog>
 
-      {/* Import Excel Modal */}
       <ImportExcelModal
         isOpen={isImportModalVisible}
         onClose={() => setIsImportModalVisible(false)}

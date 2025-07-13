@@ -17,6 +17,8 @@ const UserFormModal = ({ isVisible, onClose, onSubmit, isEdit, form, loading = f
     }
   }
 
+  const shouldShowPassword = isEdit === false
+
   return (
     <Modal title={isEdit ? 'Sửa người dùng' : 'Thêm người dùng mới'} open={isVisible} onCancel={onClose} footer={null}>
       <Form form={form} layout="vertical" onFinish={handleSubmit} disabled={loading}>
@@ -41,6 +43,12 @@ const UserFormModal = ({ isVisible, onClose, onSubmit, isEdit, form, loading = f
         >
           <AntInput placeholder="example@medischool.com" disabled={isEdit} />
         </Form.Item>
+
+        {shouldShowPassword && (
+          <Form.Item name="password" label="Mật khẩu" rules={[{ min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' }]}>
+            <AntInput.Password placeholder="Nhập mật khẩu (để trống để tự tạo)" />
+          </Form.Item>
+        )}
 
         <Form.Item
           name="phone"

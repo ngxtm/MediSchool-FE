@@ -8,14 +8,25 @@ const DeleteUserModal = ({ isVisible, onClose, onConfirm, user, loading = false 
   const [deleteReason, setDeleteReason] = useState('')
 
   const handleConfirm = async () => {
+    console.log('DeleteUserModal handleConfirm called')
+    console.log('User ID:', user?.id)
+    console.log('Delete reason:', deleteReason)
+
     if (!deleteReason?.trim()) {
+      console.log('Delete reason is empty, returning')
       return
     }
 
+    console.log('Calling onConfirm with user ID:', user?.id, 'and reason:', deleteReason)
     const result = await onConfirm(user?.id, deleteReason)
+    console.log('onConfirm result:', result)
+
     if (result?.success) {
+      console.log('Delete successful, closing modal')
       setDeleteReason('')
       onClose()
+    } else {
+      console.log('Delete failed, keeping modal open')
     }
   }
 

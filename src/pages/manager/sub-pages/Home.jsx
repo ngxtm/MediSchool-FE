@@ -3,49 +3,80 @@ import { FileText, CircleCheckBig, CircleAlert, Calendar, Stethoscope, User, Pac
 import api from '../../../utils/api'
 import Loading from '../../../components/Loading'
 import DetailBox from '../../nurse/components/DetailBox'
-import { formatDate } from '../../../utils/dateparse'
 import { useState, useEffect } from 'react'
 import { Table } from 'antd'
 import { errorToast, successToast } from '../../../components/ToastPopup'
 import RejectReasonModal from '../../../components/RejectReasonModal'
+import dayjs from "dayjs";
+import {formatDate} from "../../../utils/dateparse.jsx";
+
+export const formatCreateDate = (date) => {
+	if (!date) return ''
+	return typeof date === 'number'
+		? dayjs.unix(Math.floor(date)).format('DD/MM/YYYY')
+		: dayjs(date).format('DD/MM/YYYY')
+}
 
 const Home = () => {
 	const queryClient = useQueryClient()
-
 	const approveEvent = useMutation({
-		mutationFn: async eventId => {
-			return api.put(`/vaccine-events/${eventId}/status`, null, {
+		mutationFn: async ({ type, id }) => {
+			const endpoint =
+				type === 'vaccine'
+					? `/vaccine-events/${id}/status`
+					: type === 'checkup'
+						? `/health-checkup/${id}/status`
+						: `/medication-requests/${id}/status`
+			return api.put(endpoint, null, {
 				params: { status: 'APPROVED' }
 			})
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries(['vaccine-event'])
-			successToast('Duyệt sự kiện thành công')
+			queryClient.invalidateQueries()
+			successToast('Duyệt thành công')
 		},
 		onError: () => {
-			errorToast('Duyệt sự kiện thất bại. Vui lòng thử lại')
+			errorToast('Duyệt thất bại. Vui lòng thử lại')
 		}
 	})
 
-	const rejectEvent = useMutation({
-		mutationFn: async ({ eventId, reason }) => {
-			return api.put(`/vaccine-events/${eventId}/status`, null, {
-				params: {
-					status: 'CANCELLED',
-					rejectionReason: reason
-				}
+	const rejectRequest = useMutation({
+		mutationFn: async ({ type, id, reason }) => {
+			const endpoint =
+				type === 'vaccine'
+					? `/vaccine-events/${id}/status`
+					: type === 'checkup'
+						? `/health-checkup/${id}/status`
+						: `/medication-requests/${id}/status`
+
+			return api.put(endpoint, null, {
+				params: { status: 'REJECTED', rejectionReason: reason }
 			})
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries(['vaccine-event'])
-			successToast('Từ chối sự kiện thành công')
+			queryClient.invalidateQueries()
+			successToast('Từ chối thành công')
 			setRejectModalOpen(false)
-			setSelectedEvent(null)
+			setSelectedRequest(null)
 		},
 		onError: () => {
-			errorToast('Từ chối sự kiện thất bại. Vui lòng thử lại')
+			errorToast('Từ chối thất bại. Vui lòng thử lại')
 		}
 	})
+
+	const [rejectModalOpen, setRejectModalOpen] = useState(false)
+	const [selectedRequest, setSelectedRequest] = useState(null)
+
+	const handleRejectClick = (type, item) => {
+		setSelectedRequest({ ...item, type })
+		setRejectModalOpen(true)
+	}
+
+	const handleRejectConfirm = reason => {
+		if (selectedRequest) {
+			rejectRequest.mutate({ type: selectedRequest.type, id: selectedRequest.id, reason })
+		}
+	}
 
 	const [pagination, setPagination] = useState({
 		current: 1,
@@ -54,45 +85,33 @@ const Home = () => {
 		showQuickJumper: true
 	})
 
-	const [rejectModalOpen, setRejectModalOpen] = useState(false)
-	const [selectedEvent, setSelectedEvent] = useState(null)
-
-	const handleRejectClick = event => {
-		setSelectedEvent(event)
-		setRejectModalOpen(true)
-	}
-
-	const handleRejectConfirm = reason => {
-		if (selectedEvent) {
-			rejectEvent.mutate({ eventId: selectedEvent.id, reason })
-		}
-	}
-
 	const results = useQueries({
 		queries: [
 			{
 				queryKey: ['consent-total'],
-				queryFn: async () => {
-					const response = await api.get('/vaccine-consents')
-					return response.data
-				}
+				queryFn: () => api.get('/vaccine-consents').then(res => res.data)
 			},
 			{
 				queryKey: ['upcoming-vaccine-events'],
-				queryFn: async () => {
-					const response = await api.get('/vaccine-events/upcoming')
-					return response.data
-				}
+				queryFn: () => api.get('/vaccine-events/upcoming').then(res => res.data)
 			},
 			{
 				queryKey: ['vaccine-event'],
-				queryFn: async () => {
-					const response = await api.get('/vaccine-events')
-					return response.data
-				}
+				queryFn: () => api.get('/vaccine-events').then(res => res.data)
+			},
+			{
+				queryKey: ['reviewed-health-checkups'],
+				queryFn: () => api.get('/health-checkup/pending').then(res => res.data)
+			},
+			{
+				queryKey: ['reviewed-medication'],
+				queryFn: () => api.get('/medication-requests/reviewed').then(res => res.data)
 			}
 		]
 	})
+
+	const reviewedHealthCheckups = results[3]?.data ?? []
+	const reviewedMedicationRequests = results[4]?.data ?? []
 
 	useEffect(() => {
 		results.forEach((result, index) => {
@@ -144,7 +163,7 @@ const Home = () => {
 		return data.join(', ')
 	}
 
-	const columns = [
+	const vacc_columns = [
 		{
 			title: 'Tên sự kiện',
 			dataIndex: 'eventTitle',
@@ -215,6 +234,7 @@ const Home = () => {
 			width: 50,
 			render: (_, record) => {
 				return (
+
 					<div className="flex flex-col gap-2">
 						<button
 							onClick={() => approveEvent.mutate(record.id)}
@@ -316,6 +336,69 @@ const Home = () => {
 					subText="tháng này"
 				/>
 			</div>
+
+			<div className="flex items-center gap-2 mt-12">
+				<p className="font-bold text-white text-xl bg-gradient-to-r from-emerald-500 to-lime-600 px-6 py-2 rounded-lg">
+			<span className="flex items-center gap-5">
+			  <Stethoscope size={28} />
+			  <span>Sự kiện khám sức khỏe chờ duyệt</span>
+			</span>
+				</p>
+			</div>
+			<Table
+				dataSource={reviewedHealthCheckups}
+				className="custom-pagination"
+				columns={[
+					{ title: 'Tên sự kiện', dataIndex: 'eventTitle', key: 'eventTitle', align: 'center' },
+					{ title: 'Năm học', dataIndex: 'schoolYear', key: 'schoolYear', align: 'center' },
+					{ title: 'Ngày bắt đầu', dataIndex: 'startDate', key: 'startDate', align: 'center', render: formatDate },
+					{ title: 'Ngày kết thúc', dataIndex: 'endDate', key: 'endDate', align: 'center', render: formatDate },
+					{ title: 'Phạm vi', dataIndex: 'scope', key: 'scope', align: 'center' },
+					{
+						title: 'Người tạo',
+						dataIndex: 'createdBy',
+						key: 'createdBy',
+						align: 'center',
+						render: u => u?.fullName || ''
+					},
+					{
+						title: 'Ngày tạo',
+						dataIndex: 'createdAt',
+						key: 'createdAt',
+						align: 'center',
+						render: formatDate
+					},
+					{
+						title: '',
+						key: 'action',
+						align: 'center',
+						render: (_, record) => (
+							<div className="flex flex-col gap-2">
+								<button
+									onClick={() => approveEvent.mutate({ type: 'medication', id: record.requestId })}
+									className="font-semibold text-white bg-teal-600 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors duration-200"
+								>
+									Duyệt
+								</button>
+								<button
+									onClick={() => handleRejectClick('medication', record)}
+									className="font-semibold text-teal-700 bg-white border-1 border-teal-700 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-200 transition-colors duration-200"
+								>
+									Từ chối
+								</button>
+							</div>
+						)
+					}
+				]}
+				rowKey="requestId"
+				pagination={false}
+				components={{
+					header: {
+						cell: props => <th {...props} style={{ ...props.style, backgroundColor: '#a7f3d0' }} />
+					}
+				}}
+			/>
+
 			<div className="flex flex-col gap-3">
 				<div className="flex items-center gap-2">
 					<p className="font-bold text-white text-xl bg-gradient-to-r from-teal-500 to-emerald-500 px-6 py-2 rounded-lg">
@@ -327,7 +410,7 @@ const Home = () => {
 				</div>
 				<Table
 					className="custom-pagination"
-					columns={columns}
+					columns={vacc_columns}
 					dataSource={filteredEvent()}
 					pagination={pagination}
 					onChange={pagination => setPagination(pagination)}
@@ -340,12 +423,63 @@ const Home = () => {
 				/>
 			</div>
 
+			<div className="flex items-center gap-2 mt-12">
+				<p className="font-bold text-white text-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-6 py-2 rounded-lg">
+    <span className="flex items-center gap-5">
+      <Package size={28} />
+      <span>Đơn dặn thuốc chờ duyệt</span>
+    </span>
+				</p>
+			</div>
+			<Table
+				dataSource={reviewedMedicationRequests}
+				className="custom-pagination"
+				columns={[
+					{ title: 'Tiêu đề', dataIndex: 'title', key: 'title', align: 'center' },
+					{ title: 'Học sinh', dataIndex: 'student', key: 'student', align: 'center', render: r => `${r?.fullName || ''}` },
+					{ title: 'Ngày bắt đầu', dataIndex: 'startDate', key: 'startDate', align: 'center', render: t => formatDate(t) },
+					{ title: 'Ngày kết thúc', dataIndex: 'endDate', key: 'endDate', align: 'center', render: t => formatDate(t) },
+					{ title: 'Lý do', dataIndex: 'reason', key: 'reason', align: 'center' },
+					{ title: 'Ghi chú', dataIndex: 'note', key: 'note', align: 'center' },
+					{ title: 'Người tạo', dataIndex: 'parent', key: 'parent', align: 'center', render: r => r?.fullName || '' },
+					{ title: 'Ngày tạo', dataIndex: 'createAt', key: 'createAt', align: 'center', render: t => formatCreateDate(t) },
+					{
+						title: '',
+						key: 'action',
+						align: 'center',
+						render: (_, record) => (
+							<div className="flex flex-col gap-2">
+								<button
+									onClick={() => approveEvent.mutate({ type: 'medication', id: record.requestId })}
+									className="font-semibold text-white bg-teal-600 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors duration-200"
+								>
+									Duyệt
+								</button>
+								<button
+									onClick={() => handleRejectClick('medication', record)}
+									className="font-semibold text-teal-700 bg-white border-1 border-teal-700 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-200 transition-colors duration-200"
+								>
+									Từ chối
+								</button>
+							</div>
+						)
+					}
+				]}
+				rowKey="requestId"
+				pagination={false}
+				components={{
+					header: {
+						cell: props => <th {...props} style={{ ...props.style, backgroundColor: '#a7f3d0' }} />
+					}
+				}}
+			/>
+
 			<RejectReasonModal
 				isOpen={rejectModalOpen}
 				onClose={() => setRejectModalOpen(false)}
 				onConfirm={handleRejectConfirm}
-				eventTitle={selectedEvent?.eventTitle || ''}
-				loading={rejectEvent.isPending}
+				eventTitle={selectedRequest?.eventTitle || selectedRequest?.title || ''}
+				loading={rejectRequest.isPending}
 			/>
 		</div>
 	)

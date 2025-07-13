@@ -23,6 +23,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import api from '../../utils/api'
 import { message } from 'antd'
+import { formatDateTime } from '../../utils/dateparse'
 
 const LoginHistory = () => {
   const [loading, setLoading] = useState(false)
@@ -38,11 +39,11 @@ const LoginHistory = () => {
 
   useEffect(() => {
     fetchLoginHistory()
-  }, [currentPage, pageSize])
+  }, [fetchLoginHistory])
 
   useEffect(() => {
     filterHistory()
-  }, [loginHistory, searchTerm, statusFilter, dateFilter, selectedUser])
+  }, [filterHistory])
 
   const fetchLoginHistory = useCallback(async () => {
     try {
@@ -140,29 +141,37 @@ const LoginHistory = () => {
     }
   }
 
-  const formatDateTime = dateString => {
-    if (!dateString) return 'N/A'
-    let safeString = dateString
-    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+$/.test(dateString)) {
-      safeString += 'Z'
-    }
-    const date = new Date(safeString)
-    if (isNaN(date)) return 'N/A'
-    return date.toLocaleString('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
-  }
-
   const formatDuration = seconds => {
-    if (!seconds) return 'N/A'
+    if (!seconds || seconds === 0) return 'N/A'
+
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
-    return `${hours}h ${minutes}m`
+    const secs = seconds % 60
+
+    let result = ''
+    if (hours > 0) {
+      result += `${hours}h `
+    }
+    if (minutes > 0 || hours > 0) {
+      result += `${minutes}m `
+    }
+    if (secs > 0 && hours === 0) {
+      result += `${secs}s`
+    }
+
+    return result.trim() || 'N/A'
+  }
+
+  const getSessionStatus = item => {
+    if (item.isActiveSession) {
+      return (
+        <Badge variant="default" className="bg-blue-100 text-blue-800">
+          <Clock className="mr-1 h-3 w-3" />
+          Đang hoạt động
+        </Badge>
+      )
+    }
+    return null
   }
 
   const getUniqueUsers = () => {
@@ -217,7 +226,6 @@ const LoginHistory = () => {
         </div>
       </div>
 
-      {/* Filters */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -290,7 +298,6 @@ const LoginHistory = () => {
         </CardContent>
       </Card>
 
-      {/* Login History Table */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
@@ -347,7 +354,12 @@ const LoginHistory = () => {
                         </div>
                       </td>
                       <td className="p-3">{getStatusBadge(item.status)}</td>
-                      <td className="p-3 text-sm">{formatDuration(item.sessionDuration)}</td>
+                      <td className="p-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          {formatDuration(item.sessionDuration)}
+                          {getSessionStatus(item)}
+                        </div>
+                      </td>
                       <td className="p-3">
                         <Button variant="ghost" size="sm">
                           <Eye className="h-4 w-4" />
@@ -360,7 +372,6 @@ const LoginHistory = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {!loading && filteredHistory.length > 0 && (
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm text-gray-600">

@@ -16,7 +16,7 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout.jsx'))
 const StudentInfo = lazy(() => import('../pages/parent/StudentInfo'))
 const MedicalRecord = lazy(() => import('../pages/parent/MedicalRecord'))
 const Vaccination = lazy(() => import('../pages/parent/Vaccination'))
-const HealthCheck = lazy(() => import('../pages/parent/HealthCheck'))
+const HealthCheck = lazy(() => import('../pages/parent/HealthCheckup'))
 const MedicationRequest = lazy(() => import('../pages/parent/MedicationRequest.jsx'))
 const AuthRedirect = lazy(() => import('../components/AuthRedirect'))
 
@@ -117,6 +117,7 @@ const HealthCheckupLayout = lazy(() => import('../pages/nurse/sub-pages/health-c
 const HealthCheckupForm = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'))
 const HealthCheckupDetail = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'))
 const CheckupCategoryList = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'))
+const CheckupConsentDetail = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupConsentDetail.jsx'))
 
 const AdminDashboard = lazy(() => import('../pages/admin').then(module => ({ default: module.AdminDashboard })))
 const UserManagement = lazy(() => import('../pages/admin').then(module => ({ default: module.UserManagement })))
@@ -147,16 +148,23 @@ const router = createBrowserRouter([
         path: 'health-checkup',
         element: <LazyComponent component={HealthCheckupLayout} />,
         children: [
+          { index: true, element: <LazyComponent component={HealthCheckupList} /> },
           {
-            index: true,
-            element: <LazyComponent component={HealthCheckupList} />
+            path: ':id',
+            element: <LazyComponent component={HealthCheckupDetail} />,
+            children: [
+              { index: true, element: <LazyComponent component={HealthCheckupDetail} /> },
+              { path: 'consents', element: <LazyComponent component={HealthCheckupDetail} /> },
+              { path: 'results', element: <LazyComponent component={HealthCheckupDetail} /> }
+            ]
+          },
+          {
+            path: 'consent/:id',
+            element: <LazyComponent component={CheckupConsentDetail} />
           }
         ]
       },
-      {
-        path: 'checkup-categories',
-        element: <LazyComponent component={CheckupCategoryList} />
-      },
+      { path: 'checkup-categories', element: <LazyComponent component={CheckupCategoryList} /> },
       { path: 'health-checkup/create', element: <LazyComponent component={HealthCheckupForm} /> },
       { path: 'health-checkup/:id', element: <LazyComponent component={HealthCheckupDetail} /> },
       {

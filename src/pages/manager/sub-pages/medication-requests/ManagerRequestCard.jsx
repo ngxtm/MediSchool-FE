@@ -57,7 +57,7 @@ export default function ManagerRequestCard({ data, managerId }) {
                             actionType="approve"
                             managerId={managerId}
                             triggerButton={
-                                <button className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
+                                <button className="bg-gradient-to-r from-teal-500 to-teal-600 text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
                                     Duyệt
                                 </button>
                             }
@@ -83,7 +83,7 @@ export default function ManagerRequestCard({ data, managerId }) {
                             managerId={managerId}
                             items={data.items}
                             triggerButton={
-                                <button className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
+                                <button className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]">
                                     Phát thuốc
                                 </button>
                             }
@@ -93,7 +93,7 @@ export default function ManagerRequestCard({ data, managerId }) {
                             actionType="done"
                             managerId={managerId}
                             triggerButton={
-                                <button className="bg-[#EDF3F8] text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]">
+                                <button className="bg-gray-200 text-[#000000] px-4 py-[6px] rounded-md font-semibold hover:bg-[#dceaf6]">
                                     Đánh dấu đã xong
                                 </button>
                             }
@@ -126,7 +126,7 @@ export default function ManagerRequestCard({ data, managerId }) {
                         {data.medicationStatus === "APPROVED" && (
                             <button
                                 onClick={handleReceive}
-                                className="bg-[#023E73] text-white px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]"
+                                className="bg-gradient-to-r from-gray-200 to-green-500 text-black px-4 py-[6px] rounded-md font-semibold hover:bg-[#01294d]"
                             >
                                 Nhận thuốc
                             </button>

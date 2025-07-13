@@ -57,7 +57,7 @@ export default function ManagerMedicationLayout() {
 							{ label: "Đang xử lí", icon: <Users2 />, value: stats?.approved ?? 0, note: "đơn thuốc" },
 							{ label: "Đã huỷ", icon: <AlertCircle />, value: stats?.rejected ?? 0, note: "đơn thuốc" },
 						].map((item, i) => (
-							<div key={i} className="bg-[#DEEDFA] px-6 py-4 rounded-xl w-[250px]">
+							<div key={i} className="bg-gradient-to-r from-emerald-300 to-emerald-500 px-6 py-4 rounded-xl w-[250px]">
 								<div className="flex justify-between items-center mb-1">
 									<p className="font-semibold text-[15px]">{item.label}</p>
 									{item.icon}
@@ -88,7 +88,7 @@ export default function ManagerMedicationLayout() {
 								key={btn.value}
 								onClick={() => navigate(`/manager/medication-requests/${btn.value}`)}
 								className={`px-4 py-2 rounded-md ${
-									currentTab === btn.value ? "bg-[#023E73] text-white font-bold" : "bg-white text-black"
+									currentTab === btn.value ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white font-bold" : "bg-white text-black"
 								}`}
 							>
 								{btn.label}

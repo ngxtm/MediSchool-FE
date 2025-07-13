@@ -10,7 +10,7 @@ const MedicationRequestDetailPage = () => {
 			<div className="space-y-3 mb-6">
 			<ReturnButton
 				linkNavigate="/manager/medication-requests/pending"
-				actor="nurse"
+				actor=""
 			/>
 			</div>
 			<MedicationRequestDetail id={id} />

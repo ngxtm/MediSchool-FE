@@ -18,11 +18,15 @@ const ManagerRequestPending = () => {
     queryKey: ['pending-medication-requests', debouncedSearch],
     queryFn: async () => {
       if (!debouncedSearch.trim()) {
-        const res = await api.get('/medication-requests/pending')
-        return res.data
+        const res = await api.get('/medication-requests/all')
+        return res.data.filter(r =>
+            r.medicationStatus === 'PENDING' || r.medicationStatus === 'REVIEWED'
+        )
       }
       const res = await api.get(`/medication-requests/search?keyword=${debouncedSearch}`)
-      return res.data.filter(r => r.medicationStatus === 'PENDING' || 'REVIEWED')
+      return res.data.filter(r =>
+          r.medicationStatus === 'PENDING' || r.medicationStatus === 'REVIEWED'
+      )
     },
     enabled: true
   })

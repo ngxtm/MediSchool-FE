@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { BookOpen, Frame, Home, LifeBuoy, Map, PieChart, Send, Settings2, SquareTerminal, Users } from 'lucide-react'
+import { BookOpen, Home, LifeBuoy, SquareTerminal, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import logoNoText from '../assets/logo-notext.png'
 import { NavMain } from '@/components/nav-main'
@@ -35,7 +36,11 @@ const data = {
       items: [
         {
           title: 'Lịch sử đăng nhập',
-          url: '#'
+          url: '/admin/login-history'
+        },
+        {
+          title: 'Người dùng đang hoạt động',
+          url: '/admin/active-users'
         },
         {
           title: 'Cài đặt',
@@ -100,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to="/admin">
                 <div className="flex aspect-square size-12 items-center justify-center">
                   <img src={logoNoText} alt="Medischool" className="size-10 object-contain" />
                 </div>
@@ -108,7 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-medium">Medischool</span>
                   <span className="truncate text-xs">Admin Portal</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

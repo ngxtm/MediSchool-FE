@@ -1,10 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import api from "../../utils/api";
+import api from "../../../utils/api.js";
 
 export default function ParentConsentReply({ consentDetail, onClose, refetch }) {
-    const [overallStatus, setOverallStatus] = useState("APPROVED");
+    const [overallStatus, setOverallStatus] = useState("REJECTED"); // mặc định là chưa đồng ý
     const [note, setNote] = useState("");
     const [categoryReplies, setCategoryReplies] = useState(() => {
         const map = {};
@@ -55,22 +55,22 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                 <Dialog.Content className="fixed z-50 bg-white top-1/2 left-1/2 max-w-lg w-full -translate-x-1/2 -translate-y-1/2 rounded-lg p-6 shadow">
                     <h2 className="text-lg font-bold mb-4">Phản hồi đơn đề nghị</h2>
 
-                    {/* Toggle Overall */}
+                    {/* Phần chọn tham gia */}
                     <div className="space-y-2 mb-4">
                         <p className="font-medium">Phụ huynh đồng ý cho học sinh tham gia?</p>
-                        <div className="flex gap-4">
-                            <label className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    checked={overallStatus === "APPROVED"}
-                                    onChange={(e) => setOverallStatus(e.target.checked ? "APPROVED" : "REJECTED")}
-                                />
-                                <span>Đồng ý tham gia</span>
-                            </label>
-                        </div>
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={overallStatus === "APPROVED"}
+                                onChange={(e) =>
+                                    setOverallStatus(e.target.checked ? "APPROVED" : "REJECTED")
+                                }
+                            />
+                            <span>Đồng ý tham gia</span>
+                        </label>
                     </div>
 
-                    {/* Checkbox per category */}
+                    {/* Chỉ hiện danh mục nếu đã đồng ý */}
                     {overallStatus === "APPROVED" && (
                         <div className="mb-4 space-y-2">
                             <p className="font-medium">Chọn danh mục đồng ý:</p>
@@ -78,7 +78,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                                 <label key={cat.categoryId} className="flex gap-2 items-center">
                                     <input
                                         type="checkbox"
-                                        checked={categoryReplies[cat.categoryId] === "APPROVED"}
+                                        checked={categoryReplies[cat.categoryId] === "REJECTED"}
                                         onChange={() => handleChangeCategory(cat.categoryId)}
                                     />
                                     <span>{cat.categoryName}</span>
@@ -87,7 +87,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                         </div>
                     )}
 
-                    {/* Note */}
+                    {/* Ghi chú */}
                     <textarea
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
@@ -95,7 +95,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                         placeholder="Ghi chú thêm (nếu có)"
                     />
 
-                    {/* Actions */}
+                    {/* Button */}
                     <div className="flex justify-end mt-4 space-x-2">
                         <button onClick={onClose} className="px-4 py-2 rounded bg-gray-300 text-sm">
                             Hủy

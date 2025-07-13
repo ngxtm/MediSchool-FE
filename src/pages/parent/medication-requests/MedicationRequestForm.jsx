@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import api from "../../utils/api";
+import api from "../../../utils/api.js";
 import dayjs from "dayjs";
 import { toast, Zoom } from "react-toastify";
 import { ArrowLeft } from 'lucide-react'

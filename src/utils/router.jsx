@@ -16,8 +16,8 @@ const AdminLayout = lazy(() => import('../pages/admin/AdminLayout.jsx'))
 const StudentInfo = lazy(() => import('../pages/parent/StudentInfo'))
 const MedicalRecord = lazy(() => import('../pages/parent/MedicalRecord'))
 const Vaccination = lazy(() => import('../pages/parent/Vaccination'))
-const HealthCheck = lazy(() => import('../pages/parent/HealthCheckup'))
-const MedicationRequest = lazy(() => import('../pages/parent/MedicationRequest.jsx'))
+const HealthCheck = lazy(() => import('../pages/parent/health-checkups/HealthCheckup.jsx'))
+const MedicationRequest = lazy(() => import('../pages/parent/medication-requests/MedicationRequest.jsx'))
 const AuthRedirect = lazy(() => import('../components/AuthRedirect'))
 
 const NurseStudent = lazy(() =>
@@ -97,8 +97,8 @@ const MedicationLayout = lazy(() => import('../pages/nurse/sub-pages/medication-
 const MedicationRequestDetail = lazy(
   () => import('../pages/nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx')
 )
-const MedicationRequestCreate = lazy(() => import('../pages/parent/MedicationRequestCreate.jsx'))
-const MedicationRequestUpdate = lazy(() => import('../pages/parent/MedicationRequestUpdate.jsx'))
+const MedicationRequestCreate = lazy(() => import('../pages/parent/medication-requests/MedicationRequestCreate.jsx'))
+const MedicationRequestUpdate = lazy(() => import('../pages/parent/medication-requests/MedicationRequestUpdate.jsx'))
 
 const ManagerMedicationLayout = lazy(
   () => import('../pages/manager/sub-pages/medication-requests/ManagerMedicationLayout.jsx')

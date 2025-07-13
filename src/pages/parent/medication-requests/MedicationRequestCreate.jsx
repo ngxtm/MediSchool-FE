@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import MedicationRequestForm from "./MedicationRequestForm";
+import MedicationRequestForm from "./MedicationRequestForm.jsx";
 
 export default function MedicationRequestCreate() {
 	const location = useLocation();

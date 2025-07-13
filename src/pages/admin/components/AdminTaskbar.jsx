@@ -1,7 +1,13 @@
 import { ChevronDown, CircleUserRound, LogOut, Settings } from 'lucide-react'
 import heartIcon from '../../../assets/heart.png'
 import useSignOut from '../../../utils/signout.jsx'
-import { DropdownMenu } from 'radix-ui'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 
 const AdminTaskbar = ({ userData }) => {
   const username = userData?.fullName || 'N/A'
@@ -21,28 +27,28 @@ const AdminTaskbar = ({ userData }) => {
         <div className="flex items-center gap-2">
           <CircleUserRound color="#4d8ab3" size={28} className="mr-1.5" />
           <p>Hi, {username}</p>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <button className="flex items-center">
                 <ChevronDown size={20} />
               </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content className="z-[60] rounded-md bg-white p-2 shadow-xl ring-1 ring-black/5">
-              <DropdownMenu.Item className="cursor-pointer rounded px-4 py-2 transition-colors duration-200 hover:bg-gray-100">
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="z-[60] rounded-md bg-white p-2 shadow-xl ring-1 ring-black/5">
+              <DropdownMenuItem className="cursor-pointer rounded px-4 py-2 transition-colors duration-200 hover:bg-gray-100">
                 <div className="flex items-center">
                   <p className="pr-4">Cài đặt tài khoản</p>
                   <Settings size={16} />
                 </div>
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator className="my-1 h-px bg-gray-200" />
-              <DropdownMenu.Item className="cursor-pointer rounded px-4 py-2 text-red-600 transition-colors duration-200 hover:bg-gray-100">
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="my-1 h-px bg-gray-200" />
+              <DropdownMenuItem className="cursor-pointer rounded px-4 py-2 text-red-600 transition-colors duration-200 hover:bg-gray-100">
                 <button onClick={signout} className="flex w-full items-center justify-between">
                   <span>Đăng xuất</span>
                   <LogOut size={16} />
                 </button>
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

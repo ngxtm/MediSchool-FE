@@ -36,7 +36,6 @@ const StudentManagement = () => {
         'Students with status:',
         response.data.map(s => ({ id: s.studentId, name: s.fullName, status: s.status }))
       )
-      // Ensure data is an array
       const studentsData = Array.isArray(response.data) ? response.data : []
       setAllStudents(studentsData)
     } catch (error) {
@@ -51,18 +50,13 @@ const StudentManagement = () => {
     fetchStudents()
   }, [])
 
-  // Filter students based on searchText and includeInactive
   useEffect(() => {
     let filteredStudents = allStudents
 
-    // Filter by status
     if (!includeInactive) {
-      // When includeInactive is false, show only ACTIVE students
       filteredStudents = filteredStudents.filter(student => student.status === 'ACTIVE')
     }
-    // When includeInactive is true, show all students (both ACTIVE and INACTIVE)
 
-    // Filter by search text
     if (searchText) {
       filteredStudents = filteredStudents.filter(
         student =>
@@ -99,9 +93,30 @@ const StudentManagement = () => {
       if (isEdit) {
         await api.put(`/admin/students/${currentStudent.studentId}`, studentData)
         message.success('Cập nhật học sinh thành công')
+
+        try {
+          await api.post('/activity-log', {
+            actionType: 'UPDATE',
+            entityType: 'STUDENT',
+            description: `Cập nhật thông tin học sinh`,
+            details: `Tên học sinh: ${values.fullName}, Mã: ${values.studentCode}`
+          })
+        } catch (logErr) {
+          console.error('Ghi log hoạt động thất bại:', logErr)
+        }
       } else {
         await api.post('/admin/students', studentData)
         message.success('Tạo học sinh thành công')
+        try {
+          await api.post('/activity-log', {
+            actionType: 'CREATE',
+            entityType: 'STUDENT',
+            description: `Tạo học sinh mới`,
+            details: `Tên học sinh: ${values.fullName}, Mã: ${values.studentCode}`
+          })
+        } catch (logErr) {
+          console.error('Ghi log hoạt động thất bại:', logErr)
+        }
       }
       setIsModalVisible(false)
       form.resetFields()
@@ -176,7 +191,6 @@ const StudentManagement = () => {
     setIsEdit(false)
   }
 
-  // Handle import
   const handleImport = async file => {
     try {
       const formData = new FormData()
@@ -191,6 +205,16 @@ const StudentManagement = () => {
       if (response.data.success) {
         message.success(`Import thành công: ${response.data.successCount} học sinh`)
         fetchStudents()
+        try {
+          await api.post('/activity-log', {
+            actionType: 'IMPORT',
+            entityType: 'STUDENT',
+            description: `Nhập thành công ${response.data.successCount} học sinh từ file Excel`,
+            details: `Tên file: ${file.name}`
+          })
+        } catch (logErr) {
+          console.error('Ghi log hoạt động thất bại:', logErr)
+        }
       } else {
         message.error('Lỗi khi import file')
       }
@@ -228,7 +252,6 @@ const StudentManagement = () => {
         </CardContent>
       </Card>
 
-      {/* Create/Edit Modal */}
       <Modal
         title={isEdit ? 'Chỉnh sửa học sinh' : 'Thêm học sinh mới'}
         open={isModalVisible}
@@ -314,7 +337,6 @@ const StudentManagement = () => {
         </Form>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
       <ConfirmDialog
         open={isDeleteModalVisible}
         onOpenChange={setIsDeleteModalVisible}
@@ -327,7 +349,6 @@ const StudentManagement = () => {
         confirmButtonProps={{ variant: 'destructive' }}
       />
 
-      {/* Import Modal */}
       <ImportExcelModal
         isOpen={isImportModalVisible}
         onClose={() => setIsImportModalVisible(false)}

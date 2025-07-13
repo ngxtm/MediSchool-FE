@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { FileText, Download, Calendar, Users, User, AlertCircle, CheckCircle, Clock } from 'lucide-react'
+import { FileText, Download, Calendar, Users, User, AlertCircle, CheckCircle, Clock, RefreshCw } from 'lucide-react'
 import api from '../../utils/api'
 import { message } from 'antd'
 
@@ -18,6 +18,7 @@ const PdfExport = () => {
   const [selectedEvent, setSelectedEvent] = useState('')
   const [selectedStudent, setSelectedStudent] = useState('')
   const [exportProgress, setExportProgress] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     fetchData()
@@ -26,16 +27,20 @@ const PdfExport = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
+      console.log('Fetching data for PDF export...')
 
-      // Fetch vaccination events
-      const eventsResponse = await api.get('/vaccination/events')
+      console.log('Fetching vaccine events...')
+      const eventsResponse = await api.get('/vaccine-events')
+      console.log('Events response:', eventsResponse.data)
       setEvents(eventsResponse.data)
 
-      // Fetch students
+      console.log('Fetching students...')
       const studentsResponse = await api.get('/admin/students')
+      console.log('Students response:', studentsResponse.data)
       setStudents(studentsResponse.data)
     } catch (error) {
-      message.error('Lỗi khi tải dữ liệu')
+      console.error('Error details:', error.response?.data || error.message)
+      message.error(`Lỗi khi tải dữ liệu: ${error.response?.data?.message || error.message}`)
       console.error('Error fetching data:', error)
     } finally {
       setLoading(false)
@@ -51,12 +56,14 @@ const PdfExport = () => {
     try {
       setLoading(true)
       setExportProgress({ status: 'Đang tạo PDF...' })
+      console.log('Exporting PDF for event:', selectedEvent)
 
       const response = await api.get(`/vaccination-history/event/${selectedEvent}/pdf`, {
         responseType: 'blob'
       })
 
-      // Create download link
+      console.log('PDF response received, size:', response.data.size)
+
       const blob = new Blob([response.data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
@@ -70,8 +77,8 @@ const PdfExport = () => {
       message.success('Xuất PDF thành công')
       setExportProgress(null)
     } catch (error) {
-      message.error('Lỗi khi xuất PDF')
-      console.error('Error exporting PDF:', error)
+      console.error('Error exporting PDF:', error.response?.data || error.message)
+      message.error(`Lỗi khi xuất PDF: ${error.response?.data?.message || error.message}`)
       setExportProgress(null)
     } finally {
       setLoading(false)
@@ -87,12 +94,14 @@ const PdfExport = () => {
     try {
       setLoading(true)
       setExportProgress({ status: 'Đang tạo PDF...' })
+      console.log('Exporting PDF for student:', selectedStudent)
 
       const response = await api.get(`/vaccination-history/student/${selectedStudent}/pdf`, {
         responseType: 'blob'
       })
 
-      // Create download link
+      console.log('PDF response received, size:', response.data.size)
+
       const blob = new Blob([response.data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
@@ -106,8 +115,8 @@ const PdfExport = () => {
       message.success('Xuất PDF thành công')
       setExportProgress(null)
     } catch (error) {
-      message.error('Lỗi khi xuất PDF')
-      console.error('Error exporting PDF:', error)
+      console.error('Error exporting PDF:', error.response?.data || error.message)
+      message.error(`Lỗi khi xuất PDF: ${error.response?.data?.message || error.message}`)
       setExportProgress(null)
     } finally {
       setLoading(false)
@@ -146,6 +155,18 @@ const PdfExport = () => {
     const date = new Date(dateString)
     return date.toLocaleDateString('vi-VN')
   }
+
+  const filteredEvents = events.filter(
+    event =>
+      event.eventName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.location?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+  const filteredStudents = students.filter(
+    student =>
+      student.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.studentCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.classCode?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="container mx-auto space-y-6 p-6">
@@ -239,12 +260,26 @@ const PdfExport = () => {
         {/* Data Preview */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {exportType === 'event' ? <Calendar className="h-5 w-5" /> : <User className="h-5 w-5" />}
-              {exportType === 'event' ? 'Danh Sách Sự Kiện' : 'Danh Sách Học Sinh'}
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {exportType === 'event' ? <Calendar className="h-5 w-5" /> : <User className="h-5 w-5" />}
+                {exportType === 'event' ? 'Danh Sách Sự Kiện' : 'Danh Sách Học Sinh'}
+              </div>
+              <Button variant="outline" size="sm" onClick={fetchData} disabled={loading} className="h-8 w-8 p-0">
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 flex items-center gap-2">
+              <Input
+                type="text"
+                placeholder={exportType === 'event' ? 'Tìm kiếm sự kiện...' : 'Tìm kiếm học sinh...'}
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="w-full max-w-xs"
+              />
+            </div>
             <div className="max-h-96 space-y-2 overflow-y-auto">
               {loading ? (
                 <div className="py-8 text-center">
@@ -252,65 +287,86 @@ const PdfExport = () => {
                   <p className="mt-2 text-sm text-gray-600">Đang tải dữ liệu...</p>
                 </div>
               ) : exportType === 'event' ? (
-                events.length === 0 ? (
-                  <div className="py-8 text-center text-gray-500">Không có sự kiện nào</div>
-                ) : (
-                  events.map(event => {
-                    const status = getEventStatus(event)
-                    return (
+                <>
+                  <div className="mb-4 text-sm text-gray-600">Tổng số sự kiện: {filteredEvents.length}</div>
+                  {filteredEvents.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <div className="mb-4 text-gray-400">
+                        <Calendar className="mx-auto h-12 w-12" />
+                      </div>
+                      <p className="text-gray-500">Không có sự kiện tiêm chủng nào</p>
+                      <p className="mt-2 text-sm text-gray-400">
+                        Vui lòng tạo sự kiện tiêm chủng trước khi xuất báo cáo
+                      </p>
+                    </div>
+                  ) : (
+                    filteredEvents.map(event => {
+                      const status = getEventStatus(event)
+                      return (
+                        <div
+                          key={event.id}
+                          className={`cursor-pointer rounded-lg border p-3 transition-colors ${
+                            selectedEvent === event.id.toString()
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setSelectedEvent(event.id.toString())}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="font-medium">{event.eventName}</div>
+                              <div className="text-sm text-gray-600">
+                                {formatDate(event.eventDate)} - {event.location}
+                              </div>
+                            </div>
+                            <Badge className={status.color}>{status.status}</Badge>
+                          </div>
+                        </div>
+                      )
+                    })
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="mb-4 text-sm text-gray-600">Tổng số học sinh: {filteredStudents.length}</div>
+                  {filteredStudents.length === 0 ? (
+                    <div className="py-8 text-center">
+                      <div className="mb-4 text-gray-400">
+                        <User className="mx-auto h-12 w-12" />
+                      </div>
+                      <p className="text-gray-500">Không có học sinh nào</p>
+                      <p className="mt-2 text-sm text-gray-400">Vui lòng thêm học sinh trước khi xuất báo cáo</p>
+                    </div>
+                  ) : (
+                    filteredStudents.map(student => (
                       <div
-                        key={event.id}
+                        key={student.studentId}
                         className={`cursor-pointer rounded-lg border p-3 transition-colors ${
-                          selectedEvent === event.id.toString()
+                          selectedStudent === student.studentId.toString()
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
-                        onClick={() => setSelectedEvent(event.id.toString())}
+                        onClick={() => setSelectedStudent(student.studentId.toString())}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
-                            <div className="font-medium">{event.eventName}</div>
+                            <div className="font-medium">{student.fullName}</div>
                             <div className="text-sm text-gray-600">
-                              {formatDate(event.eventDate)} - {event.location}
+                              {student.studentCode} - {student.classCode}
                             </div>
                           </div>
-                          <Badge className={status.color}>{status.status}</Badge>
+                          {getStudentStatus(student)}
                         </div>
                       </div>
-                    )
-                  })
-                )
-              ) : students.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">Không có học sinh nào</div>
-              ) : (
-                students.map(student => (
-                  <div
-                    key={student.studentId}
-                    className={`cursor-pointer rounded-lg border p-3 transition-colors ${
-                      selectedStudent === student.studentId.toString()
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedStudent(student.studentId.toString())}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="font-medium">{student.fullName}</div>
-                        <div className="text-sm text-gray-600">
-                          {student.studentCode} - {student.classCode}
-                        </div>
-                      </div>
-                      {getStudentStatus(student)}
-                    </div>
-                  </div>
-                ))
+                    ))
+                  )}
+                </>
               )}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* PDF Export Info */}
       <Card>
         <CardHeader>
           <CardTitle>Thông tin về Xuất PDF</CardTitle>
@@ -334,6 +390,18 @@ const PdfExport = () => {
                     theo danh mục vaccine
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <h4 className="mb-2 font-medium">Kiểm tra dữ liệu:</h4>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div>• Đảm bảo có dữ liệu sự kiện tiêm chủng trong database</div>
+                <div>• Đảm bảo có dữ liệu học sinh trong database</div>
+                <div>• Đảm bảo có dữ liệu lịch sử tiêm chủng trong database</div>
+                <div>• Kiểm tra console để xem thông tin debug</div>
               </div>
             </div>
 

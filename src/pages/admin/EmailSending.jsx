@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -15,106 +14,10 @@ const EmailSending = () => {
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState([])
   const [selectedUsers, setSelectedUsers] = useState([])
-  const [emailTemplate, setEmailTemplate] = useState('')
   const [subject, setSubject] = useState('')
   const [content, setContent] = useState('')
-  const [emailType, setEmailType] = useState('custom')
   const [sendingProgress, setSendingProgress] = useState(null)
   const [showPreview, setShowPreview] = useState(false)
-
-  // Email templates with HTML content
-  const emailTemplates = {
-    vaccination_reminder: {
-      subject: '💉 Thông báo tiêm chủng quan trọng',
-      content: `
-<p style="font-size:18px;font-weight:500;margin-bottom:16px;">Kính chào Quý phụ huynh!</p>
-<p style="color:#555;font-size:15px;margin-bottom:20px;">Chúng tôi xin gửi đến bạn thông báo về lịch tiêm chủng của con em bạn.</p>
-<div style="background:linear-gradient(135deg,#ffecd2 0%,#fcb69f 100%);border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:4px solid #e67e22;">
-  <strong>👨‍👩‍👧‍👦 Thông tin phụ huynh & học sinh</strong><br/>
-  Phụ huynh: <b>{parentName}</b><br/>
-  Học sinh: <b>{studentName}</b>
-</div>
-<div style="background:linear-gradient(135deg,#d299c2 0%,#fef9d7 100%);border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:4px solid #9b59b6;">
-  <strong>💉 Thông tin tiêm chủng</strong><br/>
-  Loại vaccine: <b>{vaccineName}</b><br/>
-  Thời gian: <b>{eventDate}</b><br/>
-  Địa điểm: <b>{eventLocation}</b>
-</div>
-<div style="background:#fff3cd;border:1px solid #ffeaa7;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
-  <b>⚠️ Lưu ý quan trọng:</b> Vui lòng xác nhận tham gia và chuẩn bị đầy đủ giấy tờ cần thiết. Trẻ em cần được phụ huynh đưa đến đúng giờ và mang theo sổ tiêm chủng.
-</div>
-<div style="text-align:center;margin:24px 0;">
-  <a href="{consentUrl}" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:12px 28px;font-size:16px;border-radius:40px;text-decoration:none;font-weight:600;display:inline-block;">✅ XÁC NHẬN THAM GIA TIÊM CHỦNG</a>
-</div>
-<div style="background:#f8f9fa;border-radius:8px;padding:14px 18px;margin-top:18px;font-size:14px;">
-  <b>📞 Thông tin liên hệ hỗ trợ</b><br/>
-  Email: medischool@gmail.com<br/>
-  Hotline: 19009999<br/>
-  Thời gian hỗ trợ: 7:00 - 17:00 (Thứ 2 - Thứ 6)
-</div>
-`
-    },
-    health_checkup: {
-      subject: '🏥 Thông báo kiểm tra sức khỏe',
-      content: `
-<p style="font-size:18px;font-weight:500;margin-bottom:16px;">Kính chào Quý phụ huynh!</p>
-<p style="color:#555;font-size:15px;margin-bottom:20px;">Chúng tôi xin gửi đến bạn thông báo về lịch kiểm tra sức khỏe của con em bạn.</p>
-<div style="background:linear-gradient(135deg,#e8f5e8 0%,#c8e6c9 100%);border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:4px solid #4caf50;">
-  <strong>👨‍👩‍👧‍👦 Thông tin phụ huynh & học sinh</strong><br/>
-  Phụ huynh: <b>{parentName}</b><br/>
-  Học sinh: <b>{studentName}</b>
-</div>
-<div style="background:linear-gradient(135deg,#f3e5f5 0%,#e1bee7 100%);border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:4px solid #9c27b0;">
-  <strong>🏥 Thông tin kiểm tra sức khỏe</strong><br/>
-  Ngày kiểm tra: <b>{eventDate}</b><br/>
-  Địa điểm: <b>{eventLocation}</b><br/>
-  Nội dung kiểm tra: <b>{checkupDetails}</b>
-</div>
-<div style="background:#fff3cd;border:1px solid #ffeaa7;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
-  <b>⚠️ Lưu ý quan trọng:</b> Vui lòng chuẩn bị cho học sinh tham gia đầy đủ. Học sinh cần ăn sáng nhẹ trước khi kiểm tra và mang theo sổ khám bệnh nếu có.
-</div>
-<div style="text-align:center;margin:24px 0;">
-  <a href="{consentUrl}" style="background:linear-gradient(135deg,#4caf50 0%,#2e7d32 100%);color:#fff;padding:12px 28px;font-size:16px;border-radius:40px;text-decoration:none;font-weight:600;display:inline-block;">✅ XÁC NHẬN THAM GIA KIỂM TRA</a>
-</div>
-<div style="background:#f8f9fa;border-radius:8px;padding:14px 18px;margin-top:18px;font-size:14px;">
-  <b>📞 Thông tin liên hệ hỗ trợ</b><br/>
-  Email: medischool@gmail.com<br/>
-  Hotline: 19009999<br/>
-  Thời gian hỗ trợ: 7:00 - 17:00 (Thứ 2 - Thứ 6)
-</div>
-`
-    },
-    medication_reminder: {
-      subject: '💊 Nhắc nhở thuốc quan trọng',
-      content: `
-<p style="font-size:18px;font-weight:500;margin-bottom:16px;">Kính chào Quý phụ huynh!</p>
-<p style="color:#555;font-size:15px;margin-bottom:20px;">Chúng tôi xin gửi đến bạn nhắc nhở về việc cung cấp thuốc cho con em bạn.</p>
-<div style="background:linear-gradient(135deg,#fff3e0 0%,#ffe0b2 100%);border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:4px solid #ff9800;">
-  <strong>👨‍👩‍👧‍👦 Thông tin phụ huynh & học sinh</strong><br/>
-  Phụ huynh: <b>{parentName}</b><br/>
-  Học sinh: <b>{studentName}</b>
-</div>
-<div style="background:linear-gradient(135deg,#fce4ec 0%,#f8bbd9 100%);border-radius:10px;padding:16px 20px;margin-bottom:16px;border-left:4px solid #e91e63;">
-  <strong>💊 Thông tin thuốc</strong><br/>
-  Tên thuốc: <b>{medicationName}</b><br/>
-  Liều lượng: <b>{dosage}</b><br/>
-  Thời gian: <b>{medicationTime}</b>
-</div>
-<div style="background:#fff3cd;border:1px solid #ffeaa7;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
-  <b>⚠️ Lưu ý quan trọng:</b> Vui lòng cung cấp thuốc theo đúng chỉ định và hướng dẫn của nhân viên y tế. Đảm bảo học sinh uống thuốc đúng giờ và đúng liều lượng.
-</div>
-<div style="text-align:center;margin:24px 0;">
-  <a href="{consentUrl}" style="background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%);color:#fff;padding:12px 28px;font-size:16px;border-radius:40px;text-decoration:none;font-weight:600;display:inline-block;">✅ XÁC NHẬN CUNG CẤP THUỐC</a>
-</div>
-<div style="background:#f8f9fa;border-radius:8px;padding:14px 18px;margin-top:18px;font-size:14px;">
-  <b>📞 Thông tin liên hệ hỗ trợ</b><br/>
-  Email: medischool@gmail.com<br/>
-  Hotline: 19009999<br/>
-  Thời gian hỗ trợ: 7:00 - 17:00 (Thứ 2 - Thứ 6)
-</div>
-`
-    }
-  }
 
   useEffect(() => {
     fetchUsers()
@@ -130,14 +33,6 @@ const EmailSending = () => {
       console.error('Error fetching users:', error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleTemplateChange = template => {
-    setEmailTemplate(template)
-    if (template && emailTemplates[template]) {
-      setSubject(emailTemplates[template].subject)
-      setContent(emailTemplates[template].content)
     }
   }
 
@@ -187,8 +82,7 @@ const EmailSending = () => {
       const emailData = {
         recipients: selectedUsers,
         subject: subject,
-        content: content,
-        template: emailTemplate
+        content: content
       }
 
       const response = await api.post('/admin/emails/send', emailData)
@@ -198,7 +92,21 @@ const EmailSending = () => {
         setSelectedUsers([])
         setSubject('')
         setContent('')
-        setEmailTemplate('')
+        // Ghi log hoạt động chi tiết
+        try {
+          await api.post('/activity-log', {
+            actionType: 'SEND_EMAIL',
+            entityType: 'EMAIL',
+            description: `Gửi email thông báo cho ${response.data.recipientCount || selectedUsers.length} người nhận`,
+            details: `Danh sách người nhận: ${users
+              .filter(u => selectedUsers.includes(u.id))
+              .map(u => u.fullName)
+              .join(', ')}`
+          })
+        } catch (logErr) {
+          // Không cần báo lỗi log cho user
+          console.error('Ghi log hoạt động thất bại:', logErr)
+        }
       } else {
         message.error(response.data.message || 'Có lỗi xảy ra khi gửi email')
       }
@@ -247,7 +155,6 @@ const EmailSending = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Email Configuration */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -256,35 +163,6 @@ const EmailSending = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email-type">Loại Email</Label>
-              <Select value={emailType} onValueChange={setEmailType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn loại email" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="custom">Email tùy chỉnh</SelectItem>
-                  <SelectItem value="template">Email theo mẫu</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {emailType === 'template' && (
-              <div className="space-y-2">
-                <Label htmlFor="email-template">Mẫu Email</Label>
-                <Select value={emailTemplate} onValueChange={handleTemplateChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn mẫu email" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="vaccination_reminder">Nhắc nhở tiêm chủng</SelectItem>
-                    <SelectItem value="health_checkup">Thông báo kiểm tra sức khỏe</SelectItem>
-                    <SelectItem value="medication_reminder">Nhắc nhở thuốc</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="subject">Tiêu đề Email</Label>
               <Input
@@ -333,7 +211,6 @@ const EmailSending = () => {
           </CardContent>
         </Card>
 
-        {/* User Selection */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -396,30 +273,12 @@ const EmailSending = () => {
         </Card>
       </div>
 
-      {/* Email Templates Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Thông tin về Mẫu Email</CardTitle>
+          <CardTitle>Thông tin về Gửi Email</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div>
-              <h4 className="mb-2 font-medium">Biến có thể sử dụng trong mẫu:</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm md:grid-cols-3">
-                <code className="rounded bg-gray-100 px-2 py-1">{'{parentName}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{studentName}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{vaccineName}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{eventDate}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{eventLocation}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{consentUrl}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{medicationName}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{dosage}'}</code>
-                <code className="rounded bg-gray-100 px-2 py-1">{'{medicationTime}'}</code>
-              </div>
-            </div>
-
-            <Separator />
-
             <div>
               <h4 className="mb-2 font-medium">Lưu ý:</h4>
               <ul className="space-y-1 text-sm text-gray-600">
@@ -433,7 +292,6 @@ const EmailSending = () => {
         </CardContent>
       </Card>
 
-      {/* Email Preview Modal */}
       {showPreview && (
         <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
           <div className="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl">

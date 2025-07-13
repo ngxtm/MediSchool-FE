@@ -9,6 +9,7 @@ const MESSAGES = {
   SAVE_ERROR: 'Lỗi khi lưu người dùng',
   DELETE_SUCCESS: 'Xóa người dùng thành công',
   DELETE_ERROR: 'Lỗi khi xóa người dùng',
+  ALREADY_DELETED: 'Người dùng đã bị xóa trước đó',
   RESTORE_SUCCESS: 'Khôi phục người dùng thành công',
   RESTORE_ERROR: 'Lỗi khi khôi phục người dùng',
   HARD_DELETE_SUCCESS: 'Xóa vĩnh viễn thành công khỏi cả Supabase và database local',
@@ -39,7 +40,13 @@ export const useUserManagement = () => {
           includeDeleted: includeDeleted
         }
       })
-      setUsers(response.data)
+
+      let filteredUsers = response.data
+      if (!includeDeleted) {
+        filteredUsers = response.data.filter(user => user.isActive && !user.deletedAt)
+      }
+
+      setUsers(filteredUsers)
     } catch (error) {
       message.error(MESSAGES.FETCH_ERROR)
       console.error('Error fetching users:', error)
@@ -56,11 +63,18 @@ export const useUserManagement = () => {
     async (userData, isEdit = false, userId = null) => {
       try {
         if (isEdit && userId) {
-          await api.put(`/admin/users/${userId}`, userData)
+          const { password: _, ...updateData } = userData
+          await api.put(`/admin/users/${userId}`, updateData)
           message.success(MESSAGES.UPDATE_SUCCESS)
         } else {
-          await api.post('/admin/users', userData)
-          message.success(MESSAGES.CREATE_SUCCESS)
+          if (userData.password && userData.password.trim() !== '') {
+            await api.post('/admin/users/with-password', userData)
+            message.success(MESSAGES.CREATE_SUCCESS)
+          } else {
+            const { password: _, ...createData } = userData
+            await api.post('/admin/users', createData)
+            message.success(MESSAGES.CREATE_SUCCESS)
+          }
         }
         await fetchUsers()
         return { success: true }
@@ -81,12 +95,19 @@ export const useUserManagement = () => {
       }
 
       try {
-        await api.delete(`/admin/users/${userId}`, {
+        const response = await api.delete(`/admin/users/${userId}`, {
           data: { reason: reason.trim() }
         })
-        message.success(MESSAGES.DELETE_SUCCESS)
-        await fetchUsers()
-        return { success: true }
+
+        if (response.data?.success === true) {
+          message.success(MESSAGES.DELETE_SUCCESS)
+          await fetchUsers()
+          return { success: true }
+        } else {
+          message.warning(MESSAGES.ALREADY_DELETED)
+          await fetchUsers()
+          return { success: false, alreadyDeleted: true }
+        }
       } catch (error) {
         console.error('Error deleting user:', error)
 
@@ -94,9 +115,16 @@ export const useUserManagement = () => {
         if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
           errorMessage = 'Không có quyền thực hiện thao tác này'
         } else if (error.response?.status === HTTP_STATUS.NOT_FOUND) {
-          errorMessage = 'Không tìm thấy người dùng'
+          errorMessage = 'Không tìm thấy người dùng hoặc đã bị xóa'
+          await fetchUsers()
         } else if (error.response?.data?.message) {
           errorMessage = `Lỗi khi xóa người dùng: ${error.response.data.message}`
+          if (
+            error.response.data.message.includes('already deleted') ||
+            error.response.data.message.includes('not found')
+          ) {
+            await fetchUsers()
+          }
         }
 
         message.error(errorMessage)

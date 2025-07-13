@@ -21,15 +21,20 @@ const Home = () => {
 	const queryClient = useQueryClient()
 	const approveEvent = useMutation({
 		mutationFn: async ({ type, id }) => {
-			const endpoint =
-				type === 'vaccine'
-					? `/vaccine-events/${id}/status`
-					: type === 'checkup'
-						? `/health-checkup/${id}/status`
-						: `/medication-requests/${id}/status`
-			return api.put(endpoint, null, {
-				params: { status: 'APPROVED' }
-			})
+			if (type === 'vaccine') {
+				return api.put(`/vaccine-events/${id}/status`, null, {
+					params: { status: 'APPROVED' }
+				})
+			}
+			if (type === 'checkup') {
+				return api.put(`/health-checkup/${id}/status`, null, {
+					params: { status: 'APPROVED' }
+				})
+			}
+			if (type === 'medication') {
+				return api.put(`/medication-requests/${id}/approve`)
+			}
+			throw new Error('Invalid type')
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries()
@@ -42,16 +47,22 @@ const Home = () => {
 
 	const rejectRequest = useMutation({
 		mutationFn: async ({ type, id, reason }) => {
-			const endpoint =
-				type === 'vaccine'
-					? `/vaccine-events/${id}/status`
-					: type === 'checkup'
-						? `/health-checkup/${id}/status`
-						: `/medication-requests/${id}/status`
-
-			return api.put(endpoint, null, {
-				params: { status: 'REJECTED', rejectionReason: reason }
-			})
+			if (type === 'vaccine') {
+				return api.put(`/vaccine-events/${id}/status`, null, {
+					params: { status: 'REJECTED', rejectionReason: reason }
+				})
+			}
+			if (type === 'checkup') {
+				return api.put(`/health-checkup/${id}/status`, null, {
+					params: {status: 'REJECTED', rejectionReason: reason}
+				})
+			}
+			if (type === 'medication') {
+				return api.put(`/medication-requests/${id}/reject`, null, {
+					params: { rejectReason: reason }
+				})
+			}
+			throw new Error('Invalid type')
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries()
@@ -68,8 +79,9 @@ const Home = () => {
 	const [selectedRequest, setSelectedRequest] = useState(null)
 
 	const handleRejectClick = (type, item) => {
-		setSelectedRequest({ ...item, type })
-		setRejectModalOpen(true)
+		const id = item.id ?? item.requestId;
+		setSelectedRequest({ ...item, type, id });
+		setRejectModalOpen(true);
 	}
 
 	const handleRejectConfirm = reason => {
@@ -237,13 +249,13 @@ const Home = () => {
 
 					<div className="flex flex-col gap-2">
 						<button
-							onClick={() => approveEvent.mutate(record.id)}
+							onClick={() => approveEvent.mutate({ type: 'vaccine', id: record.id })}
 							className="font-semibold text-white bg-teal-600 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors duration-200"
 						>
 							Duyệt
 						</button>
 						<button
-							onClick={() => handleRejectClick(record)}
+							onClick={() => handleRejectClick('vaccine', record)}
 							className="font-semibold text-teal-700 bg-white border-1 border-teal-700 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-200 transition-colors duration-200"
 						>
 							Từ chối
@@ -375,13 +387,13 @@ const Home = () => {
 						render: (_, record) => (
 							<div className="flex flex-col gap-2">
 								<button
-									onClick={() => approveEvent.mutate({ type: 'medication', id: record.requestId })}
+									onClick={() => approveEvent.mutate({ type: 'checkup', id: record.id })}
 									className="font-semibold text-white bg-teal-600 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors duration-200"
 								>
 									Duyệt
 								</button>
 								<button
-									onClick={() => handleRejectClick('medication', record)}
+									onClick={() => handleRejectClick('checkup', record)}
 									className="font-semibold text-teal-700 bg-white border-1 border-teal-700 px-4 py-0.5 rounded-lg cursor-pointer hover:bg-teal-200 transition-colors duration-200"
 								>
 									Từ chối

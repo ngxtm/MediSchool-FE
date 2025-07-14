@@ -71,23 +71,41 @@ export default function HealthCheckupForm() {
     }
   }
 
-  const handleSubmit = async e => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!eventTitle || !startDate || !endDate || selectedCategories.length === 0) {
-      toast.error('Vui lòng điền đầy đủ thông tin và chọn ít nhất 1 hạng mục.')
-      return
+      toast.error("Vui lòng điền đầy đủ thông tin và chọn ít nhất 1 hạng mục.");
+      return;
     }
 
-    let classCodes = []
+    const today = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-    if (scope === 'GRADE' && gradeClasses.length > 0) {
-      classCodes = gradeClasses.map(c => c.classCode)
-    } else if (scope === 'CLASS') {
-      classCodes = selectedClasses
+    // Kiểm tra ngày bắt đầu phải sau hôm nay ít nhất 7 ngày
+    const minStart = new Date();
+    minStart.setDate(today.getDate() + 7);
+    if (start < minStart) {
+      toast.error("Ngày bắt đầu phải sau ngày hôm nay ít nhất 7 ngày.");
+      return;
+    }
+
+    // Kiểm tra ngày kết thúc phải sau ngày bắt đầu
+    if (end <= start) {
+      toast.error("Ngày kết thúc phải sau ngày bắt đầu.");
+      return;
+    }
+
+    let classCodes = [];
+
+    if (scope === "GRADE" && gradeClasses.length > 0) {
+      classCodes = gradeClasses.map((c) => c.classCode);
+    } else if (scope === "CLASS") {
+      classCodes = selectedClasses;
       if (classCodes.length === 0) {
-        toast.error('Vui lòng chọn ít nhất 1 lớp.')
-        return
+        toast.error("Vui lòng chọn ít nhất 1 lớp.");
+        return;
       }
     }
 
@@ -98,18 +116,18 @@ export default function HealthCheckupForm() {
       endDate,
       scope,
       categoryIds: selectedCategories,
-      classCodes
-    }
+      classCodes,
+    };
 
     try {
-      await api.post('/health-checkup/create', payload)
-      toast.success('Tạo sự kiện thành công!')
-      navigate('/nurse/health-checkup')
+      await api.post("/health-checkup/create", payload);
+      toast.success("Tạo sự kiện thành công!");
+      navigate("/nurse/health-checkup");
     } catch (err) {
-      console.error(err)
-      toast.error('Lỗi khi tạo sự kiện.')
+      console.error(err);
+      toast.error("Lỗi khi tạo sự kiện.");
     }
-  }
+  };
 
   return (
     <div className="font-inter mx-auto max-w-4xl px-6 py-10">

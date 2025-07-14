@@ -15,6 +15,7 @@ import {
 import Loading from "@/components/Loading";
 import ReturnButton from "../../../../components/ReturnButton.jsx";
 import React, { useState } from "react";
+import dayjs from "dayjs";
 
 function formatDate(dateInput) {
 	if (!dateInput) return "N/A";
@@ -23,6 +24,12 @@ function formatDate(dateInput) {
 	} catch {
 		return "N/A";
 	}
+}
+
+export function parseDate(array) {
+	if (!Array.isArray(array) || array.length < 3) return null;
+	const [year, month, day, hour = 0, minute = 0, second = 0] = array;
+	return new Date(year, month - 1, day, hour, minute, second);
 }
 
 export default function HealthCheckupDetail() {
@@ -199,7 +206,7 @@ export default function HealthCheckupDetail() {
 							{[
 								["Ngày bắt đầu", formatDate(startDate)],
 								["Ngày kết thúc", formatDate(endDate)],
-								["Ngày tạo sự kiện", formatDate(createdAt)],
+								["Ngày tạo sự kiện", dayjs(parseDate(createdAt)).format("DD/MM/YYYY")],
 								["Người phụ trách", createdBy?.fullName || "Không rõ"],
 							].map(([label, value], i) => (
 								<div
@@ -226,7 +233,7 @@ export default function HealthCheckupDetail() {
 						<h2 className="text-xl font-bold mb-3">Mức độ phản hồi</h2>
 						<div className="bg-yellow-100 text-yellow-900 font-bold px-4 py-3 rounded-md mb-8 flex items-center gap-2">
 							<AlertCircle size={18} />
-							<span>Chưa phản hồi từ {notReplied}/{totalSent} phụ huynh</span>
+							<span>Chưa có phản hồi từ {notReplied}/{totalSent} phụ huynh</span>
 						</div>
 
 						<div className="grid grid-cols-2 gap-5 mb-5">

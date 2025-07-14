@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "../../utils/api";
-import MedicationRequestForm from "./MedicationRequestForm";
+import api from "../../../utils/api.js";
+import MedicationRequestForm from "./MedicationRequestForm.jsx";
 
 export default function MedicationRequestUpdate() {
 	const { id } = useParams();

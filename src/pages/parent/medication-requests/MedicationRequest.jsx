@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useStudent } from "../../context/StudentContext";
-import MedicationRequestDetail from "../nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx";
-import api from "../../utils/api";
+import { useStudent } from "../../../context/StudentContext.jsx";
+import MedicationRequestDetail from "../../nurse/sub-pages/medication-requests/MedicationRequestDetail.jsx";
+import api from "../../../utils/api.js";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";

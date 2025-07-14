@@ -449,7 +449,7 @@ const ApiDocumentation = () => {
   }
 
   const renderCodeExample = endpoint => {
-    const baseUrl = 'https://api.medischool.com'
+    const baseUrl = 'https://medischool-be.onrender.com'
 
     return (
       <div className="space-y-4">

@@ -19,16 +19,16 @@ export default function HealthCheckupCard({ event }) {
 
 	const status = event.status === "PENDING"
 		? "Chờ duyệt"
-		: event.status === "APPROVED"
+		: event.status === "UPCOMING"
 			? "Đã lên lịch"
 			: event.status === "DONE"
-				? "Hoàn thành"
+				? "Đã hoàn thành"
 				: "Không xác định";
 
 	return (
 		<div
 			className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-100 cursor-pointer w-full max-w-[1000px] mx-auto"
-			onClick={() => navigate(`/nurse/health-checkup/${event.id}`)}
+			onClick={() => navigate(`/manager/health-checkup/${event.id}`)}
 		>
 		<div className="flex items-center justify-between items-start gap-5 py-3">
 				<div className="p-2">

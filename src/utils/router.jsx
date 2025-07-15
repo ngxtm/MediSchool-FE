@@ -112,6 +112,13 @@ const ManagerRequestApproved = lazy(
   () => import('../pages/manager/sub-pages/medication-requests/ManagerRequestApproved.jsx')
 )
 
+const ManagerCheckupPage = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupLayout.jsx'))
+const ManagerCheckupList = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupList.jsx'))
+const ManagerCheckupForm = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupForm.jsx'))
+const ManagerCheckupDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupDetail.jsx'))
+const ManagerCategoryList = lazy(() => import('../pages/manager/sub-pages/health-checkup/CheckupCategoryList.jsx'))
+const ManagerCheckupConsentDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/CheckupConsentDetail.jsx'))
+
 const HealthCheckupList = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupList.jsx'))
 const HealthCheckupLayout = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'))
 const HealthCheckupForm = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupForm.jsx'))
@@ -269,10 +276,33 @@ const router = createBrowserRouter([
           { path: 'approved', element: <LazyComponent component={ManagerRequestApproved} /> },
           { path: ':id', element: <LazyComponent component={ManagerRequestPage} /> }
         ]
-      }
-    ]
-  },
-  {
+      },
+      {
+        path: 'health-checkup',
+        element: <LazyComponent component={ManagerCheckupPage} />,
+          children: [
+            { index: true, element: <LazyComponent component={ManagerCheckupList} /> },
+            {
+              path: ':id',
+              element: <LazyComponent component={ManagerCheckupDetail} />,
+              children: [
+                { index: true, element: <LazyComponent component={ManagerCheckupDetail} /> },
+                { path: 'consents', element: <LazyComponent component={ManagerCheckupDetail} /> },
+                { path: 'results', element: <LazyComponent component={ManagerCheckupDetail} /> }
+              ]
+            },
+            {
+              path: 'consent/:id',
+              element: <LazyComponent component={ManagerCheckupConsentDetail} />
+            }
+          ]
+          },
+          { path: 'checkup-categories', element: <LazyComponent component={ManagerCategoryList} /> },
+          { path: 'health-checkup/create', element: <LazyComponent component={ManagerCheckupForm} /> },
+          { path: 'health-checkup/:id', element: <LazyComponent component={ManagerCheckupDetail} /> },
+        ]
+      },
+    {
     path: '/admin',
     element: (
       <PrivateRouter requiredRole="ADMIN">

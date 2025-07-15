@@ -477,7 +477,7 @@ const Home = () => {
 						)
 					}
 				]}
-				rowKey="requestId"
+				rowKey={record => record.requestId || record.id || record.title}
 				pagination={false}
 				components={{
 					header: {

@@ -75,16 +75,16 @@ export default function HealthCheckupDetail() {
 		createdBy,
 		totalSent = 0,
 		totalReplied = 0,
-		status: eventStatus,
+		eventStatus, // đúng tên từ backend
 	} = eventData;
 
 	const status =
 		eventStatus === "PENDING"
 			? "Chờ duyệt"
 			: eventStatus === "APPROVED"
-				? "Đã lên lịch"
+				? "Đã duyệt"
 				: eventStatus === "DONE"
-					? "Hoàn thành"
+					? "Đã hoàn thành"
 					: "Không xác định";
 
 	const notReplied = Math.max(totalSent - totalReplied, 0);
@@ -139,7 +139,7 @@ export default function HealthCheckupDetail() {
 	return (
 		<div className="max-w-screen-xl mx-auto font-inter text-gray-900">
 			<div className="flex justify-between items-center mt-4 mb-6">
-				<ReturnButton linkNavigate={-1} actor="nurse" />
+				<ReturnButton linkNavigate={-1} actor="manager" />
 			</div>
 
 			<div>
@@ -256,13 +256,13 @@ export default function HealthCheckupDetail() {
 					{eventStatus !== "PENDING" && (
 						<div className="grid grid-cols-2 gap-5">
 							<button
-								onClick={() => navigate(`/nurse/health-checkup/${id}/consents`)}
+								onClick={() => navigate(`/manager/health-checkup/${id}/consents`)}
 								className="flex-center items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-4 py-2 rounded-lg"
 							>
 								Danh sách đơn
 							</button>
 							<button
-								onClick={() => navigate(`/nurse/health-checkup/${id}/results`)}
+								onClick={() => navigate(`/manager/health-checkup/${id}/results`)}
 								className="flex-center items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-4 py-2 rounded-lg"
 							>
 								Kết quả khám
@@ -295,13 +295,13 @@ export default function HealthCheckupDetail() {
 								<td className="p-3">{row.studentName}</td>
 								<td className="p-3">{row.classCode}</td>
 								<td className="p-3">{row.parentName}</td>
-								<td className="p-3"><p>{row.parentEmail}</p><p>{row.parentPhone}</p></td>
+								<td className="p-3">{row.contactPhone}</td>
 								<td className="p-3 font-semibold text-yellow-600">
 									{renderStatusBadge(row.consentStatus)}
 								</td>
 								<td><div
 									className="cursor-pointer"
-									onClick={() => navigate(`/nurse/health-checkup/consent/${row.id}`)}
+									onClick={() => navigate(`/manager/health-checkup/consent/${row.id}`)}
 								>
 									<ChevronRight className="text-black hover:scale-110 transition-transform" />
 								</div></td>

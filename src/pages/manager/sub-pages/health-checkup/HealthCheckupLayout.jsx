@@ -5,7 +5,7 @@ import api from '../../../../utils/api.js'
 
 export default function HealthCheckupLayout() {
 	const location = useLocation();
-	const isDetailPage = /^\/nurse\/health-checkup(\/consent)?\/\d+$/.test(location.pathname);
+	const isDetailPage = /^\/manager\/health-checkup(\/consent)?\/\d+$/.test(location.pathname);
 	const isConsent = location.pathname.endsWith("/consents");
 	const isResult = location.pathname.endsWith("/results");
 
@@ -21,10 +21,10 @@ export default function HealthCheckupLayout() {
 					{[
 						{ label: "Đã gửi", icon: <FileText />, value: data?.sent || 0 },
 						{ label: "Đã phản hồi", icon: <CheckCheck />, value: data?.replied || 0 },
-						{ label: "Chưa phản hồi", icon: <AlertTriangle />, value: data?.pending || 0 },
+						{ label: "Chưa phản hồi", icon: <AlertTriangle />, value: data?.notReplied || 0 },
 						{ label: "Hạng mục khám", icon: <Calendar />, value: data?.categories || 0 },
 					].map((item, i) => (
-						<div key={i} className="bg-[#DAEAF7] rounded-xl p-6">
+						<div key={i} className="bg-gradient-to-r from-emerald-300 to-emerald-500 rounded-xl p-6">
 							<div className="flex justify-between items-center mb-3">
 								<p className="font-semibold">{item.label}</p>
 								{item.icon}

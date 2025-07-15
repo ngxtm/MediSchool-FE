@@ -9,6 +9,13 @@ export default function HealthCheckupList() {
 	const [search, setSearch] = useState("");
 	const navigate = useNavigate();
 
+	const statusOrder = {
+		PENDING: 1,
+		APPROVED: 2,
+		COMPLETED: 3,
+		REJECTED: 4
+	};
+
 	const { data: eventsRaw, isLoading } = useQuery({
 		queryKey: ["checkup-events"],
 		queryFn: async () => (await api.get("/health-checkup")).data,
@@ -51,15 +58,19 @@ export default function HealthCheckupList() {
 			</div>
 
 			<div>
-				{isLoading ? (
-					<p className="text-center py-10">Đang tải danh sách...</p>
-				) : filtered.length === 0 ? (
-					<p className="text-center py-10">Không tìm thấy sự kiện phù hợp.</p>
-				) : (
-					filtered.map((event) => (
-						<HealthCheckupCard key={event.id} event={event} />
-					))
-				)}
+				{
+					isLoading ? (
+						<p className="text-center py-10">Đang tải danh sách...</p>
+					) : filtered.length === 0 ? (
+						<p className="text-center py-10">Không tìm thấy sự kiện phù hợp.</p>
+					) : (
+						filtered
+							.sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
+							.map((event) => (
+								<HealthCheckupCard key={event.id} event={event} />
+							))
+					)
+				}
 			</div>
 		</div>
 	);

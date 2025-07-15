@@ -21,9 +21,9 @@ export default function HealthCheckupCard({ event }) {
 		? "Chờ duyệt"
 		: event.status === "APPROVED"
 			? "Đã lên lịch"
-			: event.status === "DONE"
+			: event.status === "COMPLETED"
 				? "Hoàn thành"
-				: "Không xác định";
+				: "Đã hủy";
 
 	return (
 		<div

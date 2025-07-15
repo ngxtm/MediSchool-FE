@@ -122,7 +122,7 @@ export default function HealthCheckupForm() {
     try {
       await api.post("/health-checkup/create", payload);
       toast.success("Tạo sự kiện thành công!");
-      navigate("/nurse/health-checkup");
+      navigate("/manager/health-checkup");
     } catch (err) {
       console.error(err);
       toast.error("Lỗi khi tạo sự kiện.");

@@ -37,12 +37,12 @@ export default function HealthCheckupList() {
 
 				<div className="flex gap-4">
 					<button
-						onClick={() => navigate("/nurse/checkup-categories")}
+						onClick={() => navigate("/manager/checkup-categories")}
 						className="bg-gradient-to-r from-emerald-300 to-emerald-500 text-black font-semibold px-5 py-3 rounded-xl text-m rounded-lg hover:bg-[#034a8a]">
 						Xem danh sách Hạng mục
 					</button>
 					<button
-						onClick={() => navigate("/nurse/health-checkup/create")}
+						onClick={() => navigate("/manager/health-checkup/create")}
 						className="flex items-center gap-2 bg-gradient-to-r from-emerald-300 to-emerald-500 hover:bg-[#034a8a] text-black font-semibold px-4 py-2 rounded-lg"
 					>
 						Tạo lịch khám mới

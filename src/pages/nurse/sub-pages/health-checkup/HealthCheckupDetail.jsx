@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import api from "@/utils/api";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
+import CheckupResultDetail from "./CheckupResultDetail.jsx";
 import {
 	FileText,
 	CalendarDays,
@@ -83,9 +84,9 @@ export default function HealthCheckupDetail() {
 			? "Chờ duyệt"
 			: eventStatus === "APPROVED"
 				? "Đã lên lịch"
-				: eventStatus === "DONE"
+				: eventStatus === "COMPLETED"
 					? "Hoàn thành"
-					: "Không xác định";
+					: "Đã hủy";
 
 	const notReplied = Math.max(totalSent - totalReplied, 0);
 
@@ -315,26 +316,15 @@ export default function HealthCheckupDetail() {
 			{isResult && (
 				<div className="mt-10">
 					<h2 className="text-xl font-bold mb-4">Hồ sơ khám sức khỏe</h2>
-					<table className="w-full text-sm border rounded-md overflow-hidden">
-						<thead className="bg-gray-100 font-semibold text-left">
-						<tr>
-							<th className="p-3">Học sinh</th>
-							<th className="p-3">Lớp</th>
-							<th className="p-3">Vấn đề</th>
-							<th className="p-3">Ghi chú</th>
-						</tr>
-						</thead>
-						<tbody>
-						{resultList.map((row) => (
-							<tr key={row.id} className="border-t hover:bg-gray-50">
-								<td className="p-3">{row.studentName}</td>
-								<td className="p-3">{row.className}</td>
-								<td className="p-3">{row.healthIssue}</td>
-								<td className="p-3">{row.notes}</td>
-							</tr>
-						))}
-						</tbody>
-					</table>
+					{resultList.length === 0 ? (
+						<p>Chưa có dữ liệu kết quả khám</p>
+					) : (
+						resultList.map((result) => (
+							<div key={result.id} className="border rounded-lg p-4 mb-6 bg-white shadow">
+								<CheckupResultDetail resultId={result.id} />
+							</div>
+						))
+					)}
 				</div>
 			)}
 		</div>

@@ -82,9 +82,9 @@ export default function HealthCheckupDetail() {
 		eventStatus === "PENDING"
 			? "Chờ duyệt"
 			: eventStatus === "APPROVED"
-				? "Đã duyệt"
+				? "Đã lên lịch"
 				: eventStatus === "DONE"
-					? "Đã hoàn thành"
+					? "Hoàn thành"
 					: "Không xác định";
 
 	const notReplied = Math.max(totalSent - totalReplied, 0);

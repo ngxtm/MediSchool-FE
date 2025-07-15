@@ -25,7 +25,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
         const fullCategoryReplies = {};
         for (const cat of consentDetail.categoryConsents) {
             fullCategoryReplies[cat.categoryId] =
-                overallStatus === "APPROVED" && categoryReplies[cat.categoryId] === "APPROVED"
+                overallStatus === "APPROVED" && categoryReplies[cat.categoryId] === "REJECTED"
                     ? "APPROVED"
                     : "REJECTED";
         }
@@ -78,7 +78,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                                 <label key={cat.categoryId} className="flex gap-2 items-center">
                                     <input
                                         type="checkbox"
-                                        checked={categoryReplies[cat.categoryId] === "REJECTED"}
+                                        checked={categoryReplies[cat.categoryId] === "APPROVED"}
                                         onChange={() => handleChangeCategory(cat.categoryId)}
                                     />
                                     <span>{cat.categoryName}</span>

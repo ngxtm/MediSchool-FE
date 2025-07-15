@@ -19,10 +19,10 @@ export default function HealthCheckupCard({ event }) {
 
 	const status = event.status === "PENDING"
 		? "Chờ duyệt"
-		: event.status === "UPCOMING"
+		: event.status === "APPROVED"
 			? "Đã lên lịch"
 			: event.status === "DONE"
-				? "Đã hoàn thành"
+				? "Hoàn thành"
 				: "Không xác định";
 
 	return (

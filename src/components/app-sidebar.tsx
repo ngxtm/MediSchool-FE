@@ -39,10 +39,6 @@ const data = {
           url: '/admin/login-history'
         },
         {
-          title: 'Cài đặt',
-          url: '#'
-        },
-        {
           title: 'Gửi email',
           url: '/admin/email-sending'
         },
@@ -65,6 +61,10 @@ const data = {
         {
           title: 'Học sinh',
           url: '/admin/student-management'
+        },
+        {
+          title: 'Phụ huynh - Học sinh',
+          url: '/admin/parent-student-management'
         }
       ]
     },

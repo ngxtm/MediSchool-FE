@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Modal, Form, message, Select, Input as AntInput, Space } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import api from '../../utils/api'
@@ -25,6 +25,7 @@ const StudentManagement = () => {
   const [studentToDelete, setStudentToDelete] = useState(null)
   const [isImportModalVisible, setIsImportModalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
 
   const fetchStudents = async () => {
     try {
@@ -78,6 +79,12 @@ const StudentManagement = () => {
 
     setStudents(filteredStudents)
   }, [allStudents, searchText, includeInactive])
+
+  const paginatedStudents = useMemo(() => {
+    const start = pagination.pageIndex * pagination.pageSize
+    const end = start + pagination.pageSize
+    return students.slice(start, end)
+  }, [students, pagination])
 
   const handleSubmit = async values => {
     try {
@@ -239,7 +246,7 @@ const StudentManagement = () => {
           <TooltipProvider>
             <DataTable
               columns={columns}
-              data={students}
+              data={paginatedStudents}
               searchText={searchText}
               onSearchChange={setSearchText}
               includeInactive={includeInactive}
@@ -247,6 +254,9 @@ const StudentManagement = () => {
               onCreateStudent={handleCreate}
               onImportExcel={() => setIsImportModalVisible(true)}
               loading={loading}
+              pagination={pagination}
+              setPagination={setPagination}
+              totalRows={students.length}
             />
           </TooltipProvider>
         </CardContent>

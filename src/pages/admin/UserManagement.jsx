@@ -7,7 +7,6 @@ import { createColumns } from '../../components/user-table/columns'
 import { DataTable } from '../../components/user-table/data-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { Button } from '@/components/ui/button'
 import ImportExcelModal from '@/components/ImportExcelModal'
 import UserFormModal from '@/components/modals/UserFormModal'
 

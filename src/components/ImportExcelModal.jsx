@@ -48,17 +48,14 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' })
 
     setIsUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await onImport(formData)
+      const response = await onImport(file)
       setImportResult(response)
 
-      if (response.success) {
+      if (response?.success === true) {
         message.success(`Import thành công! ${response.successCount} bản ghi đã được thêm.`)
         onClose()
       } else {
-        message.warning(`Import hoàn thành với ${response.errorCount} lỗi.`)
+        message.warning(`Import hoàn thành với ${response?.errorCount || 0} lỗi.`)
       }
     } catch (error) {
       console.error('Import error:', error)
@@ -70,7 +67,7 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' })
 
   const handleDownloadTemplate = async () => {
     try {
-      const { data: blob } = await api.get('/admin/users/import/template', {
+      const { data: blob } = await api.get('/admin/students/import/template', {
         responseType: 'blob'
       })
 
@@ -78,7 +75,7 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' })
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'user_import_template.xlsx'
+        a.download = 'student_import_template.xlsx'
         document.body.appendChild(a)
         a.click()
         window.URL.revokeObjectURL(url)
@@ -142,11 +139,11 @@ const ImportExcelModal = ({ isOpen, onClose, onImport, title = 'Import Excel' })
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm">Thành công: {importResult.successCount}</span>
+                  <span className="text-sm">Thành công: {importResult?.successCount}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-red-500" />
-                  <span className="text-sm">Lỗi: {importResult.errorCount}</span>
+                  <span className="text-sm">Lỗi: {importResult?.errorCount}</span>
                 </div>
               </div>
 

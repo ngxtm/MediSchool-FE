@@ -127,6 +127,7 @@ const PdfExport = lazy(() => import('../pages/admin/PdfExport'))
 const UserGuide = lazy(() => import('../pages/admin/UserGuide'))
 const ApiDocumentation = lazy(() => import('../pages/admin/ApiDocumentation'))
 const LoginHistory = lazy(() => import('../pages/admin/LoginHistory'))
+const ParentStudentManagement = lazy(() => import('../pages/admin/ParentStudentManagement'))
 
 const router = createBrowserRouter([
   { path: '/', element: <LazyComponent component={AuthRedirect} /> },
@@ -283,6 +284,7 @@ const router = createBrowserRouter([
       { path: 'dashboard', element: <LazyComponent component={AdminDashboard} /> },
       { path: 'user-management', element: <LazyComponent component={UserManagement} /> },
       { path: 'student-management', element: <LazyComponent component={StudentManagement} /> },
+      { path: 'parent-student-management', element: <LazyComponent component={ParentStudentManagement} /> },
       { path: 'login-history', element: <LazyComponent component={LoginHistory} /> },
       { path: 'email-sending', element: <LazyComponent component={EmailSending} /> },
       { path: 'pdf-export', element: <LazyComponent component={PdfExport} /> },

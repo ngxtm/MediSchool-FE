@@ -35,6 +35,9 @@ interface DataTableProps<TData, TValue> {
   onCreateStudent: () => void
   onImportExcel: () => void
   loading?: boolean
+  pagination: { pageIndex: number; pageSize: number }
+  setPagination: (p: { pageIndex: number; pageSize: number }) => void
+  totalRows: number
 }
 
 const LoadingSkeleton = React.memo(() => (
@@ -107,20 +110,17 @@ export const DataTable = React.memo(
     data,
     searchText,
     onSearchChange,
-    includeInactive,
-    onIncludeInactiveChange,
     onCreateStudent,
     onImportExcel,
-    loading = false
+    loading = false,
+    pagination,
+    setPagination,
+    totalRows
   }: DataTableProps<TData, TValue>) => {
     const [rowSelection, setRowSelection] = React.useState({})
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [sorting, setSorting] = React.useState<SortingState>([])
-    const [pagination, setPagination] = React.useState({
-      pageIndex: 0,
-      pageSize: 10
-    })
 
     const table = useReactTable({
       data,
@@ -138,13 +138,14 @@ export const DataTable = React.memo(
       onSortingChange: setSorting,
       onColumnFiltersChange: setColumnFilters,
       onColumnVisibilityChange: setColumnVisibility,
-      onPaginationChange: setPagination,
       getCoreRowModel: getCoreRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFacetedRowModel: getFacetedRowModel(),
-      getFacetedUniqueValues: getFacetedUniqueValues()
+      getFacetedUniqueValues: getFacetedUniqueValues(),
+      manualPagination: true,
+      pageCount: Math.ceil(totalRows / pagination.pageSize)
     })
 
     const handleSearchChange = React.useCallback(
@@ -154,18 +155,11 @@ export const DataTable = React.memo(
       [onSearchChange]
     )
 
-    const handleIncludeInactiveChange = React.useCallback(
-      (checked: boolean) => {
-        onIncludeInactiveChange(checked)
-      },
-      [onIncludeInactiveChange]
-    )
-
     const handlePageSizeChange = React.useCallback(
       (value: string) => {
-        table.setPageSize(Number(value))
+        setPagination({ ...pagination, pageSize: Number(value), pageIndex: 0 })
       },
-      [table]
+      [setPagination, pagination]
     )
 
     const pageSizeOptions = React.useMemo(() => [10, 20, 30, 40, 50], [])
@@ -184,17 +178,6 @@ export const DataTable = React.memo(
               className="max-w-sm"
               disabled={loading}
             />
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="include-inactive"
-                checked={includeInactive}
-                onCheckedChange={handleIncludeInactiveChange}
-                disabled={loading}
-              />
-              <Label htmlFor="include-inactive">
-                {includeInactive ? 'Hiện tất cả học sinh' : 'Chỉ hiện học sinh hoạt động'}
-              </Label>
-            </div>
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={onImportExcel} className="ml-auto hidden h-8 lg:flex">
@@ -280,9 +263,54 @@ export const DataTable = React.memo(
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-              Trang {table.getState().pagination.pageIndex + 1} trong {table.getPageCount()}
+              Trang {pagination.pageIndex + 1} trong {table.getPageCount()}
             </div>
-            <PaginationButtons table={table} loading={loading} />
+            <div className="ml-auto flex items-center gap-2 lg:ml-0">
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => setPagination({ ...pagination, pageIndex: 0 })}
+                disabled={pagination.pageIndex === 0 || loading}
+              >
+                <span className="sr-only">Đi đến trang đầu</span>
+                <ChevronsLeft />
+              </Button>
+              <Button
+                variant="outline"
+                className="size-8"
+                size="icon"
+                onClick={() => setPagination({ ...pagination, pageIndex: Math.max(0, pagination.pageIndex - 1) })}
+                disabled={pagination.pageIndex === 0 || loading}
+              >
+                <span className="sr-only">Trang trước</span>
+                <ChevronLeft />
+              </Button>
+              <Button
+                variant="outline"
+                className="size-8"
+                size="icon"
+                onClick={() =>
+                  setPagination({
+                    ...pagination,
+                    pageIndex: Math.min(table.getPageCount() - 1, pagination.pageIndex + 1)
+                  })
+                }
+                disabled={pagination.pageIndex >= table.getPageCount() - 1 || loading}
+              >
+                <span className="sr-only">Trang sau</span>
+                <ChevronRight />
+              </Button>
+              <Button
+                variant="outline"
+                className="hidden size-8 lg:flex"
+                size="icon"
+                onClick={() => setPagination({ ...pagination, pageIndex: table.getPageCount() - 1 })}
+                disabled={pagination.pageIndex >= table.getPageCount() - 1 || loading}
+              >
+                <span className="sr-only">Đi đến trang cuối</span>
+                <ChevronsRight />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

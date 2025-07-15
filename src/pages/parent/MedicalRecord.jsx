@@ -1,9 +1,25 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ChevronRight } from 'lucide-react'
 import api from '../../utils/api'
 import { useStudent } from '../../context/StudentContext'
+import { useState } from 'react'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 const MedicalRecord = () => {
+  const queryClient = useQueryClient()
+
   const { selectedStudent } = useStudent()
   const rowBlue = 'flex justify-between flex-col md:flex-row bg-[#DAEAF7] px-6 py-3 rounded-xl'
   const rowWhite = 'flex justify-between flex-col md:flex-row px-6 py-3'
@@ -36,6 +52,58 @@ const MedicalRecord = () => {
     },
     enabled: !!selectedStudent?.studentId
   })
+
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [form, setForm] = useState({
+    height: '',
+    weight: '',
+    bloodType: '',
+    visionLeft: '',
+    visionRight: '',
+    underlyingDiseases: '',
+    allergies: ''
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleOpenDialog = () => {
+    if (!selectedStudent?.studentId) return
+    setForm({
+      height: healthProfile?.height || '',
+      weight: healthProfile?.weight || '',
+      bloodType: healthProfile?.bloodType || '',
+      visionLeft: healthProfile?.visionLeft || '',
+      visionRight: healthProfile?.visionRight || '',
+      underlyingDiseases: healthProfile?.underlyingDiseases || '',
+      allergies: healthProfile?.allergies || ''
+    })
+    setError('')
+    setDialogOpen(true)
+  }
+
+  const handleFormChange = e => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async e => {
+    e.preventDefault()
+    if (!selectedStudent?.studentId) return
+    setLoading(true)
+    setError('')
+    try {
+      await api.put(`/checkup-basic-info/student/${selectedStudent.studentId}`, {
+        ...healthProfile,
+        ...form
+      })
+      queryClient.invalidateQueries({ queryKey: ['healthProfile', selectedStudent.studentId] })
+      setDialogOpen(false)
+    } catch {
+      setError('Cập nhật thất bại. Vui lòng thử lại.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const formatDate = dateString => {
     const date = new Date(dateString)
@@ -177,6 +245,128 @@ const MedicalRecord = () => {
             </>
           )}
         </div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <button
+              onClick={handleOpenDialog}
+              disabled={healthProfileLoading}
+              className="w-full rounded-xl bg-[#023E73] py-2 text-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:border-1 hover:shadow-lg hover:shadow-gray-300"
+            >
+              Cập nhập thông tin
+            </button>
+          </DialogTrigger>
+          <DialogContent className="border-blue-200 bg-[#DAEAF7] shadow-lg">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-[#023E73]">
+                Cập nhật thông tin sức khoẻ cơ bản
+              </DialogTitle>
+              <DialogDescription className="text-blue-900">
+                Chỉnh sửa và lưu thông tin sức khoẻ cho học sinh.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="height" className="text-[#023E73]">
+                  Chiều cao (cm)
+                </Label>
+                <Input
+                  id="height"
+                  name="height"
+                  value={form.height}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="weight" className="text-[#023E73]">
+                  Cân nặng (kg)
+                </Label>
+                <Input
+                  id="weight"
+                  name="weight"
+                  value={form.weight}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="bloodType" className="text-[#023E73]">
+                  Nhóm máu
+                </Label>
+                <Input
+                  id="bloodType"
+                  name="bloodType"
+                  value={form.bloodType}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="visionLeft" className="text-[#023E73]">
+                  Mắt trái không kính
+                </Label>
+                <Input
+                  id="visionLeft"
+                  name="visionLeft"
+                  value={form.visionLeft}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="visionRight" className="text-[#023E73]">
+                  Mắt phải không kính
+                </Label>
+                <Input
+                  id="visionRight"
+                  name="visionRight"
+                  value={form.visionRight}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="underlyingDiseases" className="text-[#023E73]">
+                  Bệnh nền
+                </Label>
+                <Input
+                  id="underlyingDiseases"
+                  name="underlyingDiseases"
+                  value={form.underlyingDiseases}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              <div>
+                <Label htmlFor="allergies" className="text-[#023E73]">
+                  Dị ứng
+                </Label>
+                <Input
+                  id="allergies"
+                  name="allergies"
+                  value={form.allergies}
+                  onChange={handleFormChange}
+                  className="border-blue-200 bg-white focus:border-[#023E73]"
+                />
+              </div>
+              {error && <div className="text-sm text-red-600">{error}</div>}
+              <DialogFooter>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-[#023E73] font-semibold text-white hover:bg-[#01294d]"
+                >
+                  {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+                </Button>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline" className="border-blue-200 text-[#023E73]">
+                    Hủy
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="md:w-1/2">
         <h1 className={header}>Thông tin tai nạn y tế</h1>

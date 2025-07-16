@@ -135,7 +135,7 @@ export default function CheckupResultDetail() {
                 section={editingSection}
                 open={!!editingSection}
                 onOpenChange={(open) => !open && setEditingSection(null)}
-                onSaved={() => window.location.reload()} // hoặc refetch nếu đúng hook
+                onSaved={() => window.location.reload()}
             />
         </div>
     );

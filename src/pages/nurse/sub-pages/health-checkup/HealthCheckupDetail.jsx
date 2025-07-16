@@ -77,12 +77,25 @@ export default function HealthCheckupDetail() {
 		queryFn: () => api.get(`/checkup-results/${editingResultId}`).then((res) => res.data),
 	});
 
-	const filtered = useMemo(() => {
-		if (!isResult || !resultList) return [];
-		return resultList.filter((item) =>
-			item.studentName.toLowerCase().includes(search.toLowerCase())
+	const filteredConsents = useMemo(() => {
+		if (!isConsent || !consentList) return [];
+		const lowerSearch = search.toLowerCase();
+		return consentList.filter((item) =>
+			item.studentName.toLowerCase().includes(lowerSearch) ||
+			item.studentCode.toLowerCase().includes(lowerSearch) ||
+			item.classCode?.toLowerCase().includes(lowerSearch)
 		);
-	}, [search, resultList, isResult]);
+	}, [consentList, isConsent, search]);
+
+	const filteredResults = useMemo(() => {
+		if (!isResult || !resultList) return [];
+		const lowerSearch = search.toLowerCase();
+		return resultList.filter((item) =>
+			item.studentName.toLowerCase().includes(lowerSearch) ||
+			item.studentCode.toLowerCase().includes(lowerSearch) ||
+			item.classCode?.toLowerCase().includes(lowerSearch)
+		);
+	}, [resultList, isResult, search]);
 
 	if (isLoading || !eventData) return <Loading />;
 
@@ -157,7 +170,6 @@ export default function HealthCheckupDetail() {
 				</span>
 			</div>
 
-			{/* Consent filter + actions */}
 			{(isConsent || isResult) && (
 				<div className="flex flex-wrap justify-between items-center mt-6 mb-4">
 					<div className="flex gap-4 items-center">
@@ -165,7 +177,7 @@ export default function HealthCheckupDetail() {
 							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
 							<input
 								type="text"
-								placeholder="Tìm kiếm học sinh hoặc phụ huynh"
+								placeholder="Tìm kiếm học sinhh"
 								className="pl-9 pr-4 py-3 border rounded-md w-full text-md"
 								value={search}
 								onChange={(e) => setSearch(e.target.value)}
@@ -291,7 +303,7 @@ export default function HealthCheckupDetail() {
 						</thead>
 						<tbody>
 
-						{consentList.sort((a, b) => statusOrder[a.consentStatus] - statusOrder[b.consentStatus])
+						{filteredConsents.sort((a, b) => statusOrder[a.consentStatus] - statusOrder[b.consentStatus])
 							.map((row) => (
 								<tr key={row.id} className="text-center border-t hover:bg-gray-50">
 									<td className="p-3">{row.studentCode}</td>
@@ -320,8 +332,8 @@ export default function HealthCheckupDetail() {
 							<th className="p-3">MSHS</th>
 							<th className="p-3">Học sinh</th>
 							<th className="p-3">Lớp</th>
-							<th className="p-3">Bố</th>
-							<th className="p-3">Mẹ</th>
+							<th className="p-3">Phụ huynh</th>
+							<th className="p-3">Liên lạc</th>
 							<th className="p-3">Ngày khám</th>
 							<th className="p-3">Hạng mục khám</th>
 							<th className="p-3">Kết quả</th>
@@ -329,18 +341,19 @@ export default function HealthCheckupDetail() {
 						</tr>
 						</thead>
 						<tbody>
-						{filtered.map((item) => (
+						{filteredResults.map((item) => (
 							<tr key={item.resultId} className="border-t hover:bg-gray-50">
 								<td className="p-3">{item.studentCode}</td>
 								<td className="p-3">{item.studentName}</td>
 								<td className="p-3">{item.classCode}</td>
-								<td className="p-3">{item.contactEmail}</td>
-								<td className="p-3">{item.contactPhone}</td>
-								<td className="p-3">{item.examDate}</td>
-								<td className="p-3">{item.checkedItemsCount}/{item.totalItems}</td>
+								<td className="p-3">{item.parentName}</td>
+								<td className="p-3"><p>{item.parentEmail}</p><p>{item.parentPhone}</p></td>
+								<td className="p-3">{item.eventDate}</td>
+								<td className="p-3">{item.categoryResults.length}/categoryList.length</td>
 								<td className="p-3">
 										<span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-											{item.resultSummary}
+											<p>{item.status}</p>
+											<p>{item.note}</p>
 										</span>
 								</td>
 								<td className="p-3 flex justify-center items-center gap-4">
@@ -360,7 +373,7 @@ export default function HealthCheckupDetail() {
 								</td>
 							</tr>
 						))}
-						{!filtered.length && (
+						{!filteredResults.length && (
 							<tr>
 								<td colSpan={9} className="text-center p-4 text-gray-500">Không có dữ liệu</td>
 							</tr>
@@ -368,7 +381,6 @@ export default function HealthCheckupDetail() {
 						</tbody>
 					</table>
 
-					{/* Dialog */}
 					{editingResultData && (
 						<EditCheckupResultDialog
 							open={isDialogOpen}

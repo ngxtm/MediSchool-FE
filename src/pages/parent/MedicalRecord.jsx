@@ -236,7 +236,7 @@ const MedicalRecord = () => {
             <>
               <div className={rowBlue}>
                 <p className="w-fit font-bold">Bệnh nền</p>
-                <p className="w-fit">{healthProfile?.chronicConditions || 'Không'}</p>
+                <p className="w-fit">{healthProfile?.underlyingDiseases || 'Không'}</p>
               </div>
               <div className={rowWhite}>
                 <p className="w-fit font-bold">Dị ứng</p>

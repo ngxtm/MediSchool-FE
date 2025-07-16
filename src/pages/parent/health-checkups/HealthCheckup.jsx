@@ -160,7 +160,7 @@ export default function HealthCheckup() {
                                 </p>
 
                                 {!c.replied && c.eventStatus === "APPROVED" && (
-                                    <p className="text-sm mt-2 text-blue-700 font-medium">Phụ huynh cần phản hồi đơn đề nghị!</p>
+                                    <p className="text-md mt-2 font-semibold text-red-500">Phụ huynh cần phản hồi đơn đề nghị!</p>
                                 )}
                             </div>
                         ))}
@@ -209,7 +209,7 @@ export default function HealthCheckup() {
                                         <div className="mt-4">
                                             <button
                                                 onClick={() => setShowReply(true)}
-                                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                                className="bg-[#023E73] text-white px-4 py-2 rounded hover:bg-[#034a8a]"
                                             >
                                                 Xem đơn đề nghị
                                             </button>

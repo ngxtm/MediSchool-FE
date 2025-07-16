@@ -1,21 +1,23 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import api from "@/utils/api";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
-import CheckupResultDetail from "./CheckupResultDetail.jsx";
+import EditCheckupResultDialog from "./EditCheckupResultDialog";
 import {
-	FileText,
+	Pencil,
 	CalendarDays,
 	AlertCircle,
 	CheckCircle,
 	AlertTriangle,
-	Search, ChevronRight,
+	Search,
+	ChevronRight,
+	FileText,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import ReturnButton from "../../../../components/ReturnButton.jsx";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import dayjs from "dayjs";
 
 function formatDate(dateInput) {
@@ -34,6 +36,10 @@ export function parseDate(array) {
 }
 
 export default function HealthCheckupDetail() {
+	const [editingResultId, setEditingResultId] = useState(null);
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const queryClient = useQueryClient();
+
 	const { id } = useParams();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -65,6 +71,19 @@ export default function HealthCheckupDetail() {
 		queryFn: () => api.get(`/checkup-results/event/${id}`).then((res) => res.data),
 	});
 
+	const { data: editingResultData } = useQuery({
+		queryKey: ["checkup-result-detail", editingResultId],
+		enabled: !!editingResultId && isDialogOpen,
+		queryFn: () => api.get(`/checkup-results/${editingResultId}`).then((res) => res.data),
+	});
+
+	const filtered = useMemo(() => {
+		if (!isResult || !resultList) return [];
+		return resultList.filter((item) =>
+			item.studentName.toLowerCase().includes(search.toLowerCase())
+		);
+	}, [search, resultList, isResult]);
+
 	if (isLoading || !eventData) return <Loading />;
 
 	const {
@@ -79,14 +98,20 @@ export default function HealthCheckupDetail() {
 		status: eventStatus,
 	} = eventData;
 
+	const statusOrder = {
+		APPROVED: 1,
+		REJECTED: 2,
+		PENDING: 3,
+	};
+
 	const status =
 		eventStatus === "PENDING"
 			? "Chờ duyệt"
 			: eventStatus === "APPROVED"
 				? "Đã lên lịch"
-				: eventStatus === "COMPLETED"
+				: eventStatus === "DONE"
 					? "Hoàn thành"
-					: "Đã hủy";
+					: "Không xác định";
 
 	const notReplied = Math.max(totalSent - totalReplied, 0);
 
@@ -105,38 +130,19 @@ export default function HealthCheckupDetail() {
 	function renderStatusBadge(consentStatus) {
 		switch (consentStatus) {
 			case "NOT_SENT":
-				return (
-					<span className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Chưa gửi đơn
-					</span>
-				);
+				return <span className="inline-block bg-green-100 font-semibold text-green-800 px-4 py-2 rounded">Chưa gửi đơn</span>;
 			case "PENDING":
-				return (
-					<span className="inline-block bg-yellow-100 text-yellow-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Chưa phản hồi
-					</span>
-				);
+				return <span className="inline-block bg-yellow-100 font-semibold text-yellow-800 px-4 py-2 rounded">Chưa phản hồi</span>;
 			case "APPROVED":
-				return (
-					<span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Đồng ý
-					</span>
-				);
+				return <span className="inline-block bg-blue-100 font-semibold text-blue-800 px-4 py-2 rounded">Đồng ý</span>;
 			case "REJECTED":
-				return (
-					<span className="inline-block bg-red-100 text-red-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Từ chối
-					</span>
-				);
+				return <span className="inline-block bg-red-100 font-semibold text-red-800 px-4 py-2 rounded">Từ chối</span>;
 			default:
-				return (
-					<span className="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Không rõ
-					</span>
-				);
+				return <span className="inline-block bg-gray-100 font-semibold text-gray-800 px-4 py-2 rounded">Không rõ</span>;
 		}
 	}
 
+	// === UI return ===
 	return (
 		<div className="max-w-screen-xl mx-auto font-inter text-gray-900">
 			<div className="flex justify-between items-center mt-4 mb-6">
@@ -151,7 +157,8 @@ export default function HealthCheckupDetail() {
 				</span>
 			</div>
 
-			{isConsent && (
+			{/* Consent filter + actions */}
+			{(isConsent || isResult) && (
 				<div className="flex flex-wrap justify-between items-center mt-6 mb-4">
 					<div className="flex gap-4 items-center">
 						<div className="relative w-[350px] mr-10">
@@ -176,23 +183,19 @@ export default function HealthCheckupDetail() {
 					</div>
 
 					<div className="flex gap-3">
-						<button
-							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md disabled:opacity-50"
-							onClick={handleSendConsentForms}
-							disabled={sending}
-						>
-							{sending ? "Đang gửi..." : "Gửi đơn"}
+						{isConsent && (
+							<button
+								className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md disabled:opacity-50"
+								onClick={handleSendConsentForms}
+								disabled={sending}
+							>
+								{sending ? "Đang gửi..." : "Gửi đơn"}
+							</button>
+						)}
+						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
+							Gửi kết quả
 						</button>
-						<button
-							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md"
-							onClick={() => console.log("Gửi lời nhắc")}
-						>
-							Gửi lời nhắc
-						</button>
-						<button
-							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md"
-							onClick={() => console.log("Xuất PDF")}
-						>
+						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
 							Xuất PDF
 						</button>
 					</div>
@@ -210,10 +213,7 @@ export default function HealthCheckupDetail() {
 								["Ngày tạo sự kiện", dayjs(parseDate(createdAt)).format("DD/MM/YYYY")],
 								["Người phụ trách", createdBy?.fullName || "Không rõ"],
 							].map(([label, value], i) => (
-								<div
-									key={i}
-									className={`flex justify-between px-6 py-3 rounded-md ${i % 2 === 0 ? "bg-[#E3F2FD]" : "bg-white"}`}
-								>
+								<div key={i} className={`flex justify-between px-6 py-3 rounded-md ${i % 2 === 0 ? "bg-[#E3F2FD]" : "bg-white"}`}>
 									<span className="font-bold">{label}</span>
 									<span>{value}</span>
 								</div>
@@ -254,21 +254,21 @@ export default function HealthCheckupDetail() {
 							))}
 						</div>
 
-					{eventStatus !== "PENDING" && (
-						<div className="grid grid-cols-2 gap-5">
-							<button
-								onClick={() => navigate(`/nurse/health-checkup/${id}/consents`)}
-								className="flex-center items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-4 py-2 rounded-lg"
-							>
-								Danh sách đơn
-							</button>
-							<button
-								onClick={() => navigate(`/nurse/health-checkup/${id}/results`)}
-								className="flex-center items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-4 py-2 rounded-lg"
-							>
-								Kết quả khám
-							</button>
-						</div>
+						{eventStatus !== "PENDING" && (
+							<div className="grid grid-cols-2 gap-5">
+								<button
+									onClick={() => navigate(`/nurse/health-checkup/${id}/consents`)}
+									className="bg-[#023E73] text-white text-lg font-semibold px-4 py-2 rounded-lg"
+								>
+									Danh sách đơn
+								</button>
+								<button
+									onClick={() => navigate(`/nurse/health-checkup/${id}/results`)}
+									className="bg-[#023E73] text-white text-lg font-semibold px-4 py-2 rounded-lg"
+								>
+									Kết quả khám
+								</button>
+							</div>
 						)}
 					</div>
 				</div>
@@ -290,40 +290,94 @@ export default function HealthCheckupDetail() {
 						</tr>
 						</thead>
 						<tbody>
-						{consentList.map((row) => (
-							<tr key={row.id} className="text-center border-t hover:bg-gray-50">
-								<td className="p-3">{row.studentCode}</td>
-								<td className="p-3">{row.studentName}</td>
-								<td className="p-3">{row.classCode}</td>
-								<td className="p-3">{row.parentName}</td>
-								<td className="p-3"><p>{row.parentEmail}</p><p>{row.parentPhone}</p></td>
-								<td className="p-3 font-semibold text-yellow-600">
-									{renderStatusBadge(row.consentStatus)}
-								</td>
-								<td><div
-									className="cursor-pointer"
-									onClick={() => navigate(`/nurse/health-checkup/consent/${row.id}`)}
-								>
-									<ChevronRight className="text-black hover:scale-110 transition-transform" />
-								</div></td>
-							</tr>
-						))}
+
+						{consentList.sort((a, b) => statusOrder[a.consentStatus] - statusOrder[b.consentStatus])
+							.map((row) => (
+								<tr key={row.id} className="text-center border-t hover:bg-gray-50">
+									<td className="p-3">{row.studentCode}</td>
+									<td className="p-3">{row.studentName}</td>
+									<td className="p-3">{row.classCode}</td>
+									<td className="p-3">{row.parentName}</td>
+									<td className="p-3"><p>{row.parentEmail}</p><p>{row.parentPhone}</p></td>
+									<td className="p-3">{renderStatusBadge(row.consentStatus)}</td>
+									<td className="p-3">
+										<div className="cursor-pointer" onClick={() => navigate(`/nurse/health-checkup/consent/${row.id}`)}>
+											<ChevronRight className="text-black hover:scale-110 transition-transform" />
+										</div>
+									</td>
+								</tr>
+							))}
 						</tbody>
 					</table>
 				</div>
 			)}
 
 			{isResult && (
-				<div className="mt-10">
-					<h2 className="text-xl font-bold mb-4">Hồ sơ khám sức khỏe</h2>
-					{resultList.length === 0 ? (
-						<p>Chưa có dữ liệu kết quả khám</p>
-					) : (
-						resultList.map((result) => (
-							<div key={result.id} className="border rounded-lg p-4 mb-6 bg-white shadow">
-								<CheckupResultDetail resultId={result.id} />
-							</div>
-						))
+				<div className="p-6 space-y-4">
+					<table className="w-full text-sm border rounded-md overflow-hidden">
+						<thead className="bg-gray-100 font-semibold text-left">
+						<tr>
+							<th className="p-3">MSHS</th>
+							<th className="p-3">Học sinh</th>
+							<th className="p-3">Lớp</th>
+							<th className="p-3">Bố</th>
+							<th className="p-3">Mẹ</th>
+							<th className="p-3">Ngày khám</th>
+							<th className="p-3">Hạng mục khám</th>
+							<th className="p-3">Kết quả</th>
+							<th className="p-3 text-center">Thao tác</th>
+						</tr>
+						</thead>
+						<tbody>
+						{filtered.map((item) => (
+							<tr key={item.resultId} className="border-t hover:bg-gray-50">
+								<td className="p-3">{item.studentCode}</td>
+								<td className="p-3">{item.studentName}</td>
+								<td className="p-3">{item.classCode}</td>
+								<td className="p-3">{item.contactEmail}</td>
+								<td className="p-3">{item.contactPhone}</td>
+								<td className="p-3">{item.examDate}</td>
+								<td className="p-3">{item.checkedItemsCount}/{item.totalItems}</td>
+								<td className="p-3">
+										<span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+											{item.resultSummary}
+										</span>
+								</td>
+								<td className="p-3 flex justify-center items-center gap-4">
+									<ChevronRight
+										size={20}
+										className="cursor-pointer text-blue-600 hover:scale-110"
+										onClick={() => navigate(`/nurse/checkup-results/${item.resultId}`)}
+									/>
+									<Pencil
+										size={20}
+										className="cursor-pointer text-gray-700 hover:text-blue-600"
+										onClick={() => {
+											setEditingResultId(item.resultId);
+											setIsDialogOpen(true);
+										}}
+									/>
+								</td>
+							</tr>
+						))}
+						{!filtered.length && (
+							<tr>
+								<td colSpan={9} className="text-center p-4 text-gray-500">Không có dữ liệu</td>
+							</tr>
+						)}
+						</tbody>
+					</table>
+
+					{/* Dialog */}
+					{editingResultData && (
+						<EditCheckupResultDialog
+							open={isDialogOpen}
+							onOpenChange={setIsDialogOpen}
+							section={editingResultData}
+							onSaved={() => {
+								queryClient.invalidateQueries(["checkup-result", id]);
+							}}
+						/>
 					)}
 				</div>
 			)}

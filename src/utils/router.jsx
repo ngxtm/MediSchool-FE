@@ -125,6 +125,7 @@ const HealthCheckupForm = lazy(() => import('../pages/nurse/sub-pages/health-che
 const HealthCheckupDetail = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupDetail.jsx'))
 const CheckupCategoryList = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupCategoryList.jsx'))
 const CheckupConsentDetail = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupConsentDetail.jsx'))
+const CheckupResultDetail = lazy(() => import('../pages/nurse/sub-pages/health-checkup/CheckupResultDetail.jsx'))
 
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'))
 const UserManagement = lazy(() => import('../pages/admin/UserManagement'))
@@ -175,6 +176,7 @@ const router = createBrowserRouter([
       { path: 'checkup-categories', element: <LazyComponent component={CheckupCategoryList} /> },
       { path: 'health-checkup/create', element: <LazyComponent component={HealthCheckupForm} /> },
       { path: 'health-checkup/:id', element: <LazyComponent component={HealthCheckupDetail} /> },
+      { path: 'checkup-results/:resultId', element: <LazyComponent component={CheckupResultDetail} /> },
       {
         path: 'vaccination',
         element: <LazyComponent component={VaccinationLayout} />,

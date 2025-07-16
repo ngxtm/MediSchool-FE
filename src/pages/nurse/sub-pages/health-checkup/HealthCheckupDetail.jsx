@@ -29,10 +29,36 @@ function formatDate(dateInput) {
 	}
 }
 
+function renderResultStatusBadge(status) {
+	const baseClass = "px-3 py-1 rounded-full text-sm font-semibold inline-block";
+
+	switch (status) {
+		case "NORMAL":
+			return <span className={`${baseClass} bg-green-100 text-green-700`}>Bình thường</span>;
+		case "ABNORMAL":
+			return <span className={`${baseClass} bg-yellow-100 text-yellow-800`}>Theo dõi</span>;
+		case "SERIOUS":
+			return <span className={`${baseClass} bg-red-100 text-red-700`}>Nguy hiểm</span>;
+		case "NO_RESULT":
+			return <span className={`${baseClass} bg-gray-100 text-gray-800`}>Chưa có kết quả</span>;
+		default:
+			return <span className={`${baseClass} bg-gray-200 text-gray-600`}>Không rõ</span>;
+	}
+}
+
 export function parseDate(array) {
 	if (!Array.isArray(array) || array.length < 3) return null;
 	const [year, month, day, hour = 0, minute = 0, second = 0] = array;
 	return new Date(year, month - 1, day, hour, minute, second);
+}
+
+export function useCheckupStats(id) {
+	return useQuery({
+		queryKey: ['checkup-stats', id],
+		queryFn: () =>
+			api.get(`/health-checkup/${id}/stats`).then((res) => res.data),
+		enabled: !!id,
+	});
 }
 
 export default function HealthCheckupDetail() {
@@ -41,6 +67,10 @@ export default function HealthCheckupDetail() {
 	const queryClient = useQueryClient();
 
 	const { id } = useParams();
+	const { data: stats } = useCheckupStats(id);
+	const totalSent = stats?.totalSent ?? 0;
+	const totalReplied = stats?.totalReplied ?? 0;
+	const totalNotReplied = stats?.totalNotReplied ?? 0;
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [search, setSearch] = useState("");
@@ -106,8 +136,6 @@ export default function HealthCheckupDetail() {
 		endDate,
 		createdAt,
 		createdBy,
-		totalSent = 0,
-		totalReplied = 0,
 		status: eventStatus,
 	} = eventData;
 
@@ -140,6 +168,8 @@ export default function HealthCheckupDetail() {
 		}
 	};
 
+
+
 	function renderStatusBadge(consentStatus) {
 		switch (consentStatus) {
 			case "NOT_SENT":
@@ -155,7 +185,6 @@ export default function HealthCheckupDetail() {
 		}
 	}
 
-	// === UI return ===
 	return (
 		<div className="max-w-screen-xl mx-auto font-inter text-gray-900">
 			<div className="flex justify-between items-center mt-4 mb-6">
@@ -177,7 +206,7 @@ export default function HealthCheckupDetail() {
 							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
 							<input
 								type="text"
-								placeholder="Tìm kiếm học sinhh"
+								placeholder="Tìm kiếm học sinh"
 								className="pl-9 pr-4 py-3 border rounded-md w-full text-md"
 								value={search}
 								onChange={(e) => setSearch(e.target.value)}
@@ -253,7 +282,7 @@ export default function HealthCheckupDetail() {
 							{[
 								["Đã gửi", totalSent, <FileText size={20} />, "bg-[#DAEAF7]"],
 								["Đã phản hồi", totalReplied, <CheckCircle size={20} />, "bg-[#C8E6C9]"],
-								["Chưa phản hồi", notReplied, <AlertTriangle size={20} />, "bg-[#F9F9F9]"],
+								["Chưa phản hồi", totalNotReplied, <AlertTriangle size={20} />, "bg-[#F9F9F9]"],
 								["Hạng mục khám", categoryList.length, <CalendarDays size={20} />, "bg-[#E3F2FD]"],
 							].map(([label, value, icon, bg], i) => (
 								<div key={i} className={`${bg} rounded-xl p-5`}>
@@ -325,51 +354,51 @@ export default function HealthCheckupDetail() {
 			)}
 
 			{isResult && (
-				<div className="p-6 space-y-4">
-					<table className="w-full text-sm border rounded-md overflow-hidden">
-						<thead className="bg-gray-100 font-semibold text-left">
+				<div className="p-6">
+					<table className="w-full text-sm border rounded-md overflow-hidden px-3 py-3">
+						<thead className="bg-gray-100 font-semibold text-center">
 						<tr>
-							<th className="p-3">MSHS</th>
-							<th className="p-3">Học sinh</th>
-							<th className="p-3">Lớp</th>
-							<th className="p-3">Phụ huynh</th>
-							<th className="p-3">Liên lạc</th>
-							<th className="p-3">Ngày khám</th>
-							<th className="p-3">Hạng mục khám</th>
-							<th className="p-3">Kết quả</th>
-							<th className="p-3 text-center">Thao tác</th>
+							<th className="p-5">MSHS</th>
+							<th className="p-5">Học sinh</th>
+							<th className="p-5">Lớp</th>
+							<th className="p-5">Phụ huynh</th>
+							<th className="p-5">Liên lạc</th>
+							<th className="p-5">Ngày khám</th>
+							<th className="p-5">Hạng mục khám</th>
+							<th className="p-5">Kết quả</th>
+							<th className="p-5">Thao tác</th>
 						</tr>
 						</thead>
 						<tbody>
 						{filteredResults.map((item) => (
-							<tr key={item.resultId} className="border-t hover:bg-gray-50">
+							<tr key={item.resultId} className="border-t hover:bg-gray-50 text-center">
 								<td className="p-3">{item.studentCode}</td>
 								<td className="p-3">{item.studentName}</td>
 								<td className="p-3">{item.classCode}</td>
 								<td className="p-3">{item.parentName}</td>
 								<td className="p-3"><p>{item.parentEmail}</p><p>{item.parentPhone}</p></td>
 								<td className="p-3">{item.eventDate}</td>
-								<td className="p-3">{item.categoryResults.length}/categoryList.length</td>
-								<td className="p-3">
-										<span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-											<p>{item.status}</p>
-											<p>{item.note}</p>
-										</span>
+								<td className="p-3">{item.categoryResults.length}/{categoryList.length}</td>
+								<td className="px-4 py-4">
+									<span>{renderResultStatusBadge(item.status)}</span>
 								</td>
-								<td className="p-3 flex justify-center items-center gap-4">
-									<ChevronRight
-										size={20}
-										className="cursor-pointer text-blue-600 hover:scale-110"
-										onClick={() => navigate(`/nurse/checkup-results/${item.resultId}`)}
-									/>
-									<Pencil
-										size={20}
-										className="cursor-pointer text-gray-700 hover:text-blue-600"
-										onClick={() => {
-											setEditingResultId(item.resultId);
-											setIsDialogOpen(true);
-										}}
-									/>
+
+								<td className="p-3 h-full">
+									<div className="h-full flex justify-center items-center gap-4">
+										<ChevronRight
+											size={20}
+											className="cursor-pointer text-blue-600 hover:scale-110"
+											onClick={() => navigate(`/nurse/checkup-results/${item.resultId}`)}
+										/>
+										<Pencil
+											size={20}
+											className="cursor-pointer text-gray-700 hover:text-blue-600"
+											onClick={() => {
+												setEditingResultId(item.resultId);
+												setIsDialogOpen(true);
+											}}
+										/>
+									</div>
 								</td>
 							</tr>
 						))}
@@ -385,7 +414,13 @@ export default function HealthCheckupDetail() {
 						<EditCheckupResultDialog
 							open={isDialogOpen}
 							onOpenChange={setIsDialogOpen}
-							section={editingResultData}
+							resultId={editingResultId}
+							section={{
+								status: editingResultData?.status,
+								note: editingResultData?.note,
+								eventDate: editingResultData?.eventDate,
+							}}
+							isOverall
 							onSaved={() => {
 								queryClient.invalidateQueries(["checkup-result", id]);
 							}}

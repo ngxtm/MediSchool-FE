@@ -114,9 +114,7 @@ export default function HealthCheckupForm() {
       schoolYear,
       startDate,
       endDate,
-      scope,
-      categoryIds: selectedCategories,
-      classCodes,
+      categoryIds: selectedCategories
     };
 
     try {

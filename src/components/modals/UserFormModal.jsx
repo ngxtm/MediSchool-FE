@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal, Form, Select, Input as AntInput, Space } from 'antd'
 import { Button } from '@/components/ui/button'
+import { successToast, errorToast, pendingToast } from '../ToastPopup'
 
 const USER_ROLES = [
   { value: 'ADMIN', label: 'Admin' },
@@ -10,18 +11,41 @@ const USER_ROLES = [
 ]
 
 const UserFormModal = ({ isVisible, onClose, onSubmit, isEdit, form, loading = false }) => {
-  const handleSubmit = async values => {
-    const result = await onSubmit(values)
-    if (result?.success) {
-      onClose()
-    }
-  }
+  const [role, setRole] = useState(form.getFieldValue('role') || '')
+
+  useEffect(() => {
+    setRole(form.getFieldValue('role') || '')
+  }, [form])
 
   const shouldShowPassword = isEdit === false
 
   return (
-    <Modal title={isEdit ? 'Sửa người dùng' : 'Thêm người dùng mới'} open={isVisible} onCancel={onClose} footer={null}>
-      <Form form={form} layout="vertical" onFinish={handleSubmit} disabled={loading}>
+    <Modal
+      open={isVisible}
+      onCancel={onClose}
+      footer={null}
+      title={isEdit ? 'Chỉnh sửa người dùng' : 'Tạo người dùng'}
+      confirmLoading={loading}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={async values => {
+          const toastId = pendingToast('Đang thêm người dùng...')
+          try {
+            const result = await onSubmit(values)
+            if (result?.success) {
+              successToast('Thêm người dùng thành công!')
+            }
+          } catch {
+            errorToast('Lỗi khi thêm người dùng!')
+          } finally {
+            if (toastId) {
+              import('react-toastify').then(({ toast }) => toast.dismiss(toastId))
+            }
+          }
+        }}
+      >
         <Form.Item
           name="fullName"
           label="Họ tên"
@@ -59,14 +83,31 @@ const UserFormModal = ({ isVisible, onClose, onSubmit, isEdit, form, loading = f
         </Form.Item>
 
         <Form.Item name="role" label="Vai trò" rules={[{ required: true, message: 'Vui lòng chọn vai trò' }]}>
-          <Select placeholder="Chọn vai trò">
-            {USER_ROLES.map(role => (
-              <Select.Option key={role.value} value={role.value}>
-                {role.label}
-              </Select.Option>
-            ))}
+          <Select onChange={value => setRole(value)}>
+            <Select.Option value="ADMIN">Admin</Select.Option>
+            <Select.Option value="MANAGER">Manager</Select.Option>
+            <Select.Option value="NURSE">Nurse</Select.Option>
+            <Select.Option value="PARENT">Parent</Select.Option>
           </Select>
         </Form.Item>
+        {role === 'PARENT' && (
+          <>
+            <Form.Item
+              name="job"
+              label="Nghề nghiệp của phụ huynh"
+              rules={[{ required: true, message: 'Vui lòng nhập nghề nghiệp' }]}
+            >
+              <AntInput placeholder="Nhập nghề nghiệp" />
+            </Form.Item>
+            <Form.Item
+              name="jobPlace"
+              label="Nơi làm việc của phụ huynh"
+              rules={[{ required: true, message: 'Vui lòng nhập nơi làm việc' }]}
+            >
+              <AntInput placeholder="Nhập nơi làm việc" />
+            </Form.Item>
+          </>
+        )}
 
         <Form.Item name="address" label="Địa chỉ">
           <AntInput placeholder="Nhập địa chỉ" />
@@ -77,7 +118,7 @@ const UserFormModal = ({ isVisible, onClose, onSubmit, isEdit, form, loading = f
             <Button variant="outline" onClick={onClose} disabled={loading}>
               Hủy
             </Button>
-            <Button type="submit" loading={loading}>
+            <Button type="submit" style={{ background: '#000', color: '#fff', border: 'none' }} loading={loading}>
               {isEdit ? 'Cập nhật' : 'Tạo mới'}
             </Button>
           </Space>

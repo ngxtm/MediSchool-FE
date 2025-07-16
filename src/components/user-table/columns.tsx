@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { parseDate } from '../../utils/dateparse'
 
 interface ColumnsProps {
   onEdit: (user: User) => void
@@ -24,34 +25,12 @@ interface ColumnsProps {
 export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }: ColumnsProps): ColumnDef<User>[] => [
   {
     accessorKey: 'fullName',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-8 justify-start px-2 text-left font-semibold text-gray-700 hover:bg-gray-100"
-        >
-          Tên
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: () => <div className="px-2 font-semibold text-gray-700">Tên</div>,
     cell: ({ row }) => <div className="px-2 font-medium text-gray-900">{row.getValue('fullName')}</div>
   },
   {
     accessorKey: 'email',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="h-8 justify-start px-2 text-left font-semibold text-gray-700 hover:bg-gray-100"
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: () => <div className="px-2 font-semibold text-gray-700">Email</div>,
     cell: ({ row }) => <div className="px-2 text-gray-600">{row.getValue('email')}</div>
   },
   {
@@ -61,7 +40,18 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
   },
   {
     accessorKey: 'role',
-    header: () => <div className="px-2 font-semibold text-gray-700">Vai trò</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="h-8 justify-start px-2 text-left font-semibold text-gray-700 hover:bg-gray-100"
+        >
+          Vai trò
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const role = row.getValue('role') as string
       const roleColors = {
@@ -76,6 +66,12 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
           <Badge variant={roleColors[role as keyof typeof roleColors]}>{role}</Badge>
         </div>
       )
+    },
+    sortFn: (a, b) => {
+      const priority = { ADMIN: 1, MANAGER: 2, NURSE: 3, PARENT: 4 }
+      const roleA = a.getValue('role')
+      const roleB = b.getValue('role')
+      return (priority[roleA] || 99) - (priority[roleB] || 99)
     }
   },
   {
@@ -226,6 +222,11 @@ export const createColumns = ({ onEdit, onSoftDelete, onRestore, onHardDelete }:
           </div>
         )
       }
+    },
+    sortFn: (a, b) => {
+      const dateA = parseDate(a.getValue('createdAt'))
+      const dateB = parseDate(b.getValue('createdAt'))
+      return dateA.getTime() - dateB.getTime()
     }
   },
   {

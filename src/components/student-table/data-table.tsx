@@ -180,14 +180,18 @@ export const DataTable = React.memo(
             />
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={onImportExcel} className="ml-auto hidden h-8 lg:flex">
-              <Download className="mr-2 h-4 w-4" />
-              Import Excel
-            </Button>
-            <Button size="sm" onClick={onCreateStudent} className="ml-auto hidden h-8 lg:flex">
-              <Plus className="mr-2 h-4 w-4" />
-              Thêm học sinh
-            </Button>
+            {onImportExcel && (
+              <Button variant="outline" size="sm" onClick={onImportExcel} className="ml-auto hidden h-8 lg:flex">
+                <Download className="mr-2 h-4 w-4" />
+                Import Excel
+              </Button>
+            )}
+            {onCreateStudent && (
+              <Button size="sm" onClick={onCreateStudent} className="ml-auto hidden h-8 lg:flex">
+                <Plus className="mr-2 h-4 w-4" />
+                Thêm học sinh
+              </Button>
+            )}
           </div>
         </div>
         <div className="overflow-hidden rounded-lg border bg-white">

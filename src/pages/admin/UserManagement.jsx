@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import ImportExcelModal from '@/components/ImportExcelModal'
 import UserFormModal from '@/components/modals/UserFormModal'
+import { errorToast } from '../../components/ToastPopup'
 
 const { TextArea } = AntInput
 
@@ -52,10 +53,16 @@ const UserManagement = () => {
         const { password: _password, ...updateData } = values
         await api.put(`/admin/users/${currentUser.id}`, updateData)
         message.success('Cập nhật người dùng thành công')
+        setIsModalVisible(false)
       } else {
-        if (values.password && values.password.trim() !== '') {
+        if (values.role === 'PARENT') {
+          await api.post('/admin/parent-user', values)
+          message.success('Tạo phụ huynh thành công')
+          setIsModalVisible(false)
+        } else if (values.password && values.password.trim() !== '') {
           await api.post('/admin/users/with-password', values)
           message.success('Tạo người dùng thành công')
+          setIsModalVisible(false)
           try {
             await api.post('/activity-log', {
               actionType: 'CREATE',
@@ -70,6 +77,7 @@ const UserManagement = () => {
           const { password: _password, ...createData } = values
           await api.post('/admin/users', createData)
           message.success('Tạo người dùng thành công')
+          setIsModalVisible(false)
           try {
             await api.post('/activity-log', {
               actionType: 'CREATE',
@@ -85,8 +93,10 @@ const UserManagement = () => {
       fetchUsers()
       return { success: true }
     } catch (error) {
-      message.error('Lỗi khi lưu người dùng')
-      console.error('Error saving user:', error)
+      errorToast(
+        error?.response?.data?.error || error?.response?.data?.message || error?.message || 'Lỗi khi lưu người dùng',
+        'bottom-center'
+      )
       return { success: false }
     }
   }

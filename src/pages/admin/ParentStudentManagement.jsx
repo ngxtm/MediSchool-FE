@@ -65,8 +65,12 @@ const ParentStudentManagement = () => {
   const handleAssignParent = async values => {
     setAssigning(true)
     try {
-      const _forLinter = values
-      message.success('Đã gán phụ huynh cho học sinh (giả lập, cần backend)')
+      await api.post('/admin/parent-student-link', {
+        parentId: values.parentId,
+        studentId: selectedStudent.studentId,
+        relationship: values.relationship
+      })
+      message.success('Đã gán phụ huynh cho học sinh')
       setModalVisible(false)
       api.get(`/students/${selectedStudent.studentId}/parents`).then(parentRes => {
         setParentMap(prev => ({
@@ -75,7 +79,7 @@ const ParentStudentManagement = () => {
         }))
       })
     } catch {
-      message.error('Lỗi khi gán phụ huynh (cần backend)')
+      message.error('Lỗi khi gán phụ huynh')
     } finally {
       setAssigning(false)
     }
@@ -83,18 +87,17 @@ const ParentStudentManagement = () => {
 
   const handleDeleteParent = async (studentId, parentId) => {
     try {
-      const response = await fetch(`/api/admin/parent-student-link?studentId=${studentId}&parentId=${parentId}`, {
-        method: 'DELETE'
+      await api.delete('/admin/parent-student-link', {
+        params: {
+          studentId,
+          parentId
+        }
       })
-      if (response.ok) {
-        message.success('Đã xóa quan hệ phụ huynh-học sinh')
-        setParentMap(prev => ({
-          ...prev,
-          [studentId]: (prev[studentId] || []).filter(p => p.parentId !== parentId)
-        }))
-      } else {
-        message.error('Không tìm thấy quan hệ phụ huynh-học sinh')
-      }
+      message.success('Đã xóa quan hệ phụ huynh-học sinh')
+      setParentMap(prev => ({
+        ...prev,
+        [studentId]: (prev[studentId] || []).filter(p => p.parentId !== parentId)
+      }))
     } catch {
       message.error('Lỗi khi xóa quan hệ phụ huynh-học sinh')
     }
@@ -300,8 +303,8 @@ const ParentStudentManagement = () => {
               onSearchChange={setSearchText}
               includeInactive={false}
               onIncludeInactiveChange={undefined}
-              onCreateStudent={() => {}}
-              onImportExcel={() => {}}
+              onCreateStudent={undefined}
+              onImportExcel={undefined}
               loading={loading}
               pagination={pagination}
               setPagination={setPagination}

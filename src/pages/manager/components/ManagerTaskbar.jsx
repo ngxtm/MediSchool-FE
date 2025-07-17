@@ -28,6 +28,9 @@ const ManagerTaskBar = ({ userData }) => {
   if (pathParts.includes('medication-requests')) {
     currentTab = 'medication-requests'
   }
+  if (pathParts.includes('health-checkup')) {
+    currentTab = 'health-checkup'
+  }
   if (
     pathParts.includes('manager') &&
     !['student', 'vaccination', 'health-checkup', 'medication-requests', 'medication-event'].includes(currentTab)

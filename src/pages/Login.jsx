@@ -161,12 +161,12 @@ const Login = () => {
             <p className="mb-8 text-center text-sm text-gray-600 sm:text-base">
               Truy cập hồ sơ y tế của con bạn một cách an toàn
             </p>
-            <p className="mb-8 text-center text-sm text-gray-600">
+            {/* <p className="mb-8 text-center text-sm text-gray-600">
               Chưa có tài khoản?{' '}
               <a href="#" className="text-blue-600 hover:underline" onClick={() => navigate('/signup')}>
                 Đăng ký
               </a>
-            </p>
+            </p> */}
             <div className="mb-4">
               <div className="relative flex items-center">
                 <User className="absolute left-3 text-gray-500" size={24} />

@@ -311,17 +311,6 @@ const Vaccination = () => {
     ]
   })
 
-  useEffect(() => {
-    results.forEach((result, index) => {
-      if (result.isError || result.data?.length === 0) {
-        const errorMessage =
-          result.error?.response?.data?.error ||
-          `Lỗi khi tải dữ liệu ${index === 0 ? 'thống kê' : index === 1 ? 'sự kiện sắp tới' : 'danh sách sự kiện'}`
-        errorToast(errorMessage, undefined, 8000)
-      }
-    })
-  }, [results])
-
   const isLoading = results.some(result => result.isLoading)
 
   if (isLoading) {

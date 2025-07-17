@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { ArrowLeft } from 'lucide-react'
 import api from '../../../../utils/api.js'
 
-export default function HealthCheckupForm() {
+export default function ManagerHealthCheckupForm() {
   const navigate = useNavigate()
 
   const [eventTitle, setEventTitle] = useState('')
@@ -114,9 +114,7 @@ export default function HealthCheckupForm() {
       schoolYear,
       startDate,
       endDate,
-      scope,
-      categoryIds: selectedCategories,
-      classCodes,
+      categoryIds: selectedCategories
     };
 
     try {
@@ -158,56 +156,7 @@ export default function HealthCheckupForm() {
             <label className="mb-2 block text-lg font-semibold">Năm học</label>
             <input type="text" value={schoolYear} readOnly className="w-full rounded border bg-gray-100 px-4 py-2" />
           </div>
-          <div>
-            <label className="mb-2 block text-lg font-semibold">Phạm vi</label>
-            <select
-              value={scope}
-              onChange={e => {
-                setScope(e.target.value)
-                setSelectedGrade('')
-                setSelectedClasses([])
-              }}
-              className="w-full rounded border px-4 py-2"
-            >
-              <option value="SCHOOL">Toàn trường</option>
-              <option value="GRADE">Theo khối</option>
-              <option value="CLASS">Theo lớp</option>
-            </select>
-          </div>
         </div>
-
-        {scope === 'GRADE' && (
-          <div>
-            <label className="mb-2 block text-lg font-semibold">Chọn khối</label>
-            <select
-              value={selectedGrade}
-              onChange={e => setSelectedGrade(e.target.value)}
-              className="w-full rounded border px-4 py-2"
-            >
-              <option value="">-- Chọn khối --</option>
-              {grades.map(g => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {scope === 'CLASS' && (
-          <div>
-            <label className="mb-2 block text-lg font-semibold">Chọn lớp</label>
-            <Select
-              isMulti
-              options={classes.map(c => ({ value: c.name, label: c.name }))}
-              value={selectedClasses.map(name => ({ value: name, label: name }))}
-              onChange={selected => setSelectedClasses(selected.map(opt => opt.value))}
-              className="react-select-container w-full rounded border"
-              classNamePrefix="select"
-              placeholder="-- Chọn lớp --"
-            />
-          </div>
-        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div>

@@ -112,12 +112,12 @@ const ManagerRequestApproved = lazy(
   () => import('../pages/manager/sub-pages/medication-requests/ManagerRequestApproved.jsx')
 )
 
-const ManagerCheckupPage = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupLayout.jsx'))
-const ManagerCheckupList = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupList.jsx'))
-const ManagerCheckupForm = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupForm.jsx'))
-const ManagerCheckupDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/HealthCheckupDetail.jsx'))
-const ManagerCategoryList = lazy(() => import('../pages/manager/sub-pages/health-checkup/CheckupCategoryList.jsx'))
-const ManagerCheckupConsentDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/CheckupConsentDetail.jsx'))
+const ManagerCheckupLayout = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerHealthCheckupLayout'))
+const ManagerCheckupList = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerHealthCheckupList'))
+const ManagerCheckupForm = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerHealthCheckupForm'))
+const ManagerCheckupDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerHealthCheckupDetail'))
+const ManagerCategoryList = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerCheckupCategoryList'))
+const ManagerCheckupConsentDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerCheckupConsentDetail'))
 
 const HealthCheckupList = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupList.jsx'))
 const HealthCheckupLayout = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'))
@@ -281,7 +281,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'health-checkup',
-        element: <LazyComponent component={ManagerCheckupPage} />,
+        element: <LazyComponent component={ManagerCheckupLayout} />,
           children: [
             { index: true, element: <LazyComponent component={ManagerCheckupList} /> },
             {

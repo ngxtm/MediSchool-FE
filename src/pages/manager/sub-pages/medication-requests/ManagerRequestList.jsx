@@ -24,7 +24,7 @@ export default function ManagerRequestList({ data, nurseId }) {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-10 bg-[#DAEAF7] font-semibold mt-24 rounded-lg">
+                <div className="text-center py-10 bg-gradient-to-r from-emerald-300 to-emerald-500 font-semibold mt-24 rounded-lg">
                     Không có đơn thuốc nào
                 </div>
             )}

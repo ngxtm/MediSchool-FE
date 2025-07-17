@@ -1,20 +1,22 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import api from "@/utils/api";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
 import {
-	FileText,
+	Pencil,
 	CalendarDays,
 	AlertCircle,
 	CheckCircle,
 	AlertTriangle,
-	Search, ChevronRight,
+	Search,
+	ChevronRight,
+	FileText,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import ReturnButton from "../../../../components/ReturnButton.jsx";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import dayjs from "dayjs";
 
 function formatDate(dateInput) {
@@ -26,14 +28,44 @@ function formatDate(dateInput) {
 	}
 }
 
+function renderResultStatusBadge(status) {
+	const baseClass = "px-3 py-1 rounded-full text-sm font-semibold inline-block";
+
+	switch (status) {
+		case "NORMAL":
+			return <span className={`${baseClass} bg-green-100 text-green-700`}>Bình thường</span>;
+		case "ABNORMAL":
+			return <span className={`${baseClass} bg-yellow-100 text-yellow-800`}>Theo dõi</span>;
+		case "SERIOUS":
+			return <span className={`${baseClass} bg-red-100 text-red-700`}>Nguy hiểm</span>;
+		case "NO_RESULT":
+			return <span className={`${baseClass} bg-gray-100 text-gray-800`}>Chưa có kết quả</span>;
+		default:
+			return <span className={`${baseClass} bg-gray-200 text-gray-600`}>Không rõ</span>;
+	}
+}
+
 export function parseDate(array) {
 	if (!Array.isArray(array) || array.length < 3) return null;
 	const [year, month, day, hour = 0, minute = 0, second = 0] = array;
 	return new Date(year, month - 1, day, hour, minute, second);
 }
 
-export default function HealthCheckupDetail() {
+export function useCheckupStats(id) {
+	return useQuery({
+		queryKey: ['checkup-stats', id],
+		queryFn: () =>
+			api.get(`/health-checkup/${id}/stats`).then((res) => res.data),
+		enabled: !!id,
+	});
+}
+
+export default function ManagerHealthCheckupDetail() {
 	const { id } = useParams();
+	const { data: stats } = useCheckupStats(id);
+	const totalSent = stats?.totalSent ?? 0;
+	const totalReplied = stats?.totalReplied ?? 0;
+	const totalNotReplied = stats?.totalNotReplied ?? 0;
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [search, setSearch] = useState("");
@@ -64,6 +96,26 @@ export default function HealthCheckupDetail() {
 		queryFn: () => api.get(`/checkup-results/event/${id}`).then((res) => res.data),
 	});
 
+	const filteredConsents = useMemo(() => {
+		if (!isConsent || !consentList) return [];
+		const lowerSearch = search.toLowerCase();
+		return consentList.filter((item) =>
+			item.studentName.toLowerCase().includes(lowerSearch) ||
+			item.studentCode.toLowerCase().includes(lowerSearch) ||
+			item.classCode?.toLowerCase().includes(lowerSearch)
+		);
+	}, [consentList, isConsent, search]);
+
+	const filteredResults = useMemo(() => {
+		if (!isResult || !resultList) return [];
+		const lowerSearch = search.toLowerCase();
+		return resultList.filter((item) =>
+			item.studentName.toLowerCase().includes(lowerSearch) ||
+			item.studentCode.toLowerCase().includes(lowerSearch) ||
+			item.classCode?.toLowerCase().includes(lowerSearch)
+		);
+	}, [resultList, isResult, search]);
+
 	if (isLoading || !eventData) return <Loading />;
 
 	const {
@@ -73,10 +125,14 @@ export default function HealthCheckupDetail() {
 		endDate,
 		createdAt,
 		createdBy,
-		totalSent = 0,
-		totalReplied = 0,
-		eventStatus, // đúng tên từ backend
+		status: eventStatus,
 	} = eventData;
+
+	const statusOrder = {
+		APPROVED: 1,
+		REJECTED: 2,
+		PENDING: 3,
+	};
 
 	const status =
 		eventStatus === "PENDING"
@@ -101,38 +157,20 @@ export default function HealthCheckupDetail() {
 		}
 	};
 
+
+
 	function renderStatusBadge(consentStatus) {
 		switch (consentStatus) {
 			case "NOT_SENT":
-				return (
-					<span className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Chưa gửi đơn
-					</span>
-				);
+				return <span className="inline-block bg-green-100 font-semibold text-green-800 px-4 py-2 rounded">Chưa gửi đơn</span>;
 			case "PENDING":
-				return (
-					<span className="inline-block bg-yellow-100 text-yellow-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Chưa phản hồi
-					</span>
-				);
+				return <span className="inline-block bg-yellow-100 font-semibold text-yellow-800 px-4 py-2 rounded">Chưa phản hồi</span>;
 			case "APPROVED":
-				return (
-					<span className="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Đồng ý
-					</span>
-				);
+				return <span className="inline-block bg-blue-100 font-semibold text-blue-800 px-4 py-2 rounded">Đồng ý</span>;
 			case "REJECTED":
-				return (
-					<span className="inline-block bg-red-100 text-red-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Từ chối
-					</span>
-				);
+				return <span className="inline-block bg-red-100 font-semibold text-red-800 px-4 py-2 rounded">Từ chối</span>;
 			default:
-				return (
-					<span className="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded text-m font-lg font-bold">
-						Không rõ
-					</span>
-				);
+				return <span className="inline-block bg-gray-100 font-semibold text-gray-800 px-4 py-2 rounded">Không rõ</span>;
 		}
 	}
 
@@ -150,14 +188,14 @@ export default function HealthCheckupDetail() {
 				</span>
 			</div>
 
-			{isConsent && (
+			{(isConsent || isResult) && (
 				<div className="flex flex-wrap justify-between items-center mt-6 mb-4">
 					<div className="flex gap-4 items-center">
 						<div className="relative w-[350px] mr-10">
 							<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
 							<input
 								type="text"
-								placeholder="Tìm kiếm học sinh hoặc phụ huynh"
+								placeholder="Tìm kiếm học sinh"
 								className="pl-9 pr-4 py-3 border rounded-md w-full text-md"
 								value={search}
 								onChange={(e) => setSearch(e.target.value)}
@@ -175,23 +213,19 @@ export default function HealthCheckupDetail() {
 					</div>
 
 					<div className="flex gap-3">
-						<button
-							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md disabled:opacity-50"
-							onClick={handleSendConsentForms}
-							disabled={sending}
-						>
-							{sending ? "Đang gửi..." : "Gửi đơn"}
+						{isConsent && (
+							<button
+								className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md disabled:opacity-50"
+								onClick={handleSendConsentForms}
+								disabled={sending}
+							>
+								{sending ? "Đang gửi..." : "Gửi đơn"}
+							</button>
+						)}
+						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
+							Gửi kết quả
 						</button>
-						<button
-							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md"
-							onClick={() => console.log("Gửi lời nhắc")}
-						>
-							Gửi lời nhắc
-						</button>
-						<button
-							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md"
-							onClick={() => console.log("Xuất PDF")}
-						>
+						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
 							Xuất PDF
 						</button>
 					</div>
@@ -209,10 +243,7 @@ export default function HealthCheckupDetail() {
 								["Ngày tạo sự kiện", dayjs(parseDate(createdAt)).format("DD/MM/YYYY")],
 								["Người phụ trách", createdBy?.fullName || "Không rõ"],
 							].map(([label, value], i) => (
-								<div
-									key={i}
-									className={`flex justify-between px-6 py-3 rounded-md ${i % 2 === 0 ? "bg-[#E3F2FD]" : "bg-white"}`}
-								>
+								<div key={i} className={`flex justify-between px-6 py-3 rounded-md ${i % 2 === 0 ? "bg-[#E3F2FD]" : "bg-white"}`}>
 									<span className="font-bold">{label}</span>
 									<span>{value}</span>
 								</div>
@@ -240,7 +271,7 @@ export default function HealthCheckupDetail() {
 							{[
 								["Đã gửi", totalSent, <FileText size={20} />, "bg-[#DAEAF7]"],
 								["Đã phản hồi", totalReplied, <CheckCircle size={20} />, "bg-[#C8E6C9]"],
-								["Chưa phản hồi", notReplied, <AlertTriangle size={20} />, "bg-[#F9F9F9]"],
+								["Chưa phản hồi", totalNotReplied, <AlertTriangle size={20} />, "bg-[#F9F9F9]"],
 								["Hạng mục khám", categoryList.length, <CalendarDays size={20} />, "bg-[#E3F2FD]"],
 							].map(([label, value, icon, bg], i) => (
 								<div key={i} className={`${bg} rounded-xl p-5`}>
@@ -253,21 +284,21 @@ export default function HealthCheckupDetail() {
 							))}
 						</div>
 
-					{eventStatus !== "PENDING" && (
-						<div className="grid grid-cols-2 gap-5">
-							<button
-								onClick={() => navigate(`/manager/health-checkup/${id}/consents`)}
-								className="flex-center items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-4 py-2 rounded-lg"
-							>
-								Danh sách đơn
-							</button>
-							<button
-								onClick={() => navigate(`/manager/health-checkup/${id}/results`)}
-								className="flex-center items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-4 py-2 rounded-lg"
-							>
-								Kết quả khám
-							</button>
-						</div>
+						{eventStatus !== "PENDING" && (
+							<div className="grid grid-cols-2 gap-5">
+								<button
+									onClick={() => navigate(`/manager/health-checkup/${id}/consents`)}
+									className="bg-[#023E73] text-white text-lg font-semibold px-4 py-2 rounded-lg"
+								>
+									Danh sách đơn
+								</button>
+								<button
+									onClick={() => navigate(`/manager/health-checkup/${id}/results`)}
+									className="bg-[#023E73] text-white text-lg font-semibold px-4 py-2 rounded-lg"
+								>
+									Kết quả khám
+								</button>
+							</div>
 						)}
 					</div>
 				</div>
@@ -289,52 +320,77 @@ export default function HealthCheckupDetail() {
 						</tr>
 						</thead>
 						<tbody>
-						{consentList.map((row) => (
-							<tr key={row.id} className="text-center border-t hover:bg-gray-50">
-								<td className="p-3">{row.studentCode}</td>
-								<td className="p-3">{row.studentName}</td>
-								<td className="p-3">{row.classCode}</td>
-								<td className="p-3">{row.parentName}</td>
-								<td className="p-3">{row.contactPhone}</td>
-								<td className="p-3 font-semibold text-yellow-600">
-									{renderStatusBadge(row.consentStatus)}
-								</td>
-								<td><div
-									className="cursor-pointer"
-									onClick={() => navigate(`/manager/health-checkup/consent/${row.id}`)}
-								>
-									<ChevronRight className="text-black hover:scale-110 transition-transform" />
-								</div></td>
-							</tr>
-						))}
+
+						{filteredConsents.sort((a, b) => statusOrder[a.consentStatus] - statusOrder[b.consentStatus])
+							.map((row) => (
+								<tr key={row.id} className="text-center border-t hover:bg-gray-50">
+									<td className="p-3">{row.studentCode}</td>
+									<td className="p-3">{row.studentName}</td>
+									<td className="p-3">{row.classCode}</td>
+									<td className="p-3">{row.parentName}</td>
+									<td className="p-3"><p>{row.parentEmail}</p><p>{row.parentPhone}</p></td>
+									<td className="p-3">{renderStatusBadge(row.consentStatus)}</td>
+									<td className="p-3">
+										<div className="cursor-pointer" onClick={() => navigate(`/manager/health-checkup/consent/${row.id}`)}>
+											<ChevronRight className="text-black hover:scale-110 transition-transform" />
+										</div>
+									</td>
+								</tr>
+							))}
 						</tbody>
 					</table>
 				</div>
 			)}
 
 			{isResult && (
-				<div className="mt-10">
-					<h2 className="text-xl font-bold mb-4">Hồ sơ khám sức khỏe</h2>
-					<table className="w-full text-sm border rounded-md overflow-hidden">
-						<thead className="bg-gray-100 font-semibold text-left">
+				<div className="p-6">
+					<table className="w-full text-sm border rounded-md overflow-hidden px-3 py-3">
+						<thead className="bg-gray-100 font-semibold text-center">
 						<tr>
-							<th className="p-3">Học sinh</th>
-							<th className="p-3">Lớp</th>
-							<th className="p-3">Vấn đề</th>
-							<th className="p-3">Ghi chú</th>
+							<th className="p-5">MSHS</th>
+							<th className="p-5">Học sinh</th>
+							<th className="p-5">Lớp</th>
+							<th className="p-5">Phụ huynh</th>
+							<th className="p-5">Liên lạc</th>
+							<th className="p-5">Ngày khám</th>
+							<th className="p-5">Hạng mục khám</th>
+							<th className="p-5">Kết quả</th>
+							<th className="p-5">Thao tác</th>
 						</tr>
 						</thead>
 						<tbody>
-						{resultList.map((row) => (
-							<tr key={row.id} className="border-t hover:bg-gray-50">
-								<td className="p-3">{row.studentName}</td>
-								<td className="p-3">{row.className}</td>
-								<td className="p-3">{row.healthIssue}</td>
-								<td className="p-3">{row.notes}</td>
+						{filteredResults.map((item) => (
+							<tr key={item.resultId} className="border-t hover:bg-gray-50 text-center">
+								<td className="p-3">{item.studentCode}</td>
+								<td className="p-3">{item.studentName}</td>
+								<td className="p-3">{item.classCode}</td>
+								<td className="p-3">{item.parentName}</td>
+								<td className="p-3"><p>{item.parentEmail}</p><p>{item.parentPhone}</p></td>
+								<td className="p-3">{item.eventDate}</td>
+								<td className="p-3">{item.categoryResults.length}/{categoryList.length}</td>
+								<td className="px-4 py-4">
+									<span>{renderResultStatusBadge(item.status)}</span>
+								</td>
+
+								<td className="p-3 h-full">
+									<div className="h-full flex justify-center items-center gap-4">
+										<ChevronRight
+											size={20}
+											className="cursor-pointer text-blue-600 hover:scale-110"
+											onClick={() => navigate(`/manager/checkup-results/${item.resultId}`)}
+										/>
+									</div>
+								</td>
 							</tr>
 						))}
+						{!filteredResults.length && (
+							<tr>
+								<td colSpan={9} className="text-center p-4 text-gray-500">Không có dữ liệu</td>
+							</tr>
+						)}
 						</tbody>
 					</table>
+
 				</div>
 			)}
 		</div>

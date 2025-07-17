@@ -5,7 +5,7 @@ import { ArrowLeft, Pencil, Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
 
-export default function CheckupCategoryList() {
+export default function ManagerCheckupCategoryList() {
 	const [categories, setCategories] = useState([]);
 	const [openDialog, setOpenDialog] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);

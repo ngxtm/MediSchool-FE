@@ -89,8 +89,8 @@ const ParentStudentManagement = () => {
     try {
       await api.delete('/admin/parent-student-link', {
         params: {
-          studentId,
-          parentId
+          parentId,
+          studentId
         }
       })
       message.success('Đã xóa quan hệ phụ huynh-học sinh')

@@ -25,8 +25,8 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
         const fullCategoryReplies = {};
         for (const cat of consentDetail.categoryConsents) {
             fullCategoryReplies[cat.categoryId] =
-                overallStatus === "APPROVED" && categoryReplies[cat.categoryId] === "APPROVED"
-                    ? "APPROVED"
+                overallStatus === "APPROVED"
+                    ? categoryReplies[cat.categoryId] || "REJECTED"
                     : "REJECTED";
         }
 
@@ -78,7 +78,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                                 <label key={cat.categoryId} className="flex gap-2 items-center">
                                     <input
                                         type="checkbox"
-                                        checked={categoryReplies[cat.categoryId] === "REJECTED"}
+                                        checked={categoryReplies[cat.categoryId] === "APPROVED"}
                                         onChange={() => handleChangeCategory(cat.categoryId)}
                                     />
                                     <span>{cat.categoryName}</span>
@@ -100,7 +100,7 @@ export default function ParentConsentReply({ consentDetail, onClose, refetch }) 
                         <button onClick={onClose} className="px-4 py-2 rounded bg-gray-300 text-sm">
                             Hủy
                         </button>
-                        <button onClick={handleSubmit} className="px-4 py-2 rounded bg-blue-600 text-white text-sm">
+                        <button onClick={handleSubmit} className="px-4 py-2 rounded bg-[#023E73] hover:bg-[#034a8a] text-white text-sm">
                             Gửi phản hồi
                         </button>
                     </div>

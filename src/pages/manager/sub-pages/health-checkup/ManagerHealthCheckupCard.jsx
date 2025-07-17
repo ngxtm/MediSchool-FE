@@ -14,7 +14,7 @@ export function useCheckupStats(eventId) {
 	});
 }
 
-export default function HealthCheckupCard({ event }) {
+export default function ManagerHealthCheckupCard({ event }) {
 	const navigate = useNavigate();
 	const { data: stats } = useCheckupStats(event.id);
 
@@ -50,7 +50,7 @@ export default function HealthCheckupCard({ event }) {
 	return (
 		<div
 			className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-100 cursor-pointer w-full max-w-[1000px] mx-auto"
-			onClick={() => navigate(`/nurse/health-checkup/${event.id}`)}
+			onClick={() => navigate(`/manager/health-checkup/${event.id}`)}
 		>
 			<div className="flex items-center justify-between items-start gap-5 py-3">
 				<div className="p-2">

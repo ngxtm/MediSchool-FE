@@ -30,14 +30,12 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 				});
 			}
 
-			if (actionType === "deliver") {
-				return api.post(`/medication-requests/${requestId}/dispense`, {
-					itemId: selectedItemId || null,
-					dose,
-					note,
-					status,
-				});
-			}
+			api.post(`/medication-requests/${requestId}/dispense`, {
+				itemId: selectedItemId || null,
+				dose,
+				note,
+				status,
+			});
 
 			if (actionType === "done") {
 				return api.put(`/medication-requests/${requestId}/done`);

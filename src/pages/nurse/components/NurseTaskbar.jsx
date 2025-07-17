@@ -24,7 +24,7 @@ const NurseTaskBar = ({ userData }) => {
     currentTab = 'medication-requests'
   }
 
-  if (pathParts.includes('health-checkup') || currentTab === 'checkup-categories') {
+  if (pathParts.includes('health-checkup') || currentTab === 'checkup-categories' || currentTab === 'checkup-results') {
     currentTab = 'health-checkup'
   }
 

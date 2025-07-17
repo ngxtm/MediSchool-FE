@@ -7,7 +7,7 @@ import api from "../../../../utils/api.js";
 import ReturnButton from "../../../../components/ReturnButton.jsx";
 import React from "react";
 
-export default function CheckupConsentDetail() {
+export default function ManagerCheckupConsentDetail() {
     const { id } = useParams();
 
     const { data, isLoading, error } = useQuery({
@@ -96,7 +96,7 @@ export default function CheckupConsentDetail() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <ReturnButton linkNavigate={-1} actor="nurse" />
+                <ReturnButton linkNavigate={-1} actor="manager" />
             </div>
 
             <div className="bg-gray-100 p-6 rounded-lg">

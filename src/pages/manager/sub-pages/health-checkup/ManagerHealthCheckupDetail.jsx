@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import api from "@/utils/api";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
-import EditCheckupResultDialog from "./EditCheckupResultDialog";
 import {
 	Pencil,
 	CalendarDays,
@@ -61,11 +60,7 @@ export function useCheckupStats(id) {
 	});
 }
 
-export default function HealthCheckupDetail() {
-	const [editingResultId, setEditingResultId] = useState(null);
-	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const queryClient = useQueryClient();
-
+export default function ManagerHealthCheckupDetail() {
 	const { id } = useParams();
 	const { data: stats } = useCheckupStats(id);
 	const totalSent = stats?.totalSent ?? 0;
@@ -99,12 +94,6 @@ export default function HealthCheckupDetail() {
 		queryKey: ["checkup-result", id],
 		enabled: isResult,
 		queryFn: () => api.get(`/checkup-results/event/${id}`).then((res) => res.data),
-	});
-
-	const { data: editingResultData } = useQuery({
-		queryKey: ["checkup-result-detail", editingResultId],
-		enabled: !!editingResultId && isDialogOpen,
-		queryFn: () => api.get(`/checkup-results/${editingResultId}`).then((res) => res.data),
 	});
 
 	const filteredConsents = useMemo(() => {
@@ -188,7 +177,7 @@ export default function HealthCheckupDetail() {
 	return (
 		<div className="max-w-screen-xl mx-auto font-inter text-gray-900">
 			<div className="flex justify-between items-center mt-4 mb-6">
-				<ReturnButton linkNavigate={-1} actor="nurse" />
+				<ReturnButton linkNavigate={-1} actor="manager" />
 			</div>
 
 			<div>
@@ -298,13 +287,13 @@ export default function HealthCheckupDetail() {
 						{eventStatus !== "PENDING" && (
 							<div className="grid grid-cols-2 gap-5">
 								<button
-									onClick={() => navigate(`/nurse/health-checkup/${id}/consents`)}
+									onClick={() => navigate(`/manager/health-checkup/${id}/consents`)}
 									className="bg-[#023E73] text-white text-lg font-semibold px-4 py-2 rounded-lg"
 								>
 									Danh sách đơn
 								</button>
 								<button
-									onClick={() => navigate(`/nurse/health-checkup/${id}/results`)}
+									onClick={() => navigate(`/manager/health-checkup/${id}/results`)}
 									className="bg-[#023E73] text-white text-lg font-semibold px-4 py-2 rounded-lg"
 								>
 									Kết quả khám
@@ -342,7 +331,7 @@ export default function HealthCheckupDetail() {
 									<td className="p-3"><p>{row.parentEmail}</p><p>{row.parentPhone}</p></td>
 									<td className="p-3">{renderStatusBadge(row.consentStatus)}</td>
 									<td className="p-3">
-										<div className="cursor-pointer" onClick={() => navigate(`/nurse/health-checkup/consent/${row.id}`)}>
+										<div className="cursor-pointer" onClick={() => navigate(`/manager/health-checkup/consent/${row.id}`)}>
 											<ChevronRight className="text-black hover:scale-110 transition-transform" />
 										</div>
 									</td>
@@ -388,15 +377,7 @@ export default function HealthCheckupDetail() {
 										<ChevronRight
 											size={20}
 											className="cursor-pointer text-blue-600 hover:scale-110"
-											onClick={() => navigate(`/nurse/checkup-results/${item.resultId}`)}
-										/>
-										<Pencil
-											size={20}
-											className="cursor-pointer text-gray-700 hover:text-blue-600"
-											onClick={() => {
-												setEditingResultId(item.resultId);
-												setIsDialogOpen(true);
-											}}
+											onClick={() => navigate(`/manager/checkup-results/${item.resultId}`)}
 										/>
 									</div>
 								</td>
@@ -410,22 +391,6 @@ export default function HealthCheckupDetail() {
 						</tbody>
 					</table>
 
-					{editingResultData && (
-						<EditCheckupResultDialog
-							open={isDialogOpen}
-							onOpenChange={setIsDialogOpen}
-							resultId={editingResultId}
-							section={{
-								status: editingResultData?.status,
-								note: editingResultData?.note,
-								eventDate: editingResultData?.eventDate,
-							}}
-							isOverall
-							onSaved={() => {
-								queryClient.invalidateQueries(["checkup-result", id]);
-							}}
-						/>
-					)}
 				</div>
 			)}
 		</div>

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { ArrowLeft } from 'lucide-react'
 import api from '../../../../utils/api.js'
 
-export default function HealthCheckupForm() {
+export default function ManagerHealthCheckupForm() {
   const navigate = useNavigate()
 
   const [eventTitle, setEventTitle] = useState('')
@@ -120,7 +120,7 @@ export default function HealthCheckupForm() {
     try {
       await api.post("/health-checkup/create", payload);
       toast.success("Tạo sự kiện thành công!");
-      navigate("/nurse/health-checkup");
+      navigate("/manager/health-checkup");
     } catch (err) {
       console.error(err);
       toast.error("Lỗi khi tạo sự kiện.");

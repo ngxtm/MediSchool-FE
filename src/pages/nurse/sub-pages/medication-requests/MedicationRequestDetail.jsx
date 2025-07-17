@@ -245,6 +245,7 @@ export default function MedicationRequestDetail({ id: propId, inline = false }) 
 										medication.dispensations.map((entry, index) => (
 											<React.Fragment key={index}>
 												<tr className="border-0">
+													<td className="p-3"><strong>{entry.medicineName}</strong></td>
 													<td className="p-3">Phụ trách: {entry.nurseName}</td>
 													<td className="p-3">{entry.dose || "-"}</td>
 													<td className="p-3">{dayjs.unix(Math.floor(entry.time)).format("HH:mm DD/MM/YYYY")}</td>

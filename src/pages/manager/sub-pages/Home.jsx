@@ -127,11 +127,19 @@ const Home = () => {
 
 	useEffect(() => {
 		results.forEach((result, index) => {
-			if (result.isError || result.data?.length === 0) {
+			if (result.isError) {
 				const errorMessage =
 					result.error?.response?.data?.error ||
 					`Lỗi khi tải dữ liệu ${
-						index === 0 ? 'thống kê' : index === 1 ? 'sự kiện sắp tới' : 'danh sách sự kiện'
+						index === 0
+							? 'thống kê'
+							: index === 1
+								? 'sự kiện sắp tới'
+								: index === 2
+									? 'danh sách sự kiện'
+									: index === 3
+										? 'khám sức khỏe'
+										: 'đơn thuốc'
 					}`
 				errorToast(errorMessage, undefined, 8000)
 			}
@@ -477,7 +485,7 @@ const Home = () => {
 						)
 					}
 				]}
-				rowKey="requestId"
+				rowKey={record => record.requestId || record.id || record.title}
 				pagination={false}
 				components={{
 					header: {

@@ -77,6 +77,100 @@ body {
   color: #000000 !important;
 }
 
+/* Teal theme styling for health checkup table */
+.teal-table .ant-table-thead>tr>th {
+  background-color: #f0fdfa !important;
+  border-bottom: 1px solid #14b8a6 !important;
+  color: #0f766e !important;
+  font-weight: 600 !important;
+}
+
+.teal-table .ant-table-tbody>tr:hover>td {
+  background-color: #f0fdfa !important;
+}
+
+.teal-table .ant-table-tbody>tr.ant-table-row-selected>td {
+  background-color: #ccfbf1 !important;
+}
+
+/* Enhanced checkbox styling with teal theme */
+.teal-table .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.teal-table .ant-checkbox:hover .ant-checkbox-inner,
+.teal-table .ant-checkbox-input:focus+.ant-checkbox-inner {
+  border-color: #14b8a6 !important;
+}
+
+.teal-table .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #14b8a6 !important;
+  border-color: #14b8a6 !important;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
+}
+
+.teal-table .ant-checkbox-checked::after {
+  border-color: #14b8a6 !important;
+}
+
+.teal-table .ant-checkbox-indeterminate .ant-checkbox-inner {
+  background-color: #14b8a6 !important;
+  border-color: #14b8a6 !important;
+}
+
+.teal-table .ant-checkbox-indeterminate .ant-checkbox-inner::after {
+  background-color: #ffffff !important;
+}
+
+.teal-table .ant-checkbox-disabled .ant-checkbox-inner {
+  background-color: #f0f0f0 !important;
+  border-color: #d9d9d9 !important;
+}
+
+.teal-table .ant-checkbox-disabled.ant-checkbox-checked .ant-checkbox-inner::after {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Improved table selection styling */
+.teal-table .ant-table-selection-column .ant-checkbox-wrapper {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.teal-table .ant-table-thead .ant-table-selection-column .ant-checkbox-wrapper {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+/* Enhanced table row styling */
+.teal-table .ant-table-tbody>tr.ant-table-row:nth-child(even) {
+  background-color: #f9fefd !important;
+}
+
+.teal-table .ant-table-tbody>tr.ant-table-row-selected:hover>td {
+  background-color: #99f6e4 !important;
+}
+
+/* Teal pagination styling */
+.teal-table .ant-pagination .ant-pagination-item-active {
+  border-color: #14b8a6 !important;
+}
+
+.teal-table .ant-pagination .ant-pagination-item-active a {
+  color: #14b8a6 !important;
+}
+
+.teal-table .ant-pagination .ant-pagination-item:hover {
+  border-color: #14b8a6 !important;
+}
+
+.teal-table .ant-pagination .ant-pagination-item:hover a {
+  color: #14b8a6 !important;
+}
+
+.teal-table .ant-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.teal-table .ant-pagination .ant-pagination-next:hover .ant-pagination-item-link {
+  color: #14b8a6 !important;
+  border-color: #14b8a6 !important;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -192,4 +286,156 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Teal theme styling for buttons */
+.teal-button {
+  @apply rounded-md bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-2 font-semibold text-white transition-all duration-200 hover:from-teal-600 hover:to-teal-700 disabled:opacity-50;
+}
+
+.teal-button-lg {
+  @apply rounded-lg bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-2 text-lg font-semibold text-white transition-all duration-200 hover:from-teal-600 hover:to-teal-700 disabled:opacity-50;
+}
+
+.teal-button-sm {
+  @apply rounded-md bg-gradient-to-r from-teal-500 to-teal-600 px-3 py-1.5 font-semibold text-white transition-all duration-200 hover:from-teal-600 hover:to-teal-700 disabled:opacity-50;
+}
+
+/* Teal theme styling for BulkActionBar */
+.bulk-action-bar.theme-teal {
+  background: linear-gradient(to right, #14b8a6, #0d9488) !important;
+  border-color: #0f766e !important;
+}
+
+.bulk-action-bar.theme-teal .action-button {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.bulk-action-bar.theme-teal .action-button:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.bulk-action-bar.theme-teal .cancel-button {
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.bulk-action-bar.theme-teal .cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Teal themed table styling */
+.teal-themed-table {
+  @apply w-full overflow-hidden rounded-md border;
+}
+
+.teal-themed-table thead {
+  @apply bg-teal-50 text-center font-semibold text-teal-800;
+}
+
+.teal-themed-table thead th {
+  @apply border-b border-teal-200 p-5;
+}
+
+.teal-themed-table tbody tr {
+  @apply border-t text-center;
+}
+
+.teal-themed-table tbody tr:nth-child(even) {
+  @apply bg-teal-50/30;
+}
+
+.teal-themed-table tbody tr:hover {
+  @apply bg-teal-50;
+}
+
+.teal-themed-table tbody td {
+  @apply p-3;
+}
+
+/* Teal select styling */
+.teal-select .ant-select-selector {
+  @apply border-teal-300 bg-teal-50/50 !important;
+  border-radius: 0.5rem !important;
+}
+
+.teal-select .ant-select-arrow {
+  @apply text-teal-600 !important;
+}
+
+.teal-select .ant-select-selection-item {
+  @apply text-teal-800 !important;
+}
+
+.teal-select .ant-select-focused .ant-select-selector {
+  @apply border-teal-500 !important;
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
+}
+
+.teal-select .ant-select:hover .ant-select-selector {
+  @apply border-teal-400 !important;
+}
+
+/* Teal pagination styling */
+.teal-pagination .ant-pagination-item-active {
+  @apply border-teal-500 !important;
+}
+
+.teal-pagination .ant-pagination-item-active a {
+  @apply text-teal-600 !important;
+}
+
+.teal-pagination .ant-pagination-item:hover {
+  @apply border-teal-400 !important;
+}
+
+.teal-pagination .ant-pagination-item:hover a {
+  @apply text-teal-500 !important;
+}
+
+.teal-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
+.teal-pagination .ant-pagination-next:hover .ant-pagination-item-link {
+  @apply border-teal-400 text-teal-500 !important;
+}
+
+/* A
+dditional teal theme styling for inputs and form elements */
+.teal-input {
+  @apply border-teal-300 bg-teal-50/30 text-teal-900 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20;
+}
+
+.teal-input::placeholder {
+  @apply text-teal-400;
+}
+
+/* Teal theme hover effects and transitions */
+.teal-hover-effect {
+  @apply transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md active:scale-95;
+}
+
+/* Teal theme checkbox styling */
+.teal-checkbox {
+  @apply h-5 w-5 rounded border-teal-300 text-teal-600 focus:ring-teal-500/20;
+}
+
+/* Teal theme radio button styling */
+.teal-radio {
+  @apply h-5 w-5 border-teal-300 text-teal-600 focus:ring-teal-500/20;
+}
+
+/* Teal theme badge styling */
+.teal-badge {
+  @apply inline-flex items-center rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-medium text-teal-800;
+}
+
+/* Teal theme card styling */
+.teal-card {
+  @apply rounded-lg border border-teal-100 bg-white p-6 shadow-sm hover:border-teal-200 hover:shadow-md transition-all duration-200;
+}
+
+/* Teal theme search input styling */
+.teal-search-input {
+  @apply w-full rounded-md border border-teal-200 bg-teal-50/30 py-2 pl-10 pr-4 text-teal-900 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20;
 }

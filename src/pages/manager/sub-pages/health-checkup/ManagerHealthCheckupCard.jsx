@@ -49,7 +49,7 @@ export default function ManagerHealthCheckupCard({ event }) {
 
 	return (
 		<div
-			className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-100 cursor-pointer w-full max-w-[1000px] mx-auto"
+			className="flex items-center justify-between px-6 py-4 border-b hover:bg-gray-100 cursor-pointer w-full max-w-[1200px] mx-auto"
 			onClick={() => navigate(`/manager/health-checkup/${event.id}`)}
 		>
 			<div className="flex items-center justify-between items-start gap-5 py-3">

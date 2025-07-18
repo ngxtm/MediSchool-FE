@@ -305,7 +305,7 @@ const router = createBrowserRouter([
           { path: 'checkup-categories', element: <LazyComponent component={ManagerCategoryList} /> },
           { path: 'health-checkup/create', element: <LazyComponent component={ManagerCheckupForm} /> },
           { path: 'health-checkup/:id', element: <LazyComponent component={ManagerCheckupDetail} /> },
-          { path: 'checkup-results/:resultId', element: <LazyComponent component={CheckupResultDetail} /> },
+          { path: 'checkup-results/:resultId', element: <LazyComponent component={ManagerCheckupResultDetail} /> },
         ]
       },
     {

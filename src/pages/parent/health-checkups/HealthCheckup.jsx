@@ -4,6 +4,7 @@ import api from "../../../utils/api.js";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import ParentConsentReply from "./ParentConsentReply.jsx";
+import {useLocation, useNavigate} from "react-router-dom";
 
 export function parseDate(array) {
     if (!Array.isArray(array) || array.length < 3) return null;
@@ -31,6 +32,19 @@ function getRecentSchoolYears(count = 5) {
 }
 
 export default function HealthCheckup() {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleShowReply = (consentId) => {
+        setShowReply(true);
+        navigate(`${location.pathname}?consentId=${consentId}`, { replace: true });
+    };
+
+    const handleCloseReply = () => {
+        setShowReply(false);
+        navigate(location.pathname, { replace: true });
+    };
+
     const { selectedStudent } = useStudent();
     const [selectedConsentId, setSelectedConsentId] = useState(null);
     const [showReply, setShowReply] = useState(false);
@@ -160,7 +174,11 @@ export default function HealthCheckup() {
                                 </p>
 
                                 {!c.replied && c.eventStatus === "APPROVED" && (
-                                    <p className="text-md mt-2 font-semibold text-red-500">Phụ huynh cần phản hồi đơn đề nghị!</p>
+                                    <button
+                                        onClick={() => handleShowReply(c.id)}
+                                        className="underline transition-colors text-blue-600 mt-2">
+                                        Xem giấy đồng thuận
+                                    </button>
                                 )}
                             </div>
                         ))}
@@ -204,17 +222,6 @@ export default function HealthCheckup() {
                                                 : "Phản hồi của phụ huynh: Không tham gia"
                                             : "Chưa phản hồi"}
                                     </span>
-
-                                    {!consentDetail.replied && (
-                                        <div className="mt-4">
-                                            <button
-                                                onClick={() => setShowReply(true)}
-                                                className="bg-[#023E73] text-white px-4 py-2 rounded hover:bg-[#034a8a]"
-                                            >
-                                                Xem đơn đề nghị
-                                            </button>
-                                        </div>
-                                    )}
 
                                     {consentDetail.replied &&
                                         consentDetail.consentStatus === "APPROVED" &&
@@ -274,7 +281,7 @@ export default function HealthCheckup() {
             {showReply && consentDetail && (
                 <ParentConsentReply
                     consentDetail={consentDetail}
-                    onClose={() => setShowReply(false)}
+                    onClose={handleCloseReply}
                     refetch={refetchConsent}
                 />
             )}

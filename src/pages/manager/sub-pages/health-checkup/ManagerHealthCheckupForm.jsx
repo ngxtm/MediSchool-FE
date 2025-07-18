@@ -131,7 +131,7 @@ export default function ManagerHealthCheckupForm() {
     <div className="font-inter mx-auto max-w-4xl px-6 py-10">
       <button
         onClick={() => navigate(-1)}
-        className="group mb-8 flex items-center gap-4 rounded-3xl border bg-[#023E73] px-8 py-1 text-base font-bold text-white"
+        className="group mb-8 flex items-center gap-4 rounded-3xl border bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-1 text-base font-bold text-white"
       >
         <ArrowLeft size={20} className="transition-transform group-hover:-translate-x-1" />
         Trở về
@@ -203,7 +203,7 @@ export default function ManagerHealthCheckupForm() {
         <div className="flex justify-center pt-6">
           <button
             type="submit"
-            className="rounded-xl bg-[#023E73] px-6 py-3 text-lg font-bold text-white hover:bg-[#034a8a]"
+            className="rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 px-6 py-3 text-lg font-bold text-white hover:bg-[#034a8a]"
           >
             Xác nhận
           </button>

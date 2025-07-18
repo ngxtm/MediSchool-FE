@@ -19,16 +19,19 @@ export default function HealthCheckupLayout() {
 			{!isDetailPage && !isConsent && !isResult && (
 				<div className="grid grid-cols-4 gap-15 mb-8">
 					{[
-						{ label: "Đã gửi", icon: <FileText />, value: data?.sent || 0 },
-						{ label: "Đã phản hồi", icon: <CheckCheck />, value: data?.replied || 0 },
-						{ label: "Chưa phản hồi", icon: <AlertTriangle />, value: data?.pending || 0 },
-						{ label: "Hạng mục khám", icon: <Calendar />, value: data?.categories || 0 },
+						{ label: "Đã gửi", icon: <FileText />, value: data?.sent || 0, subtext: "đơn đề nghị" },
+						{ label: "Đã phản hồi", icon: <CheckCheck />, value: data?.replied || 0, subtext: "đơn đề nghị" },
+						{ label: "Chưa phản hồi", icon: <AlertTriangle />, value: data?.pending || 0, subtext: "đơn đề nghị" },
+						{ label: "Hạng mục khám", icon: <Calendar />, value: data?.categories || 0, subtext: "toàn trường" },
 					].map((item, i) => (
 						<div key={i} className="bg-[#DAEAF7] rounded-xl p-6">
 							<div className="flex justify-between items-center mb-3">
 								<p className="font-semibold">{item.label}</p>
 								{item.icon}
 							</div>
+							<p className="text-sm text-gray-700 mt-1">
+								{item.subtext}
+							</p>
 							<p className="text-2xl font-bold">{item.value}</p>
 						</div>
 					))}

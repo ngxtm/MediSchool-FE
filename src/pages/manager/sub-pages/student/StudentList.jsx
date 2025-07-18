@@ -1,5 +1,5 @@
 import { CircleAlert, FileText, Package, Search, User } from 'lucide-react'
-import DetailBox from '../../components/DetailBox'
+import DetailBox from '../../../nurse/components/DetailBox'
 import { useState, useEffect } from 'react'
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query'
 import { Input, DatePicker, Select, Table, Tag, Space, Button, Dropdown, Menu } from 'antd'
@@ -308,7 +308,7 @@ const StudentCreateDialog = ({ open, onOpenChange, onCreateSuccess }) => {
   )
 }
 
-const Student = () => {
+const StudentList = () => {
   const [search, setSearch] = useState('')
 
   const queryClient = useQueryClient()
@@ -419,20 +419,22 @@ const Student = () => {
   return (
     <div className="font-inter">
       <div className="mb-16 flex max-w-full justify-between">
-        <DetailBox title="Tổng số học sinh" icon={<User size={28} />} number={totalStudents} subText={'toàn trường'} />
+        <DetailBox title="Tổng số học sinh" icon={<User size={28} />} number={totalStudents} subText={'toàn trường'} bgColor="bg-gradient-to-r from-teal-500 to-teal-600"/>
         <DetailBox
-            title="Đang hoạt động"
-            icon={<FileText size={28} />}
-            number={activeStudents}
-            subText={'học sinh'}
+          title="Đang hoạt động"
+          icon={<FileText size={28} />}
+          number={activeStudents}
+          subText={'học sinh'}
+          bgColor="bg-gradient-to-r from-emerald-500 to-emerald-600"
         />
         <DetailBox
-            title="Không hoạt động"
-            icon={<Package size={28} />}
-            number={inactiveStudents}
-            subText={'học sinh'}
+          title="Không hoạt động"
+          icon={<Package size={28} />}
+          number={inactiveStudents}
+          subText={'học sinh'}
+          bgColor="bg-gradient-to-r from-amber-500 to-orange-500"
         />
-        <DetailBox title="Sự kiện y tế" icon={<CircleAlert size={28} />} number={4} subText={'tuần này'} />
+        <DetailBox title="Sự kiện y tế" icon={<CircleAlert size={28} />} number={4} subText={'tuần này'} bgColor="bg-gradient-to-r from-cyan-500 to-blue-500"/>
       </div>
 
       <div className="px-[100px]">
@@ -468,4 +470,4 @@ const Student = () => {
   )
 }
 
-export default Student
+export default StudentList

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 @import "@fontsource/inter/400.css";
 @import "@fontsource/inter/700.css";
 @import "tw-animate-css";
@@ -26,10 +27,12 @@ body {
   padding-right: 0.75rem;
   border: 1px solid #d1d5db;
   outline: none;
+  transition: border-color 0.2s, border-width 0.2s;
 }
 
 .input-field:focus {
-  border: 2px solid #1676fb;
+  border-color: #1676fb;
+  border-width: 2px;
 }
 
 .input-field::placeholder {
@@ -40,14 +43,19 @@ body {
   width: 100%;
   margin-top: 0.5rem;
   border-radius: 8px;
-  padding: 0.5rem 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   border: 1px solid #d1d5db;
   outline: none;
   resize: none;
+  transition: border-color 0.2s, border-width 0.2s;
 }
 
 .textarea-field:focus {
-  border: 2px solid #1676fb;
+  border-color: #1676fb;
+  border-width: 2px;
 }
 
 .textarea-field::placeholder {
@@ -306,25 +314,28 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-* {
-  border-color: var(--border);
-  outline-color: var(--ring);
-  outline-opacity: 0.5;
-}
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 /* Teal theme styling for buttons */
 .teal-button {
   border-radius: 0.375rem;
   background: linear-gradient(to right, #14b8a6, #0d9488);
-  padding: 0.5rem 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   font-weight: 600;
-  color: white;
+  color: #fff;
   transition: all 0.2s;
+  opacity: 1;
 }
 
 .teal-button:hover {
@@ -338,11 +349,15 @@ body {
 .teal-button-lg {
   border-radius: 0.5rem;
   background: linear-gradient(to right, #14b8a6, #0d9488);
-  padding: 0.5rem 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   font-size: 1.125rem;
   font-weight: 600;
-  color: white;
+  color: #fff;
   transition: all 0.2s;
+  opacity: 1;
 }
 
 .teal-button-lg:hover {
@@ -356,10 +371,14 @@ body {
 .teal-button-sm {
   border-radius: 0.375rem;
   background: linear-gradient(to right, #14b8a6, #0d9488);
-  padding: 0.375rem 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
   font-weight: 600;
-  color: white;
+  color: #fff;
   transition: all 0.2s;
+  opacity: 1;
 }
 
 .teal-button-sm:hover {
@@ -400,14 +419,14 @@ body {
   width: 100%;
   overflow: hidden;
   border-radius: 0.375rem;
-  border: 1px solid;
+  border: 1px solid #e5e7eb;
 }
 
 .teal-themed-table thead {
   background-color: #f0fdfa;
   text-align: center;
   font-weight: 600;
-  color: #115e59;
+  color: #0f766e;
 }
 
 .teal-themed-table thead th {
@@ -416,12 +435,12 @@ body {
 }
 
 .teal-themed-table tbody tr {
-  border-top: 1px solid;
+  border-top: 1px solid #e5e7eb;
   text-align: center;
 }
 
 .teal-themed-table tbody tr:nth-child(even) {
-  background-color: rgba(240, 253, 250, 0.3);
+  background-color: rgba(45, 212, 191, 0.3);
 }
 
 .teal-themed-table tbody tr:hover {
@@ -434,56 +453,58 @@ body {
 
 /* Teal select styling */
 .teal-select .ant-select-selector {
-  border-color: #5eead4;
-  background-color: rgba(240, 253, 250, 0.5);
+  border: 1px solid #5eead4 !important;
+  background-color: rgba(45, 212, 191, 0.5) !important;
   border-radius: 0.5rem !important;
 }
 
 .teal-select .ant-select-arrow {
-  color: #0d9488;
+  color: #0d9488 !important;
 }
 
 .teal-select .ant-select-selection-item {
-  color: #115e59 !important;
+  color: #0f766e !important;
 }
 
 .teal-select .ant-select-focused .ant-select-selector {
-  border-color: #14b8a6 !important;
+  border: 1px solid #14b8a6 !important;
   box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2) !important;
 }
 
 .teal-select .ant-select:hover .ant-select-selector {
-  border-color: #2dd4bf !important;
+  border: 1px solid #2dd4bf !important;
 }
 
 /* Teal pagination styling */
 .teal-pagination .ant-pagination-item-active {
-  border-color: #14b8a6 !important;
+  border: 1px solid #14b8a6 !important;
 }
 
 .teal-pagination .ant-pagination-item-active a {
-  color: #0d9488 !important;
+  color: #14b8a6 !important;
 }
 
 .teal-pagination .ant-pagination-item:hover {
-  border-color: #2dd4bf !important;
+  border: 1px solid #2dd4bf !important;
 }
 
-.teal-pagination .ant-pagination-item:hover a {
+teal-pagination .ant-pagination-item:hover a {
   color: #14b8a6 !important;
 }
 
 .teal-pagination .ant-pagination-prev:hover .ant-pagination-item-link,
 .teal-pagination .ant-pagination-next:hover .ant-pagination-item-link {
-  border-color: #2dd4bf !important;
   color: #14b8a6 !important;
+  border: 1px solid #2dd4bf !important;
 }
 
-/* Additional teal theme styling for inputs and form elements */
+/* A
+dditional teal theme styling for inputs and form elements */
 .teal-input {
-  border-color: #5eead4;
-  background-color: rgba(240, 253, 250, 0.3);
+  border: 1px solid #5eead4;
+  background-color: rgba(45, 212, 191, 0.3);
   color: #134e4a;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .teal-input:focus {
@@ -492,17 +513,18 @@ body {
 }
 
 .teal-input::placeholder {
-  color: #2dd4bf;
+  color: #5eead4;
 }
 
 /* Teal theme hover effects and transitions */
 .teal-hover-effect {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
 }
 
 .teal-hover-effect:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 14px 0 rgba(20, 184, 166, 0.15);
 }
 
 .teal-hover-effect:active {
@@ -514,7 +536,7 @@ body {
   height: 1.25rem;
   width: 1.25rem;
   border-radius: 0.25rem;
-  border-color: #5eead4;
+  border: 1px solid #5eead4;
   color: #0d9488;
 }
 
@@ -526,7 +548,7 @@ body {
 .teal-radio {
   height: 1.25rem;
   width: 1.25rem;
-  border-color: #5eead4;
+  border: 1px solid #5eead4;
   color: #0d9488;
 }
 
@@ -539,36 +561,43 @@ body {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
-  background-color: #ccfbf1;
-  padding: 0.125rem 0.625rem;
+  background-color: #99f6e4;
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #115e59;
+  color: #0f766e;
 }
 
 /* Teal theme card styling */
 .teal-card {
   border-radius: 0.5rem;
   border: 1px solid #ccfbf1;
-  background-color: white;
+  background-color: #fff;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  transition: all 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .teal-card:hover {
   border-color: #99f6e4;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 14px 0 rgba(20, 184, 166, 0.15);
 }
 
 /* Teal theme search input styling */
 .teal-search-input {
   width: 100%;
   border-radius: 0.375rem;
-  border: 1px solid #99f6e4;
-  background-color: rgba(240, 253, 250, 0.3);
-  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  border: 1px solid #a7f3d0;
+  background-color: rgba(45, 212, 191, 0.3);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 2.5rem;
+  padding-right: 1rem;
   color: #134e4a;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .teal-search-input:focus {

@@ -42,7 +42,7 @@ export default function ManagerHealthCheckupCard({ event }) {
 	const statusColorClass = event.status === "PENDING"
 		? "bg-gray-200 text-gray-700"
 		: event.status === "APPROVED"
-			? "bg-[#E5F0FA] text-[#023E73]"
+			? "bg-gradient-to-r from-teal-500 to-teal-600 text-white"
 			: event.status === "COMPLETED"
 				? "bg-green-100 text-green-700"
 				: "bg-red-100 text-red-700";
@@ -67,7 +67,7 @@ export default function ManagerHealthCheckupCard({ event }) {
 
 			<div className="flex items-center gap-10">
 				<div className="flex flex-col items-center text-right gap-2">
-					<span className={`${statusColorClass} text-md font-bold px-4 py-1 rounded-full mb-1`}>
+					<span className={`${statusColorClass} text-md font-semibold px-4 py-1 rounded-full mb-1`}>
 						{status}
 					</span>
 					<p className="text-md italic text-black">

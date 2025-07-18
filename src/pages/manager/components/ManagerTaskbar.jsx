@@ -28,7 +28,7 @@ const ManagerTaskBar = ({ userData }) => {
   if (pathParts.includes('medication-requests')) {
     currentTab = 'medication-requests'
   }
-  if (pathParts.includes('health-checkup')) {
+  if (pathParts.includes('health-checkup') || currentTab === 'checkup-categories' || currentTab === 'checkup-results') {
     currentTab = 'health-checkup'
   }
   if (

@@ -421,16 +421,16 @@ const Student = () => {
       <div className="mb-16 flex max-w-full justify-between">
         <DetailBox title="Tổng số học sinh" icon={<User size={28} />} number={totalStudents} subText={'toàn trường'} />
         <DetailBox
-          title="Học sinh hoạt động"
-          icon={<FileText size={28} />}
-          number={activeStudents}
-          subText={'đang học'}
+            title="Đang hoạt động"
+            icon={<FileText size={28} />}
+            number={activeStudents}
+            subText={'học sinh'}
         />
         <DetailBox
-          title="Học sinh không hoạt động"
-          icon={<Package size={28} />}
-          number={inactiveStudents}
-          subText={'đã nghỉ'}
+            title="Không hoạt động"
+            icon={<Package size={28} />}
+            number={inactiveStudents}
+            subText={'học sinh'}
         />
         <DetailBox title="Sự kiện y tế" icon={<CircleAlert size={28} />} number={4} subText={'tuần này'} />
       </div>

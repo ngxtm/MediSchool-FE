@@ -2,11 +2,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import vi from "date-fns/locale/vi";
-import { ArrowLeft, Download, Pencil } from "lucide-react";
+import {Download} from "lucide-react";
 import api from "@/utils/api";
 import Loading from "@/components/Loading";
 import React, { useState } from "react";
-import ReturnButton from "../../../../components/ReturnButton.jsx";
+import ReturnButton from '../../../../components/ReturnButton.jsx'
 
 function formatDate(date) {
     try {
@@ -68,7 +68,7 @@ export default function ManagerCheckupResultDetail() {
 
     return (
         <div className="max-w-6xl mx-auto font-inter text-gray-900">
-            <div className="flex justify-between items-center mt-4 mb-6">
+            <div className="mt-4 mb-6 flex items-center justify-between">
                 <ReturnButton linkNavigate={-1} actor="manager" />
             </div>
 

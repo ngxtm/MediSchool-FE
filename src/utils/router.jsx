@@ -119,6 +119,7 @@ const ManagerCheckupForm = lazy(() => import('../pages/manager/sub-pages/health-
 const ManagerCheckupDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerHealthCheckupDetail'))
 const ManagerCategoryList = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerCheckupCategoryList'))
 const ManagerCheckupConsentDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerCheckupConsentDetail'))
+const ManagerCheckupResultDetail = lazy(() => import('../pages/manager/sub-pages/health-checkup/./ManagerCheckupResultDetail.jsx'))
 
 const HealthCheckupList = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupList.jsx'))
 const HealthCheckupLayout = lazy(() => import('../pages/nurse/sub-pages/health-checkup/HealthCheckupLayout.jsx'))
@@ -304,6 +305,7 @@ const router = createBrowserRouter([
           { path: 'checkup-categories', element: <LazyComponent component={ManagerCategoryList} /> },
           { path: 'health-checkup/create', element: <LazyComponent component={ManagerCheckupForm} /> },
           { path: 'health-checkup/:id', element: <LazyComponent component={ManagerCheckupDetail} /> },
+          { path: 'checkup-results/:resultId', element: <LazyComponent component={ManagerCheckupResultDetail} /> },
         ]
       },
     {

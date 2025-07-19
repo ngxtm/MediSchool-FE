@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useStudent } from "../../../context/StudentContext.jsx";
 import api from "../../../utils/api.js";
 import dayjs from "dayjs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ParentConsentReply from "./ParentConsentReply.jsx";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function parseDate(array) {
     if (!Array.isArray(array) || array.length < 3) return null;
@@ -21,7 +22,6 @@ function extractSchoolYearFromDate(createdAt) {
 function getRecentSchoolYears(count = 5) {
     const now = new Date();
     const currentYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
-
     const years = [];
     for (let i = 0; i < count; i++) {
         const start = currentYear - i;
@@ -31,10 +31,18 @@ function getRecentSchoolYears(count = 5) {
 }
 
 export default function HealthCheckup() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const searchParams = new URLSearchParams(location.search);
+    const urlConsentId = searchParams.get("consentId"); // string | null
+
     const { selectedStudent } = useStudent();
+
     const [selectedConsentId, setSelectedConsentId] = useState(null);
     const [showReply, setShowReply] = useState(false);
     const [selectedYear, setSelectedYear] = useState(null);
+
+    const urlSyncedRef = useRef(false);
 
     const {
         data: rawConsents = [],
@@ -48,9 +56,14 @@ export default function HealthCheckup() {
             api
                 .get(`/checkup-consents/student/${selectedStudent.studentId}`)
                 .then((res) =>
-                    res.data.sort((a, b) => new Date(parseDate(b.createdAt)) - new Date(parseDate(a.createdAt)))
+                    res.data.sort(
+                        (a, b) => new Date(parseDate(b.createdAt)) - new Date(parseDate(a.createdAt))
+                    )
                 ),
         onSuccess: (data) => {
+            // Nếu đã sync URL thì không override nữa
+            if (urlSyncedRef.current) return;
+
             if (data.length > 0) {
                 const firstSchoolYear = extractSchoolYearFromDate(data[0].createdAt);
                 setSelectedConsentId(data[0].id);
@@ -72,6 +85,36 @@ export default function HealthCheckup() {
         }
     }, [schoolYears, selectedYear]);
 
+    useEffect(() => {
+        if (!selectedStudent?.studentId) return;
+        refetch();
+        if (!urlConsentId) {
+            setSelectedConsentId(null);
+            setShowReply(false);
+            urlSyncedRef.current = false;
+        }
+    }, [selectedStudent?.studentId]);
+
+    useEffect(() => {
+        if (!urlConsentId) return;
+        if (rawConsents.length === 0) return;
+
+        const idNum = Number(urlConsentId);
+        if (Number.isNaN(idNum)) return;
+
+        const found = rawConsents.find((c) => c.id === idNum);
+        if (!found) {
+            navigate(location.pathname, { replace: true });
+            return;
+        }
+
+        // Sync
+        urlSyncedRef.current = true;
+        setSelectedConsentId(idNum);
+        setShowReply(true);
+        setSelectedYear(extractSchoolYearFromDate(found.createdAt));
+    }, [urlConsentId, rawConsents]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const {
         data: consentDetail,
         isLoading: loadingConsent,
@@ -79,17 +122,13 @@ export default function HealthCheckup() {
     } = useQuery({
         enabled: !!selectedConsentId,
         queryKey: ["checkup-consent-detail", selectedConsentId],
-        queryFn: () =>
-            api.get(`/checkup-consents/consent/${selectedConsentId}`).then((res) => res.data),
+        queryFn: () => api.get(`/checkup-consents/consent/${selectedConsentId}`).then((res) => res.data),
     });
 
-    const {
-        data: resultDetail,
-    } = useQuery({
+    const { data: resultDetail } = useQuery({
         enabled: !!selectedConsentId,
         queryKey: ["checkup-result-detail", selectedConsentId],
-        queryFn: () =>
-            api.get(`/checkup-results/event/${selectedConsentId}`).then((res) => res.data),
+        queryFn: () => api.get(`/checkup-results/event/${selectedConsentId}`).then((res) => res.data),
     });
 
     const { data: categoryList = [] } = useQuery({
@@ -99,10 +138,17 @@ export default function HealthCheckup() {
             api.get(`/checkup-categories/by-event/${consentDetail.eventId}`).then((res) => res.data),
     });
 
-    useEffect(() => {
-        refetch();
-        setSelectedConsentId(null);
-    }, [selectedStudent?.studentId]);
+    const handleShowReply = (consentId) => {
+        navigate(`${location.pathname}?consentId=${consentId}`, { replace: true });
+        urlSyncedRef.current = true;
+        setSelectedConsentId(consentId);
+        setShowReply(true);
+    };
+
+    const handleCloseReply = () => {
+        setShowReply(false);
+        navigate(location.pathname, { replace: true });
+    };
 
     const filteredConsents = consents.filter((c) => c.schoolYear === selectedYear);
 
@@ -118,16 +164,16 @@ export default function HealthCheckup() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div className="lg:col-span-1 space-y-3 w-[90%]">
                         <div className="mb-5">
-                            <label className="block text-md font-semibold text-black mb-2">
-                                Chọn năm học
-                            </label>
+                            <label className="block text-md font-semibold text-black mb-2">Chọn năm học</label>
                             <select
                                 value={selectedYear || ""}
                                 onChange={(e) => setSelectedYear(e.target.value)}
                                 className="w-full border border-black rounded px-3 py-2 text-md"
                             >
                                 {schoolYears.map((year) => (
-                                    <option key={year} value={year}>{year}</option>
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
                                 ))}
                             </select>
                         </div>
@@ -138,20 +184,25 @@ export default function HealthCheckup() {
                                 role="button"
                                 tabIndex={0}
                                 onClick={() => setSelectedConsentId(c.id)}
-                                className={`p-5 border border-black rounded-lg cursor-pointer transition
-                                    ${c.id === selectedConsentId
-                                    ? "bg-[#DAEAF7] border-blue-500 shadow"
-                                    : "hover:bg-gray-100"}`}
+                                className={`p-5 border border-black rounded-lg cursor-pointer transition ${
+                                    c.id === selectedConsentId ? "bg-[#DAEAF7] border-blue-500 shadow" : "hover:bg-gray-100"
+                                }`}
                             >
                                 <p className="text-xl font-semibold mb-1">{c.eventTitle}</p>
-                                <div className={`inline-block mt-1 px-3 py-1 mb-1 text-sm font-semibold rounded-xl
-                                    ${c.eventStatus === "APPROVED"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : c.eventStatus === "DONE"
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-gray-100 text-gray-600"}`}>
-                                    {c.eventStatus === "APPROVED" ? "Đã lên lịch"
-                                        : c.eventStatus === "DONE" ? "Hoàn thành" : "Không rõ"}
+                                <div
+                                    className={`inline-block mt-1 px-3 py-1 mb-1 text-sm font-semibold rounded-xl ${
+                                        c.eventStatus === "APPROVED"
+                                            ? "bg-yellow-100 text-yellow-800"
+                                            : c.eventStatus === "DONE"
+                                                ? "bg-green-100 text-green-800"
+                                                : "bg-gray-100 text-gray-600"
+                                    }`}
+                                >
+                                    {c.eventStatus === "APPROVED"
+                                        ? "Đã lên lịch"
+                                        : c.eventStatus === "DONE"
+                                            ? "Hoàn thành"
+                                            : "Không rõ"}
                                 </div>
 
                                 <p className="text-md text-gray-800 mt-3 mb-1">Năm học: {c.schoolYear}</p>
@@ -160,7 +211,15 @@ export default function HealthCheckup() {
                                 </p>
 
                                 {!c.replied && c.eventStatus === "APPROVED" && (
-                                    <p className="text-md mt-2 font-semibold text-red-500">Phụ huynh cần phản hồi đơn đề nghị!</p>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // tránh chọn card
+                                            handleShowReply(c.id);
+                                        }}
+                                        className="underline text-blue-600 mt-2"
+                                    >
+                                        Xem giấy đồng thuận
+                                    </button>
                                 )}
                             </div>
                         ))}
@@ -193,10 +252,10 @@ export default function HealthCheckup() {
                                 <div className="p-4 bg-gray-50 border rounded space-y-2">
                                     <span className={`font-medium ${
                                         consentDetail.replied
-                                            ? consentDetail.consentStatus === "APPROVED"
-                                                ? "text-green-600"
-                                                : "text-red-500"
-                                            : "text-yellow-500"
+                                        ? consentDetail.consentStatus === "APPROVED"
+                                        ? "text-green-600"
+                                        : "text-red-500"
+                                        : "text-yellow-500"
                                     }`}>
                                         {consentDetail.replied
                                             ? consentDetail.consentStatus === "APPROVED"
@@ -204,17 +263,6 @@ export default function HealthCheckup() {
                                                 : "Phản hồi của phụ huynh: Không tham gia"
                                             : "Chưa phản hồi"}
                                     </span>
-
-                                    {!consentDetail.replied && (
-                                        <div className="mt-4">
-                                            <button
-                                                onClick={() => setShowReply(true)}
-                                                className="bg-[#023E73] text-white px-4 py-2 rounded hover:bg-[#034a8a]"
-                                            >
-                                                Xem đơn đề nghị
-                                            </button>
-                                        </div>
-                                    )}
 
                                     {consentDetail.replied &&
                                         consentDetail.consentStatus === "APPROVED" &&
@@ -250,7 +298,7 @@ export default function HealthCheckup() {
                                                         <tr key={i} className="border-t">
                                                             <td className="p-3 w-1/3 font-medium">{item.name}</td>
                                                             <td className="p-3 text-gray-800">
-                                                                {item.value}{item.unit ? ` (${item.unit})` : ""}
+                                                                {item.value}{item.unit ?  (`${item.unit}`) : ""}
                                                             </td>
                                                             <td className="p-3 text-gray-700">{item.status}</td>
                                                         </tr>
@@ -274,7 +322,7 @@ export default function HealthCheckup() {
             {showReply && consentDetail && (
                 <ParentConsentReply
                     consentDetail={consentDetail}
-                    onClose={() => setShowReply(false)}
+                    onClose={handleCloseReply}
                     refetch={refetchConsent}
                 />
             )}

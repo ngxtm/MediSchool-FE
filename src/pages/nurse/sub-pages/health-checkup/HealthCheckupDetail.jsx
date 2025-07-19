@@ -234,7 +234,7 @@ export default function HealthCheckupDetail() {
 							</button>
 						)}
 						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
-							Gửi kết quả
+							Gửi lời nhắc
 						</button>
 						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
 							Xuất PDF
@@ -419,6 +419,7 @@ export default function HealthCheckupDetail() {
 								status: editingResultData?.status,
 								note: editingResultData?.note,
 								eventDate: editingResultData?.eventDate,
+								startDate: editingResultData?.startDate, endDate: editingResultData?.endDate
 							}}
 							isOverall
 							onSaved={() => {

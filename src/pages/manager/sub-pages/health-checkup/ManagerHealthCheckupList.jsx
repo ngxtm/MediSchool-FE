@@ -32,7 +32,7 @@ export default function ManagerHealthCheckupList() {
 		<div>
 			<div className="flex items-center justify-between px-6 py-4 w-full max-w-[1200px] mx-auto">
 				<div className="relative w-[400px]">
-					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-black" size={16} />
 					<input
 						type="text"
 						placeholder="Tìm kiếm đợt khám sức khoẻ"

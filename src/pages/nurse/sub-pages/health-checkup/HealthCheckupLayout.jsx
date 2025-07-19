@@ -29,10 +29,11 @@ export default function HealthCheckupLayout() {
 								<p className="font-semibold">{item.label}</p>
 								{item.icon}
 							</div>
-							<p className="text-sm text-gray-700 mt-1">
+							<p className="text-2xl font-bold mb-2">{item.value}</p>
+							<p className="text-sm text-gray-700 mt-2">
 								{item.subtext}
 							</p>
-							<p className="text-2xl font-bold">{item.value}</p>
+
 						</div>
 					))}
 				</div>

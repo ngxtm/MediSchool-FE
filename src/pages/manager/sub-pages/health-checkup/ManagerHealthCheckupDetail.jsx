@@ -12,7 +12,7 @@ import {
   Search,
   ChevronRight,
   FileText,
-  Mail
+  Mail, Pencil
 } from 'lucide-react'
 import { Table } from 'antd'
 import Loading from '@/components/Loading'
@@ -21,6 +21,7 @@ import BulkActionBar from '@/components/BulkActionBar'
 import { useEmailToast } from '@/hooks/useEmailToast'
 import React, { useState, useMemo } from 'react'
 import dayjs from 'dayjs'
+import EditCheckupResultDialog from "../../../nurse/sub-pages/health-checkup/EditCheckupResultDialog.jsx";
 
 function formatDate(dateInput) {
   if (!dateInput) return 'N/A'
@@ -63,6 +64,9 @@ export function useCheckupStats(id) {
 }
 
 export default function ManagerHealthCheckupDetail() {
+  const [editingResultId, setEditingResultId] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
   const { id } = useParams()
   const { data: stats } = useCheckupStats(id)
   const totalSent = stats?.totalSent ?? 0
@@ -70,7 +74,6 @@ export default function ManagerHealthCheckupDetail() {
   const totalNotReplied = stats?.totalNotReplied ?? 0
   const location = useLocation()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [sending, setSending] = useState(false)
 
@@ -105,6 +108,12 @@ export default function ManagerHealthCheckupDetail() {
     enabled: isResult,
     queryFn: () => api.get(`/checkup-results/event/${id}`).then(res => res.data)
   })
+
+  const { data: editingResultData } = useQuery({
+    queryKey: ["checkup-result-detail", editingResultId],
+    enabled: !!editingResultId && isDialogOpen,
+    queryFn: () => api.get(`/checkup-results/${editingResultId}`).then((res) => res.data),
+  });
 
   // Mutation configurations for email sending and PDF export
   const sendReminderMutation = useMutation({
@@ -267,7 +276,6 @@ export default function ManagerHealthCheckupDetail() {
     )
   }, [resultList, isResult, search])
 
-  // Row selection configuration for consent table
   const rowSelection = {
     selectedRowKeys,
     onChange: (selectedRowKeys, selectedRows) => {
@@ -281,7 +289,6 @@ export default function ManagerHealthCheckupDetail() {
     type: 'checkbox'
   }
 
-  // Table columns configuration for consent table
   const consentColumns = [
     {
       title: 'MSHS',
@@ -372,7 +379,6 @@ export default function ManagerHealthCheckupDetail() {
         </div>,
         { position: 'bottom-center', autoClose: 4000 }
       )
-      // Refresh data after sending
       queryClient.invalidateQueries(['checkup-consents', id])
       queryClient.invalidateQueries(['checkup-stats', id])
     } catch (err) {
@@ -432,7 +438,7 @@ export default function ManagerHealthCheckupDetail() {
         <div className="mt-6 mb-4 flex flex-wrap items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative mr-10 w-[350px]">
-              <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-600" size={16} />
+              <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-black" size={16} />
               <input
                 type="text"
                 placeholder="Tìm kiếm học sinh"
@@ -482,7 +488,7 @@ export default function ManagerHealthCheckupDetail() {
               ) : (
                 <div className="flex items-center gap-2">
                   <Mail size={16} />
-                  <span>Gửi kết quả</span>
+                  <span>Gửi lời nhắc</span>
                 </div>
               )}
             </button>
@@ -655,6 +661,14 @@ export default function ManagerHealthCheckupDetail() {
                         className="cursor-pointer text-teal-600 transition-transform hover:scale-110"
                         onClick={() => navigate(`/manager/checkup-results/${item.resultId}`)}
                       />
+                      <Pencil
+                          size={20}
+                          className="cursor-pointer text-gray-700 hover:text-blue-600"
+                          onClick={() => {
+                            setEditingResultId(item.resultId);
+                            setIsDialogOpen(true);
+                          }}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -668,6 +682,24 @@ export default function ManagerHealthCheckupDetail() {
               )}
             </tbody>
           </table>
+
+          {editingResultData && (
+              <EditCheckupResultDialog
+                  open={isDialogOpen}
+                  onOpenChange={setIsDialogOpen}
+                  resultId={editingResultId}
+                  section={{
+                    status: editingResultData?.status,
+                    note: editingResultData?.note,
+                    eventDate: editingResultData?.eventDate,
+                    startDate: editingResultData?.startDate, endDate: editingResultData?.endDate
+                  }}
+                  isOverall
+                  onSaved={() => {
+                    queryClient.invalidateQueries(["checkup-result", id]);
+                  }}
+              />
+          )}
         </div>
       )}
     </div>

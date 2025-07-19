@@ -8,23 +8,21 @@ export default function ManagerHealthCheckupForm() {
   const navigate = useNavigate()
 
   const [eventTitle, setEventTitle] = useState('')
-  const [schoolYear] = useState(() => {
-    const now = new Date()
-    const year = now.getFullYear()
-    return `${year}-${year + 1}`
-  })
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const schoolYearOptions = [
+    `${currentYear - 1}-${currentYear}`,
+    `${currentYear}-${currentYear + 1}`,
+    `${currentYear + 1}-${currentYear + 2}`
+  ];
+  const [schoolYear, setSchoolYear] = useState(`${currentYear}-${currentYear + 1}`);
+
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [scope, setScope] = useState('SCHOOL')
 
   const [categories, setCategories] = useState([])
   const [selectedCategories, setSelectedCategories] = useState([])
 
-  const [grades, setGrades] = useState([])
-  const [selectedGrade, setSelectedGrade] = useState('')
-
-  const [classes, setClasses] = useState([])
-  const [selectedClasses, setSelectedClasses] = useState([])
 
   useEffect(() => {
     api
@@ -32,32 +30,6 @@ export default function ManagerHealthCheckupForm() {
       .then(res => setCategories(res.data))
       .catch(() => toast.error('Không thể tải danh sách hạng mục khám'))
   }, [])
-
-  useEffect(() => {
-    api
-      .get('/classes/grades')
-      .then(res => setGrades(res.data))
-      .catch(() => toast.error('Không thể tải danh sách khối'))
-  }, [])
-
-  useEffect(() => {
-    if (scope === 'CLASS') {
-      api
-        .get('/classes')
-        .then(res => setClasses(res.data))
-        .catch(() => toast.error('Không thể tải danh sách lớp học'))
-    }
-  }, [scope])
-
-  const [gradeClasses, setGradeClasses] = useState([])
-  useEffect(() => {
-    if (scope === 'GRADE' && selectedGrade) {
-      api
-        .get(`/classes/by-grade?grade=${selectedGrade}`)
-        .then(res => setGradeClasses(res.data))
-        .catch(() => toast.error('Không thể tải lớp theo khối'))
-    }
-  }, [selectedGrade, scope])
 
   const toggleCategory = id => {
     setSelectedCategories(prev => (prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]))
@@ -95,18 +67,6 @@ export default function ManagerHealthCheckupForm() {
     if (end <= start) {
       toast.error("Ngày kết thúc phải sau ngày bắt đầu.");
       return;
-    }
-
-    let classCodes = [];
-
-    if (scope === "GRADE" && gradeClasses.length > 0) {
-      classCodes = gradeClasses.map((c) => c.classCode);
-    } else if (scope === "CLASS") {
-      classCodes = selectedClasses;
-      if (classCodes.length === 0) {
-        toast.error("Vui lòng chọn ít nhất 1 lớp.");
-        return;
-      }
     }
 
     const payload = {
@@ -154,7 +114,18 @@ export default function ManagerHealthCheckupForm() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="mb-2 block text-lg font-semibold">Năm học</label>
-            <input type="text" value={schoolYear} readOnly className="w-full rounded border bg-gray-100 px-4 py-2" />
+            <select
+                value={schoolYear}
+                onChange={(e) => setSchoolYear(e.target.value)}
+                className="w-full rounded border px-4 py-2"
+            >
+              {schoolYearOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+              ))}
+            </select>
+
           </div>
         </div>
 

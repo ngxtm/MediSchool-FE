@@ -227,6 +227,7 @@ const UserManagementOptimized = () => {
         onClose={() => closeModal('import')}
         onImport={handleImportExcel}
         title="Import người dùng từ Excel"
+        type="user"
       />
     </div>
   )

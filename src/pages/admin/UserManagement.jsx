@@ -323,26 +323,21 @@ const UserManagement = () => {
   const handleImportExcel = async formData => {
     try {
       const response = await api.post('/admin/users/import', formData)
-      fetchUsers()
-      return response.data
+      console.log('User import response:', response.data)
+
+      if (response.data.success) {
+        fetchUsers()
+        return response.data
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Import không thành công',
+          errorCount: response.data.errorCount || 0,
+          errors: response.data.errors || []
+        }
+      }
     } catch (error) {
       console.error('Import error:', error)
-
-      let errorMessage = 'Import thất bại. Vui lòng kiểm tra lại file Excel.'
-
-      if (error.response?.status === 400) {
-        if (error.response?.data?.message) {
-          errorMessage = error.response.data.message
-        } else {
-          errorMessage = 'File Excel không đúng định dạng. Vui lòng kiểm tra header và dữ liệu.'
-        }
-      } else if (error.response?.status === 401) {
-        errorMessage = 'Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.'
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message
-      }
-
-      message.error(errorMessage)
       throw error
     }
   }
@@ -471,6 +466,7 @@ const UserManagement = () => {
         onClose={() => setIsImportModalVisible(false)}
         onImport={handleImportExcel}
         title="Import người dùng từ Excel"
+        type="user"
       />
     </div>
   )

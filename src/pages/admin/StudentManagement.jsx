@@ -209,6 +209,8 @@ const StudentManagement = () => {
         }
       })
 
+      console.log('Student import response:', response.data)
+
       if (response.data.success) {
         message.success(`Import thành công: ${response.data.successCount} học sinh`)
         fetchStudents()
@@ -222,12 +224,18 @@ const StudentManagement = () => {
         } catch (logErr) {
           console.error('Ghi log hoạt động thất bại:', logErr)
         }
+        return response.data
       } else {
-        message.error('Lỗi khi import file')
+        return {
+          success: false,
+          message: response.data.message || 'Import không thành công',
+          errorCount: response.data.errorCount || 0,
+          errors: response.data.errors || []
+        }
       }
     } catch (error) {
-      message.error('Lỗi khi import file')
       console.error('Error importing students:', error)
+      throw error
     }
   }
 
@@ -364,6 +372,7 @@ const StudentManagement = () => {
         onClose={() => setIsImportModalVisible(false)}
         onImport={handleImport}
         title="Import danh sách học sinh"
+        type="student"
       />
     </div>
   )

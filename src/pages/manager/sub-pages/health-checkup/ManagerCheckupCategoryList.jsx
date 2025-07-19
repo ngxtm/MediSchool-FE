@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../../../utils/api.js";
 import { ArrowLeft, Pencil, Trash2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import * as Dialog from "@radix-ui/react-dialog";
+import ReturnButton from "../../../../components/ReturnButton.jsx";
 
 export default function ManagerCheckupCategoryList() {
 	const [categories, setCategories] = useState([]);
@@ -102,13 +103,9 @@ export default function ManagerCheckupCategoryList() {
 	return (
 		<div className="max-w-[80%] mx-auto font-inter">
 			<div className="mb-10">
-				<button
-					onClick={() => navigate(-1)}
-					className="group border px-8 py-1 rounded-3xl font-bold text-base flex items-center gap-4 bg-[#023E73] text-white"
-				>
-					<ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-					Trở về
-				</button>
+				<div className="mt-4 mb-6 flex items-center justify-between">
+					<ReturnButton linkNavigate={-1} actor="manager" />
+				</div>
 			</div>
 
 			<h1 className="text-3xl font-bold mb-5 text-left">DANH SÁCH HẠNG MỤC KHÁM SỨC KHỎE</h1>
@@ -117,7 +114,7 @@ export default function ManagerCheckupCategoryList() {
 				<Dialog.Trigger asChild>
 					<button
 						onClick={handleOpenCreate}
-						className="flex items-center gap-2 bg-[#023E73] hover:bg-[#034a8a] text-white text-lg font-semibold px-6 py-3 rounded-lg mb-8"
+						className="flex items-center gap-2 bg-teal-600 hover:bg-teal-400 text-white text-lg font-semibold px-6 py-3 rounded-lg mb-8"
 					>
 						<Plus size={18} />
 						Tạo hạng mục mới
@@ -164,7 +161,7 @@ export default function ManagerCheckupCategoryList() {
 								</Dialog.Close>
 								<button
 									type="submit"
-									className="px-8 py-3 rounded-xl text-lg font-semibold bg-[#023E73] text-white hover:bg-[#034a8a]"
+									className="px-8 py-3 rounded-xl text-lg font-semibold bg-teal-600 text-white hover:bg-teal-400"
 								>
 									{isEditing ? "Cập nhật" : "Tạo"}
 								</button>
@@ -181,7 +178,7 @@ export default function ManagerCheckupCategoryList() {
 					{categories.map((cat) => (
 						<div
 							key={cat.id}
-							className="relative bg-[#E3F2FD] px-6 py-4 rounded-md shadow-sm border border-[#90CAF9] w-[90%]"
+							className="relative bg-[#8bceb5] px-6 py-4 rounded-md shadow-sm border border-teal-800 w-[90%]"
 						>
 							<div className="absolute top-5 right-5 flex gap-2">
 								<button onClick={() => handleEdit(cat)}>

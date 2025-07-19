@@ -429,7 +429,7 @@ export default function ManagerHealthCheckupDetail() {
       <div>
         <h1 className="mb-1 text-2xl font-bold">{eventTitle}</h1>
         <p className="mb-2 text-gray-600">Năm học: {schoolYear}</p>
-        <span className="mt-2 inline-block rounded-full bg-[#E3F2FD] px-4 py-1 text-sm font-semibold text-[#1565C0]">
+        <span className="mt-2 inline-block rounded-full bg-teal-200 px-4 py-1 text-sm font-semibold text-teal-900">
           {status}
         </span>
       </div>
@@ -527,7 +527,7 @@ export default function ManagerHealthCheckupDetail() {
               ].map(([label, value], i) => (
                 <div
                   key={i}
-                  className={`flex justify-between rounded-md px-6 py-3 ${i % 2 === 0 ? 'bg-[#E3F2FD]' : 'bg-white'}`}
+                  className={`flex justify-between rounded-md px-6 py-3 ${i % 2 === 0 ? 'bg-teal-200' : 'bg-white'}`}
                 >
                   <span className="font-bold">{label}</span>
                   <span>{value}</span>
@@ -538,7 +538,7 @@ export default function ManagerHealthCheckupDetail() {
             <h2 className="mt-6 mb-3 text-xl font-bold">Hạng mục khám</h2>
             <div className="flex w-[80%] flex-wrap gap-2">
               {categoryList.map(cat => (
-                <span key={cat.id} className="rounded-full bg-[#E3F2FD] px-4 py-1 text-sm font-medium text-[#0D47A1]">
+                <span key={cat.id} className="rounded-full bg-teal-200 px-4 py-1 text-sm font-semibold text-teal-900">
                   {cat.name}
                 </span>
               ))}
@@ -677,7 +677,7 @@ export default function ManagerHealthCheckupDetail() {
                 <tr>
                   <td colSpan={9} className="p-4 text-center text-gray-500">
                     Không có dữ liệu
-                  </td>
+                  </td>g
                 </tr>
               )}
             </tbody>

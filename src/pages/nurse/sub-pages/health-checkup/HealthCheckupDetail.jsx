@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import api from "@/utils/api";
 import { format } from "date-fns";
@@ -13,12 +13,14 @@ import {
 	AlertTriangle,
 	Search,
 	ChevronRight,
-	FileText,
+	FileText, Mail,
 } from "lucide-react";
 import Loading from "@/components/Loading";
 import ReturnButton from "../../../../components/ReturnButton.jsx";
 import React, { useState, useMemo } from "react";
 import dayjs from "dayjs";
+import {useEmailToast} from "../../../../hooks/useEmailToast.jsx";
+import {Table} from "antd";
 
 function formatDate(dateInput) {
 	if (!dateInput) return "N/A";
@@ -76,6 +78,13 @@ export default function HealthCheckupDetail() {
 	const [search, setSearch] = useState("");
 	const [sending, setSending] = useState(false);
 
+	// Selection state variables for bulk actions
+	const [selectedConsents, setSelectedConsents] = useState([])
+	const [selectedRowKeys, setSelectedRowKeys] = useState([])
+
+	// Import and configure useEmailToast hook with blue theme
+	const { sendEmailWithProgress, isSending } = useEmailToast('blue')
+
 	const isConsent = location.pathname.endsWith("/consents");
 	const isResult = location.pathname.endsWith("/results");
 
@@ -107,6 +116,145 @@ export default function HealthCheckupDetail() {
 		queryFn: () => api.get(`/checkup-results/${editingResultId}`).then((res) => res.data),
 	});
 
+	// Mutation configurations for email sending and PDF export
+	const sendReminderMutation = useMutation({
+		mutationFn: () => {
+			// Get all unresponded consents to send reminder emails
+			const unrespondedConsents = consentList.filter(consent => consent.consentStatus === 'PENDING')
+			const consentIds = unrespondedConsents.map(consent => consent.id)
+
+			return api.post(`/health-checkup/${id}/send-selective-emails`, {
+				consentIds: consentIds,
+				templateType: 'HEALTH_CHECKUP'
+			})
+		},
+		onSuccess: () => queryClient.invalidateQueries(['checkup-consents', id])
+	})
+
+	const sendSelectiveEmailMutation = useMutation({
+		mutationFn: consentIds =>
+			api.post(`/health-checkup/${id}/send-selective-emails`, {
+				consentIds,
+				templateType: 'HEALTH_CHECKUP'
+			}),
+		onSuccess: () => {
+			queryClient.invalidateQueries(['checkup-consents', id])
+			setSelectedConsents([])
+			setSelectedRowKeys([])
+		}
+	})
+
+	const exportPDFMutation = useMutation({
+		mutationFn: async eventId => {
+			const response = await api.get(`/health-checkup/${eventId}/consents/pdf`, {
+				responseType: 'blob'
+			})
+			// Create blob URL and trigger download
+			const blob = new Blob([response.data], { type: 'application/pdf' })
+			const url = window.URL.createObjectURL(blob)
+			const link = document.createElement('a')
+			link.href = url
+			link.download = `health-checkup-consents-${eventId}.pdf`
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(url)
+			return response
+		},
+		onSuccess: () => {
+			toast.success(
+				<div className="flex items-center gap-2">
+					<CheckCircle className="text-blue-600" size={18} />
+					<div>
+						<p className="font-medium">Xuất PDF thành công!</p>
+						<p className="text-sm text-gray-600">Tệp PDF đã được tải xuống</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 2000 }
+			)
+		},
+		onError: error => {
+			toast.error(
+				<div className="flex items-center gap-2">
+					<AlertCircle className="text-red-500" size={18} />
+					<div>
+						<p className="font-medium">Xuất PDF thất bại</p>
+						<p className="text-sm text-gray-600">
+							{error?.response?.data?.message || 'Có lỗi xảy ra khi xuất PDF. Vui lòng thử lại sau.'}
+						</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 3000 }
+			)
+		}
+	})
+
+	// Email sending handler functions
+	const handleSendReminder = async () => {
+		const unrespondedConsents = consentList.filter(consent => consent.consentStatus === 'PENDING')
+
+		if (unrespondedConsents.length === 0) {
+			toast.error(
+				<div className="flex items-center gap-2">
+					<AlertCircle className="text-red-500" size={18} />
+					<div>
+						<p className="font-medium">Không thể gửi email nhắc nhở</p>
+						<p className="text-sm text-gray-600">Không có phụ huynh nào cần gửi email nhắc nhở. Tất cả đã phản hồi!</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 5000 }
+			)
+			return
+		}
+
+		await sendEmailWithProgress(id, unrespondedConsents.length, () => sendReminderMutation.mutateAsync())
+	}
+
+	const handleSendSelectedEmails = async () => {
+		if (selectedConsents.length === 0) {
+			toast.error(
+				<div className="flex items-center gap-2">
+					<AlertCircle className="text-red-500" size={18} />
+					<div>
+						<p className="font-medium">Không thể gửi email</p>
+						<p className="text-sm text-gray-600">Vui lòng chọn ít nhất một học sinh để gửi email!</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 5000 }
+			)
+			return
+		}
+
+		const consentIds = selectedConsents.map(consent => consent.id).filter(id => id != null)
+
+		if (consentIds.length === 0) {
+			toast.error(
+				<div className="flex items-center gap-2">
+					<AlertCircle className="text-red-500" size={18} />
+					<div>
+						<p className="font-medium">Lỗi dữ liệu</p>
+						<p className="text-sm text-gray-600">Không thể xác định ID consent. Vui lòng kiểm tra dữ liệu!</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 5000 }
+			)
+			return
+		}
+
+		await sendEmailWithProgress(`${id}-selective`, selectedConsents.length, () =>
+			sendSelectiveEmailMutation.mutateAsync(consentIds)
+		)
+	}
+
+	const handleClearSelection = () => {
+		setSelectedConsents([])
+		setSelectedRowKeys([])
+	}
+
+	const handleExportPDF = () => {
+		exportPDFMutation.mutate(id)
+	}
+
 	const filteredConsents = useMemo(() => {
 		if (!isConsent || !consentList) return [];
 		const lowerSearch = search.toLowerCase();
@@ -127,17 +275,77 @@ export default function HealthCheckupDetail() {
 		);
 	}, [resultList, isResult, search]);
 
+	const rowSelection = {
+		selectedRowKeys,
+		onChange: (selectedRowKeys, selectedRows) => {
+			setSelectedRowKeys(selectedRowKeys)
+			setSelectedConsents(selectedRows)
+		},
+		getCheckboxProps: record => ({
+			disabled: record.consentStatus !== 'PENDING', // Only allow selection of unresponded consents
+			name: record.studentName
+		}),
+		type: 'checkbox'
+	}
+
+	const consentColumns = [
+		{
+			title: 'MSHS',
+			dataIndex: 'studentCode',
+			key: 'studentCode',
+			align: 'center'
+		},
+		{
+			title: 'Học sinh',
+			dataIndex: 'studentName',
+			key: 'studentName',
+			align: 'center'
+		},
+		{
+			title: 'Lớp',
+			dataIndex: 'classCode',
+			key: 'classCode',
+			align: 'center'
+		},
+		{
+			title: 'Phụ huynh',
+			dataIndex: 'parentName',
+			key: 'parentName',
+			align: 'center'
+		},
+		{
+			title: 'Liên lạc',
+			key: 'contact',
+			align: 'center',
+			render: (_, record) => (
+				<div>
+					<p>{record.parentEmail}</p>
+					<p>{record.parentPhone}</p>
+				</div>
+			)
+		},
+		{
+			title: 'Trạng thái',
+			dataIndex: 'consentStatus',
+			key: 'consentStatus',
+			align: 'center',
+			render: status => renderStatusBadge(status)
+		},
+		{
+			title: '',
+			key: 'action',
+			align: 'center',
+			render: (_, record) => (
+				<div className="cursor-pointer" onClick={() => navigate(`/nurse/health-checkup/consent/${record.id}`)}>
+					<ChevronRight className="text-blue-600 transition-transform hover:scale-110" />
+				</div>
+			)
+		}
+	]
+
 	if (isLoading || !eventData) return <Loading />;
 
-	const {
-		eventTitle,
-		schoolYear,
-		startDate,
-		endDate,
-		createdAt,
-		createdBy,
-		status: eventStatus,
-	} = eventData;
+	const {eventTitle, schoolYear, startDate, endDate, createdAt, createdBy, status: eventStatus,} = eventData;
 
 	const statusOrder = {
 		APPROVED: 1,
@@ -157,18 +365,38 @@ export default function HealthCheckupDetail() {
 	const notReplied = Math.max(totalSent - totalReplied, 0);
 
 	const handleSendConsentForms = async () => {
-		setSending(true);
+		setSending(true)
 		try {
-			const res = await api.post(`/checkup-consents/event/${id}/send-all`);
-			toast.success(`Đã gửi ${res.data.consents_sent} đơn thành công!`);
+			const res = await api.post(`/checkup-consents/event/${id}/send-all`)
+			toast.success(
+				<div className="flex items-center gap-2">
+					<CheckCircle className="text-blue-600" size={18} />
+					<div>
+						<p className="font-medium">Gửi đơn thành công!</p>
+						<p className="text-sm text-gray-600">Đã gửi {res.data.consents_sent} đơn đến phụ huynh</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 4000 }
+			)
+			queryClient.invalidateQueries(['checkup-consents', id])
+			queryClient.invalidateQueries(['checkup-stats', id])
 		} catch (err) {
-			toast.error("Gửi đơn thất bại");
+			toast.error(
+				<div className="flex items-center gap-2">
+					<AlertCircle className="text-red-500" size={18} />
+					<div>
+						<p className="font-medium">Gửi đơn thất bại</p>
+						<p className="text-sm text-gray-600">
+							{err?.response?.data?.message || 'Có lỗi xảy ra khi gửi đơn. Vui lòng thử lại sau.'}
+						</p>
+					</div>
+				</div>,
+				{ position: 'bottom-center', autoClose: 5000 }
+			)
 		} finally {
-			setSending(false);
+			setSending(false)
 		}
-	};
-
-
+	}
 
 	function renderStatusBadge(consentStatus) {
 		switch (consentStatus) {
@@ -233,11 +461,41 @@ export default function HealthCheckupDetail() {
 								{sending ? "Đang gửi..." : "Gửi đơn"}
 							</button>
 						)}
-						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
-							Gửi lời nhắc
+						<button
+							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md disabled:opacity-50"
+							onClick={handleSendReminder}
+							disabled={sendReminderMutation.isPending || isSending(id)}
+							title={`Gửi email nhắc nhở đến ${consentList.filter(consent => consent.consentStatus === 'PENDING').length} phụ huynh chưa phản hồi`}
+						>
+							{sendReminderMutation.isPending || isSending(id) ? (
+								<div className="flex items-center gap-2">
+									<div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+									<span>Đang gửi...</span>
+								</div>
+							) : (
+								<div className="flex items-center gap-2">
+									<Mail size={16} />
+									<span>Gửi lời nhắc</span>
+								</div>
+							)}
 						</button>
-						<button className="bg-[#023E73] text-white font-semibold px-4 py-2 rounded-md">
-							Xuất PDF
+						<button
+							className="bg-[#023E73] hover:bg-[#034a8a] text-white font-semibold px-4 py-2 rounded-md disabled:opacity-50"
+							onClick={handleExportPDF}
+							disabled={exportPDFMutation.isPending}
+							title="Xuất báo cáo PDF danh sách đồng thuận khám sức khỏe"
+						>
+							{exportPDFMutation.isPending ? (
+								<div className="flex items-center gap-2">
+									<div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+									<span>Đang xuất...</span>
+								</div>
+							) : (
+								<div className="flex items-center gap-2">
+									<FileText size={16} />
+									<span>Xuất PDF</span>
+								</div>
+							)}
 						</button>
 					</div>
 				</div>
@@ -317,39 +575,32 @@ export default function HealthCheckupDetail() {
 
 			{isConsent && (
 				<div className="mt-10">
-					<h2 className="text-xl font-bold mb-4">Danh sách đơn phản hồi</h2>
-					<table className="w-full text-sm border rounded-md overflow-hidden">
-						<thead className="bg-gray-100 font-semibold text-center">
-						<tr>
-							<th className="p-3">MSHS</th>
-							<th className="p-3">Học sinh</th>
-							<th className="p-3">Lớp</th>
-							<th className="p-3">Phụ huynh</th>
-							<th className="p-3">Liên lạc</th>
-							<th className="p-3">Trạng thái</th>
-							<th></th>
-						</tr>
-						</thead>
-						<tbody>
-
-						{filteredConsents.sort((a, b) => statusOrder[a.consentStatus] - statusOrder[b.consentStatus])
-							.map((row) => (
-								<tr key={row.id} className="text-center border-t hover:bg-gray-50">
-									<td className="p-3">{row.studentCode}</td>
-									<td className="p-3">{row.studentName}</td>
-									<td className="p-3">{row.classCode}</td>
-									<td className="p-3">{row.parentName}</td>
-									<td className="p-3"><p>{row.parentEmail}</p><p>{row.parentPhone}</p></td>
-									<td className="p-3">{renderStatusBadge(row.consentStatus)}</td>
-									<td className="p-3">
-										<div className="cursor-pointer" onClick={() => navigate(`/nurse/health-checkup/consent/${row.id}`)}>
-											<ChevronRight className="text-black hover:scale-110 transition-transform" />
-										</div>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
+					<h2 className="mb-4 text-xl font-bold">Danh sách đơn phản hồi</h2>
+					{selectedConsents.length > 0 && (
+						<BulkActionBar
+							selectedCount={selectedConsents.length}
+							onSendEmail={handleSendSelectedEmails}
+							onCancel={handleClearSelection}
+							isSending={sendSelectiveEmailMutation.isPending}
+							theme="blue"
+						/>
+					)}
+					<Table
+						rowSelection={rowSelection}
+						columns={consentColumns}
+						dataSource={filteredConsents
+							.sort((a, b) => statusOrder[a.consentStatus] - statusOrder[b.consentStatus])
+							.map(item => ({ ...item, key: item.id }))}
+						pagination={{
+							className: 'blue-pagination',
+							pageSize: 10,
+							showSizeChanger: true,
+							pageSizeOptions: ['10', '20', '50'],
+							showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} mục`
+						}}
+						size="middle"
+						className="blue-table rounded-md border"
+					/>
 				</div>
 			)}
 

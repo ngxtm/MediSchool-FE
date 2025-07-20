@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import ImportExcelModal from '@/components/ImportExcelModal'
 import UserFormModal from '@/components/modals/UserFormModal'
-import { errorToast } from '../../components/ToastPopup'
+import { errorToast, successToast } from '../../components/ToastPopup'
 
 const { TextArea } = AntInput
 
@@ -52,16 +52,16 @@ const UserManagement = () => {
       if (isEdit) {
         const { password: _password, ...updateData } = values
         await api.put(`/admin/users/${currentUser.id}`, updateData)
-        message.success('Cập nhật người dùng thành công')
+        successToast('Cập nhật người dùng thành công', 'top-right', 4000)
         setIsModalVisible(false)
       } else {
         if (values.role === 'PARENT') {
           await api.post('/admin/parent-user', values)
-          message.success('Tạo phụ huynh thành công')
+          successToast('Tạo phụ huynh thành công', 'top-right', 4000)
           setIsModalVisible(false)
         } else if (values.password && values.password.trim() !== '') {
           await api.post('/admin/users/with-password', values)
-          message.success('Tạo người dùng thành công')
+          successToast('Tạo người dùng thành công', 'top-right', 4000)
           setIsModalVisible(false)
           try {
             await api.post('/activity-log', {
@@ -76,7 +76,7 @@ const UserManagement = () => {
         } else {
           const { password: _password, ...createData } = values
           await api.post('/admin/users', createData)
-          message.success('Tạo người dùng thành công')
+          successToast('Tạo người dùng thành công', 'top-right', 4000)
           setIsModalVisible(false)
           try {
             await api.post('/activity-log', {
@@ -125,7 +125,7 @@ const UserManagement = () => {
         data: { reason: deleteReason.trim() }
       })
       console.log('Delete response:', response)
-      message.success('Xóa người dùng thành công')
+      successToast('Xóa người dùng thành công', 'top-right', 4000)
       setIsDeleteModalVisible(false)
       setUserToDelete(null)
       setDeleteReason('')
@@ -137,11 +137,11 @@ const UserManagement = () => {
       console.error('Error data:', error.response?.data)
 
       if (error.response?.status === 401) {
-        message.error('Không có quyền thực hiện thao tác này')
+        errorToast('Không có quyền thực hiện thao tác này', 'top-right', 5000)
       } else if (error.response?.status === 404) {
-        message.error('Không tìm thấy người dùng')
+        errorToast('Không tìm thấy người dùng', 'top-right', 5000)
       } else {
-        message.error(`Lỗi khi xóa người dùng: ${error.response?.data?.message || error.message}`)
+        errorToast(`Lỗi khi xóa người dùng: ${error.response?.data?.message || error.message}`, 'top-right', 5000)
       }
     }
   }
@@ -156,10 +156,10 @@ const UserManagement = () => {
   const handleRestore = async user => {
     try {
       await api.post(`/admin/users/${user.id}/restore`)
-      message.success('Khôi phục người dùng thành công')
+      successToast('Khôi phục người dùng thành công', 'top-right', 4000)
       fetchUsers()
     } catch (error) {
-      message.error('Lỗi khi khôi phục người dùng')
+      errorToast('Lỗi khi khôi phục người dùng', 'top-right', 5000)
       console.error('Error restoring user:', error)
     }
   }
@@ -184,18 +184,25 @@ const UserManagement = () => {
       const endTime = Date.now()
       console.log(`✅ API Response received in ${endTime - startTime}ms:`, response)
       console.log('✅ Response status:', response.status)
+      console.log('✅ Response statusText:', response.statusText)
+      console.log('✅ Response headers:', response.headers)
       console.log('✅ Response data:', response.data)
+      console.log('✅ Response data type:', typeof response.data)
+      console.log('✅ Response data keys:', response.data ? Object.keys(response.data) : 'No data')
 
       const { data } = response
-      if (data && data.success === true) {
+      if (response.status === 204) {
+        console.log('✅ HTTP 204 - No Content (Success)')
+        successToast('Xóa vĩnh viễn thành công', 'top-right', 4000)
+      } else if (data && data.success === true) {
         console.log('✅ Explicit success from backend:', data.message)
-        message.success(data.message || 'Xóa vĩnh viễn thành công khỏi cả Supabase và database local')
+        successToast(data.message || 'Xóa vĩnh viễn thành công khỏi cả Supabase và database local', 'top-right', 4000)
       } else if (response.status >= 200 && response.status < 300) {
         console.log('✅ HTTP success status, treating as successful')
-        message.success('Xóa vĩnh viễn thành công')
+        successToast('Xóa vĩnh viễn thành công', 'top-right', 4000)
       } else {
         console.warn('⚠️ Unexpected response format:', data)
-        message.warning('Có thể đã xóa thành công, vui lòng kiểm tra danh sách')
+        successToast('Có thể đã xóa thành công, vui lòng kiểm tra danh sách', 'top-right', 4000)
       }
 
       console.log('🔄 Refreshing user list...')
@@ -259,6 +266,11 @@ const UserManagement = () => {
         errorMessage = 'Timeout - Server phản hồi quá chậm'
       }
 
+      console.log('📢 === SHOWING ERROR TOAST ===')
+      console.log('📢 Error message:', errorMessage)
+      console.log('📢 Error toast function:', typeof errorToast)
+      errorToast(errorMessage, 'top-right', 5000)
+
       if (showDetailedModal) {
         console.log('🔍 Showing detailed error modal')
         Modal.error({
@@ -299,9 +311,6 @@ const UserManagement = () => {
           ),
           width: 600
         })
-      } else {
-        console.log('📢 Showing simple error message:', errorMessage)
-        message.error(errorMessage)
       }
 
       console.log('🔄 Refreshing user list despite error...')
@@ -310,7 +319,11 @@ const UserManagement = () => {
         console.log('✅ User list refreshed after error')
       } catch (refreshError) {
         console.error('❌ Failed to refresh user list:', refreshError)
+        errorToast('Lỗi khi tải lại danh sách người dùng', 'top-right', 3000)
       }
+    } finally {
+      setIsHardDeleteModalVisible(false)
+      setUserToHardDelete(null)
     }
   }
 

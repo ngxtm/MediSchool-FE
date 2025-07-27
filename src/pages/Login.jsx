@@ -201,7 +201,7 @@ const Login = () => {
               </div>
             </div>
 
-            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-red-500">Email hoặc mật khẩu không đúng. Vui lòng thử lại.</p>}
 
             <div className="mb-6 flex items-center justify-between">
               <label className="flex items-center text-sm text-gray-600">

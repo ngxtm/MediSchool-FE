@@ -1,11 +1,10 @@
-import { DatePicker, Input } from 'antd'
+import { DatePicker, Input, Select } from 'antd'
 import DetailBox from '../../components/DetailBox'
 import { FileText, CircleAlert, CircleCheckBig, Calendar, Activity, ChevronRight, X, Search } from 'lucide-react'
 import { useQueries, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../../../../utils/api'
 import { useEffect, useState } from 'react'
 import { Dialog } from 'radix-ui'
-import { Select } from 'antd'
 import { Zoom, toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
 import { parseDate, formatDate } from '../../../../utils/dateparse'
@@ -26,6 +25,7 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
   const [selectedGrade, setSelectedGrade] = useState(null)
   const [vaccines, setVaccines] = useState([])
   const [classes, setClasses] = useState([])
+  const [errors, setErrors] = useState({})
 
   const queryClient = useQueryClient()
   const toastErrorPopup = message => {
@@ -115,7 +115,47 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
     }
   })
 
+  const validateForm = () => {
+    const newErrors = {}
+
+    if (!formData.eventTitle?.trim()) {
+      newErrors.eventTitle = 'Tên sự kiện là bắt buộc'
+    }
+
+    if (!formData.vaccineId) {
+      newErrors.vaccineId = 'Loại vaccine là bắt buộc'
+    }
+
+    if (!formData.eventScope) {
+      newErrors.eventScope = 'Phạm vi tiêm chủng là bắt buộc'
+    }
+
+    if (formData.eventScope === 'GRADE' && !selectedGrade) {
+      newErrors.grade = 'Khối là bắt buộc'
+    }
+
+    if (formData.eventScope === 'CLASS' && (!formData.classes || formData.classes.length === 0)) {
+      newErrors.classes = 'Lớp là bắt buộc'
+    }
+
+    if (!formData.eventDate) {
+      newErrors.eventDate = 'Ngày bắt đầu là bắt buộc'
+    }
+
+    if (!formData.location?.trim()) {
+      newErrors.location = 'Địa điểm là bắt buộc'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = () => {
+    if (!validateForm()) {
+      toastErrorPopup('Vui lòng điền đầy đủ thông tin bắt buộc')
+      return
+    }
+
     if (formData.eventScope === 'GRADE') {
       formData.eventScope = 'CLASS'
     }
@@ -143,97 +183,117 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
           <div className="flex flex-col">
             <fieldset className="mb-[15px] flex items-center gap-5">
               <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="eventTitle">
-                Tên sự kiện
+                Tên sự kiện <span className="text-red-500">*</span>
               </label>
-              <input
-                className="h-[30px] w-full rounded-sm border border-gray-300 px-3 text-[14px] leading-none outline-none placeholder:text-[#bfbfbf] focus:border-2 focus:border-[#1676fb]"
-                id="eventTitle"
-                value={formData.eventTitle}
-                onChange={e => handleInputChange('eventTitle', e.target.value)}
-                placeholder="Ví dụ: Tiêm chủng, Viêm gan B,..."
-              />
+              <div className="flex w-full flex-col">
+                <input
+                  className={`h-[30px] w-full rounded-sm border px-3 text-[14px] leading-none outline-none placeholder:text-[#bfbfbf] focus:border-2 focus:border-[#1676fb] ${
+                    errors.eventTitle ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  id="eventTitle"
+                  value={formData.eventTitle}
+                  onChange={e => handleInputChange('eventTitle', e.target.value)}
+                  placeholder="Ví dụ: Tiêm chủng, Viêm gan B,..."
+                />
+                {errors.eventTitle && <span className="mt-1 text-xs text-red-500">{errors.eventTitle}</span>}
+              </div>
             </fieldset>
 
             <fieldset className="mb-[15px] flex items-center gap-5">
               <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="vaccineId">
-                Loại Vaccine
+                Loại Vaccine <span className="text-red-500">*</span>
               </label>
-              <Select
-                className="custom-select w-full"
-                placeholder="Chọn loại vaccine"
-                value={formData.vaccineId}
-                onChange={value => handleInputChange('vaccineId', value)}
-                options={vaccines.map(v => ({
-                  value: v.vaccineId,
-                  label: v.name
-                }))}
-                getPopupContainer={trigger => trigger.parentNode}
-              />
+              <div className="flex w-full flex-col">
+                <Select
+                  className={`custom-select w-full ${errors.vaccineId ? 'border-red-500' : ''}`}
+                  placeholder="Chọn loại vaccine"
+                  value={formData.vaccineId}
+                  onChange={value => handleInputChange('vaccineId', value)}
+                  options={vaccines.map(v => ({
+                    value: v.vaccineId,
+                    label: v.name
+                  }))}
+                  getPopupContainer={trigger => trigger.parentNode}
+                />
+                {errors.vaccineId && <span className="mt-1 text-xs text-red-500">{errors.vaccineId}</span>}
+              </div>
             </fieldset>
 
             <fieldset className="mb-[15px] flex items-center gap-5">
               <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="eventScope">
-                Phạm vi tiêm chủng
+                Phạm vi tiêm chủng <span className="text-red-500">*</span>
               </label>
-              <Select
-                className="custom-select w-full"
-                placeholder="Chọn phạm vi tiêm chủng"
-                onChange={value => handleInputChange('eventScope', value)}
-                options={[
-                  { value: 'SCHOOL', label: 'Học sinh toàn trường' },
-                  { value: 'CLASS', label: 'Theo lớp' },
-                  { value: 'GRADE', label: 'Theo khối' }
-                ]}
-                getPopupContainer={trigger => trigger.parentNode}
-              />
+              <div className="flex w-full flex-col">
+                <Select
+                  className={`custom-select w-full ${errors.eventScope ? 'border-red-500' : ''}`}
+                  placeholder="Chọn phạm vi tiêm chủng"
+                  onChange={value => handleInputChange('eventScope', value)}
+                  options={[
+                    { value: 'SCHOOL', label: 'Học sinh toàn trường' },
+                    { value: 'CLASS', label: 'Theo lớp' },
+                    { value: 'GRADE', label: 'Theo khối' }
+                  ]}
+                  getPopupContainer={trigger => trigger.parentNode}
+                />
+                {errors.eventScope && <span className="mt-1 text-xs text-red-500">{errors.eventScope}</span>}
+              </div>
             </fieldset>
 
             {formData.eventScope === 'GRADE' && (
               <fieldset className="mb-[15px] flex items-center gap-5">
                 <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="grade">
-                  Khối
+                  Khối <span className="text-red-500">*</span>
                 </label>
-                <Select
-                  className="custom-select w-full"
-                  placeholder="Chọn khối"
-                  value={selectedGrade}
-                  onChange={handleGradeChange}
-                  options={grades.map(g => ({ value: g, label: `Khối ${g}` }))}
-                  getPopupContainer={t => t.parentNode}
-                />
+                <div className="flex w-full flex-col">
+                  <Select
+                    className={`custom-select w-full ${errors.grade ? 'border-red-500' : ''}`}
+                    placeholder="Chọn khối"
+                    value={selectedGrade}
+                    onChange={handleGradeChange}
+                    options={grades.map(g => ({ value: g, label: `Khối ${g}` }))}
+                    getPopupContainer={t => t.parentNode}
+                  />
+                  {errors.grade && <span className="mt-1 text-xs text-red-500">{errors.grade}</span>}
+                </div>
               </fieldset>
             )}
 
             {formData.eventScope === 'CLASS' && (
               <fieldset className="mb-[15px] flex items-center gap-5">
                 <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="eventScope">
-                  Lớp
+                  Lớp <span className="text-red-500">*</span>
                 </label>
-                <Select
-                  mode="multiple"
-                  disabled={formData.eventScope === 'SCHOOL'}
-                  className="custom-select w-full"
-                  placeholder="Chọn lớp"
-                  onChange={value => handleInputChange('classes', value)}
-                  options={classes.map(c => ({
-                    value: c.name,
-                    label: c.name
-                  }))}
-                  getPopupContainer={trigger => trigger.parentNode}
-                />
+                <div className="flex w-full flex-col">
+                  <Select
+                    mode="multiple"
+                    disabled={formData.eventScope === 'SCHOOL'}
+                    className={`custom-select w-full ${errors.classes ? 'border-red-500' : ''}`}
+                    placeholder="Chọn lớp"
+                    onChange={value => handleInputChange('classes', value)}
+                    options={classes.map(c => ({
+                      value: c.name,
+                      label: c.name
+                    }))}
+                    getPopupContainer={trigger => trigger.parentNode}
+                  />
+                  {errors.classes && <span className="mt-1 text-xs text-red-500">{errors.classes}</span>}
+                </div>
               </fieldset>
             )}
 
             <fieldset className="mb-[15px] flex items-center gap-5">
               <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="eventDate">
-                Ngày bắt đầu
+                Ngày bắt đầu <span className="text-red-500">*</span>
               </label>
-              <DatePicker
-                className="custom-picker w-full"
-                format="DD/MM/YY"
-                placeholder="Chọn ngày bắt đầu"
-                onChange={date => handleInputChange('eventDate', date ? date.format('YYYY-MM-DD') : '')}
-              />
+              <div className="flex w-full flex-col">
+                <DatePicker
+                  className={`custom-picker w-full ${errors.eventDate ? 'border-red-500' : ''}`}
+                  format="DD/MM/YY"
+                  placeholder="Chọn ngày bắt đầu"
+                  onChange={date => handleInputChange('eventDate', date ? date.format('YYYY-MM-DD') : '')}
+                />
+                {errors.eventDate && <span className="mt-1 text-xs text-red-500">{errors.eventDate}</span>}
+              </div>
             </fieldset>
 
             <fieldset className="mb-[15px] flex items-center gap-5">
@@ -250,15 +310,20 @@ const DialogCreate = ({ open, onOpenChange, onCreateSuccess }) => {
 
             <fieldset className="mb-[15px] flex items-center gap-5">
               <label className="w-[210px] text-left text-[15px] font-semibold" htmlFor="location">
-                Địa điểm
+                Địa điểm <span className="text-red-500">*</span>
               </label>
-              <input
-                className="h-[30px] w-full rounded-sm border border-gray-300 px-3 text-[14px] leading-none outline-none placeholder:text-[#bfbfbf] focus:border-2 focus:border-[#1676fb]"
-                id="location"
-                value={formData.location}
-                onChange={e => handleInputChange('location', e.target.value)}
-                placeholder="Nhập địa điểm tiêm chủng"
-              />
+              <div className="flex w-full flex-col">
+                <input
+                  className={`h-[30px] w-full rounded-sm border px-3 text-[14px] leading-none outline-none placeholder:text-[#bfbfbf] focus:border-2 focus:border-[#1676fb] ${
+                    errors.location ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  id="location"
+                  value={formData.location}
+                  onChange={e => handleInputChange('location', e.target.value)}
+                  placeholder="Nhập địa điểm tiêm chủng"
+                />
+                {errors.location && <span className="mt-1 text-xs text-red-500">{errors.location}</span>}
+              </div>
             </fieldset>
           </div>
 
@@ -425,11 +490,8 @@ const Vaccination = () => {
             const respondedConsents = event.consentStats?.respondedConsents || 0
 
             return (
-              <Link to={`vaccine-event/${event.id}`}>
-                <div
-                  key={event.id}
-                  className="group mx-auto flex w-full max-w-[80rem] cursor-pointer justify-between border-t-1 border-b-1 border-gray-300 p-6 transition-colors hover:bg-gray-50"
-                >
+              <Link key={event.id} to={`vaccine-event/${event.id}`}>
+                <div className="group mx-auto flex w-full max-w-[80rem] cursor-pointer justify-between border-t-1 border-b-1 border-gray-300 p-6 transition-colors hover:bg-gray-50">
                   <div className="flex items-center justify-center gap-10">
                     <Activity size={50} />
                     <div className="flex flex-col gap-2">
@@ -441,9 +503,7 @@ const Vaccination = () => {
                   <div className="flex items-center gap-10">
                     <div className="flex min-w-[200px] flex-col items-center gap-2">
                       {statusText === 'Đã hủy' ? (
-                        <>
-                          <p className={`text-center ${bgColor} w-fit rounded-4xl px-9 py-1 font-bold`}>{statusText}</p>
-                        </>
+                        <p className={`text-center ${bgColor} w-fit rounded-4xl px-9 py-1 font-bold`}>{statusText}</p>
                       ) : (
                         <>
                           <p className={`text-center ${bgColor} w-fit rounded-4xl px-9 py-1 font-bold`}>{statusText}</p>

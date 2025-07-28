@@ -14,6 +14,10 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 	const [note, setNote] = useState("");
 	const queryClient = useQueryClient();
 
+	const isReject = actionType === "reject";
+	const isDeliver = actionType === "deliver";
+	const isSuccess = status === "SUCCESS";
+
 	const mutation = useMutation({
 		mutationFn: async () => {
 			if (!requestId || !actionType) return;
@@ -30,12 +34,14 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 				});
 			}
 
-			api.post(`/medication-requests/${requestId}/dispense`, {
-				itemId: selectedItemId || null,
-				dose,
-				note,
-				status,
-			});
+			if (actionType === "deliver") {
+				return api.post(`/medication-requests/${requestId}/dispense`, {
+					itemId: selectedItemId || null,
+					dose,
+					note,
+					status,
+				});
+			}
 
 			if (actionType === "done") {
 				return api.put(`/medication-requests/${requestId}/done`);
@@ -64,9 +70,27 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 		},
 	});
 
-	const isReject = actionType === "reject";
-	const isDeliver = actionType === "deliver";
-	const isSuccess = status === "SUCCESS";
+	const handleConfirm = () => {
+		if (isReject && !rejectReason.trim()) {
+			toast.error("Vui lòng điền đầy đủ các mục", {
+				transition: Zoom,
+				position: "bottom-center",
+			});
+			return;
+		}
+
+		if (isDeliver) {
+			if (!status || (status === "SUCCESS" && (!selectedItemId || !dose.trim()))) {
+				toast.error("Vui lòng điền đầy đủ các mục", {
+					transition: Zoom,
+					position: "bottom-center",
+				});
+				return;
+			}
+		}
+
+		mutation.mutate();
+	};
 
 	return (
 		<Dialog.Root open={open} onOpenChange={setOpen}>
@@ -169,20 +193,8 @@ const MedicationDialog = ({ requestId, actionType, triggerButton, items = [] }) 
 							</button>
 						</Dialog.Close>
 						<button
-							disabled={
-								mutation.isPending ||
-								(isReject && !rejectReason.trim()) ||
-								(isDeliver && (
-									!status ||
-									(status === "SUCCESS" && (!selectedItemId || !dose.trim()))
-								))
-							}
-							onClick={() => mutation.mutate()}
-							className={`px-6 py-2 rounded-md font-semibold text-white font-inter ${
-								isReject || isDeliver
-									? "bg-[#023E73] hover:bg-[#01294d]"
-									: "bg-[#023E73] hover:bg-[#01294d]"
-							} `}
+							onClick={handleConfirm}
+							className="px-6 py-2 rounded-md font-semibold text-white font-inter bg-[#023E73] hover:bg-[#01294d]"
 						>
 							{mutation.isPending
 								? "Đang xử lý..."

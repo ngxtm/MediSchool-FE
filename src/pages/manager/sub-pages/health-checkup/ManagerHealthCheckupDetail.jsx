@@ -12,7 +12,8 @@ import {
   Search,
   ChevronRight,
   FileText,
-  Mail, Pencil
+  Mail,
+  Pencil
 } from 'lucide-react'
 import { Table } from 'antd'
 import Loading from '@/components/Loading'
@@ -21,7 +22,7 @@ import BulkActionBar from '@/components/BulkActionBar'
 import { useEmailToast } from '@/hooks/useEmailToast'
 import React, { useState, useMemo } from 'react'
 import dayjs from 'dayjs'
-import EditCheckupResultDialog from "../../../nurse/sub-pages/health-checkup/EditCheckupResultDialog.jsx";
+import EditCheckupResultDialog from '../../../nurse/sub-pages/health-checkup/EditCheckupResultDialog.jsx'
 
 function formatDate(dateInput) {
   if (!dateInput) return 'N/A'
@@ -64,9 +65,9 @@ export function useCheckupStats(id) {
 }
 
 export default function ManagerHealthCheckupDetail() {
-  const [editingResultId, setEditingResultId] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const queryClient = useQueryClient();
+  const [editingResultId, setEditingResultId] = useState(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const queryClient = useQueryClient()
   const { id } = useParams()
   const { data: stats } = useCheckupStats(id)
   const totalSent = stats?.totalSent ?? 0
@@ -110,10 +111,10 @@ export default function ManagerHealthCheckupDetail() {
   })
 
   const { data: editingResultData } = useQuery({
-    queryKey: ["checkup-result-detail", editingResultId],
+    queryKey: ['checkup-result-detail', editingResultId],
     enabled: !!editingResultId && isDialogOpen,
-    queryFn: () => api.get(`/checkup-results/${editingResultId}`).then((res) => res.data),
-  });
+    queryFn: () => api.get(`/checkup-results/${editingResultId}`).then(res => res.data)
+  })
 
   // Mutation configurations for email sending and PDF export
   const sendReminderMutation = useMutation({
@@ -140,51 +141,6 @@ export default function ManagerHealthCheckupDetail() {
       queryClient.invalidateQueries(['checkup-consents', id])
       setSelectedConsents([])
       setSelectedRowKeys([])
-    }
-  })
-
-  const exportPDFMutation = useMutation({
-    mutationFn: async eventId => {
-      const response = await api.get(`/health-checkup/${eventId}/consents/pdf`, {
-        responseType: 'blob'
-      })
-      // Create blob URL and trigger download
-      const blob = new Blob([response.data], { type: 'application/pdf' })
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `health-checkup-consents-${eventId}.pdf`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-      return response
-    },
-    onSuccess: () => {
-      toast.success(
-        <div className="flex items-center gap-2">
-          <CheckCircle className="text-teal-600" size={18} />
-          <div>
-            <p className="font-medium">Xuất PDF thành công!</p>
-            <p className="text-sm text-gray-600">Tệp PDF đã được tải xuống</p>
-          </div>
-        </div>,
-        { position: 'bottom-center', autoClose: 2000 }
-      )
-    },
-    onError: error => {
-      toast.error(
-        <div className="flex items-center gap-2">
-          <AlertCircle className="text-red-500" size={18} />
-          <div>
-            <p className="font-medium">Xuất PDF thất bại</p>
-            <p className="text-sm text-gray-600">
-              {error?.response?.data?.message || 'Có lỗi xảy ra khi xuất PDF. Vui lòng thử lại sau.'}
-            </p>
-          </div>
-        </div>,
-        { position: 'bottom-center', autoClose: 3000 }
-      )
     }
   })
 
@@ -248,10 +204,6 @@ export default function ManagerHealthCheckupDetail() {
   const handleClearSelection = () => {
     setSelectedConsents([])
     setSelectedRowKeys([])
-  }
-
-  const handleExportPDF = () => {
-    exportPDFMutation.mutate(id)
   }
 
   const filteredConsents = useMemo(() => {
@@ -492,24 +444,6 @@ export default function ManagerHealthCheckupDetail() {
                 </div>
               )}
             </button>
-            <button
-              className="teal-button"
-              onClick={handleExportPDF}
-              disabled={exportPDFMutation.isPending}
-              title="Xuất báo cáo PDF danh sách đồng thuận khám sức khỏe"
-            >
-              {exportPDFMutation.isPending ? (
-                <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  <span>Đang xuất...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <FileText size={16} />
-                  <span>Xuất PDF</span>
-                </div>
-              )}
-            </button>
           </div>
         </div>
       )}
@@ -662,12 +596,12 @@ export default function ManagerHealthCheckupDetail() {
                         onClick={() => navigate(`/manager/checkup-results/${item.resultId}`)}
                       />
                       <Pencil
-                          size={20}
-                          className="cursor-pointer text-gray-700 hover:text-blue-600"
-                          onClick={() => {
-                            setEditingResultId(item.resultId);
-                            setIsDialogOpen(true);
-                          }}
+                        size={20}
+                        className="cursor-pointer text-gray-700 hover:text-blue-600"
+                        onClick={() => {
+                          setEditingResultId(item.resultId)
+                          setIsDialogOpen(true)
+                        }}
                       />
                     </div>
                   </td>
@@ -677,28 +611,30 @@ export default function ManagerHealthCheckupDetail() {
                 <tr>
                   <td colSpan={9} className="p-4 text-center text-gray-500">
                     Không có dữ liệu
-                  </td>g
+                  </td>
+                  g
                 </tr>
               )}
             </tbody>
           </table>
 
           {editingResultData && (
-              <EditCheckupResultDialog
-                  open={isDialogOpen}
-                  onOpenChange={setIsDialogOpen}
-                  resultId={editingResultId}
-                  section={{
-                    status: editingResultData?.status,
-                    note: editingResultData?.note,
-                    eventDate: editingResultData?.eventDate,
-                    startDate: editingResultData?.startDate, endDate: editingResultData?.endDate
-                  }}
-                  isOverall
-                  onSaved={() => {
-                    queryClient.invalidateQueries(["checkup-result", id]);
-                  }}
-              />
+            <EditCheckupResultDialog
+              open={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
+              resultId={editingResultId}
+              section={{
+                status: editingResultData?.status,
+                note: editingResultData?.note,
+                eventDate: editingResultData?.eventDate,
+                startDate: editingResultData?.startDate,
+                endDate: editingResultData?.endDate
+              }}
+              isOverall
+              onSaved={() => {
+                queryClient.invalidateQueries(['checkup-result', id])
+              }}
+            />
           )}
         </div>
       )}

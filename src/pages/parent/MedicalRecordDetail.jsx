@@ -28,7 +28,7 @@ export default function MedicalRecordDetail() {
         }
       case 'NORMAL':
         return {
-          text: 'Bình thường',
+          text: 'Nhẹ',
           bgColor: '#cce5ff'
         }
       default:
@@ -63,7 +63,7 @@ export default function MedicalRecordDetail() {
                 <h2 className="text-2xl font-bold">Tai nạn: {event.problem}</h2>
                 <p>Thời gian: {formatDateTime(event.eventTime)}</p>
                 <p>Địa điểm: {event.location}</p>
-                <p>Phụ trách: {event.recordByUser.fullName || 'Chưa xác định'}</p>
+                <p>Phụ trách: {event.recordByUser.fullName ?? 'Chưa xác định'}</p>
               </div>
               <p
                 className="rounded-2xl bg-[#F5F5F5] px-8 py-1 font-bold"

@@ -401,7 +401,7 @@ const ConsentModal = ({ consent, isOpen, onClose, onSubmit, onReject }) => {
         <div className="rounded-b-2xl bg-gray-50 px-6 py-4">
           <div className="flex flex-col justify-end gap-3 sm:flex-row">
             <button
-              onClick={onClose}
+              onClick={() => onSubmit('REMIND_LATER')}
               className="rounded-lg border border-gray-300 px-6 py-2.5 font-medium text-gray-700 transition-colors hover:bg-gray-100"
             >
               Để sau quyết định

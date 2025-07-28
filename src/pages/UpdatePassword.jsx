@@ -160,7 +160,7 @@ const UpdatePassword = () => {
         updateResult = await updatePassword(newPassword)
       }
 
-      if (updateResult.success) {
+      if (updateResult && updateResult.success) {
         setSuccess(true)
 
         if (!isRecoverySession) {
@@ -170,12 +170,14 @@ const UpdatePassword = () => {
           sessionStorage.removeItem('recoveryRefreshToken')
         }
         setTimeout(() => navigate('/login'), 3000)
-      } else if (updateResult.error) {
+      } else if (updateResult && updateResult.error) {
         const errorMessage =
           typeof updateResult.error === 'string'
             ? updateResult.error
             : updateResult.error.message || 'Không thể cập nhật mật khẩu. Vui lòng thử lại sau.'
         setError(errorMessage)
+      } else {
+        setError('Không thể cập nhật mật khẩu. Vui lòng thử lại sau.')
       }
     } catch (err) {
       const errorMessage = typeof err === 'string' ? err : err.message || 'Có lỗi xảy ra. Vui lòng thử lại.'

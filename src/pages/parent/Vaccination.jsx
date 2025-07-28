@@ -662,7 +662,10 @@ const Vaccination = () => {
                         <p className="text-gray-600">{history.location || 'Trường học'}</p>
                         <p className="font-bold">{history.vaccine?.manufacturer || history.vaccine?.name}</p>
                       </div>
-                      <div className="flex items-center px-6">
+                      <button
+                        className="flex items-center px-6"
+                        onClick={() => navigate(`/parent/vaccination/${history.historyId}`)}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="24"
@@ -677,7 +680,7 @@ const Vaccination = () => {
                         >
                           <path d="m9 18 6-6-6-6" />
                         </svg>
-                      </div>
+                      </button>
                     </div>
                   ))}
                 </div>

@@ -592,7 +592,8 @@ const Vaccination = () => {
   }
 
   const upcomingConsents = consents.filter(
-    consent => consent.consentStatus === null || consent.consentStatus === undefined
+    consent =>
+      consent.consentStatus === null || consent.consentStatus === undefined || consent.consentStatus === 'REMIND_LATER'
   )
 
   const vaccinationHistory = vaccinationHistoryQuery.data?.data || {}

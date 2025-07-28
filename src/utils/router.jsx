@@ -16,6 +16,7 @@ const ManagerStudent = lazy(() => import('../pages/manager/sub-pages/student/Stu
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout.jsx'))
 const StudentInfo = lazy(() => import('../pages/parent/StudentInfo'))
 const MedicalRecord = lazy(() => import('../pages/parent/MedicalRecord'))
+const MedicalRecordDetail = lazy(() => import('../pages/parent/MedicalRecordDetail'))
 const Vaccination = lazy(() => import('../pages/parent/Vaccination'))
 const HealthCheck = lazy(() => import('../pages/parent/health-checkups/HealthCheckup.jsx'))
 const MedicationRequest = lazy(() => import('../pages/parent/medication-requests/MedicationRequest.jsx'))
@@ -235,6 +236,7 @@ const router = createBrowserRouter([
       { index: true, element: <LazyComponent component={StudentInfo} /> },
       { path: 'info', element: <LazyComponent component={StudentInfo} /> },
       { path: 'medical-record', element: <LazyComponent component={MedicalRecord} /> },
+      { path: 'medical-record/:id', element: <LazyComponent component={MedicalRecordDetail} /> },
       { path: 'vaccination', element: <LazyComponent component={Vaccination} /> },
       { path: 'health-check', element: <LazyComponent component={HealthCheck} /> },
       { path: 'medication-requests', element: <LazyComponent component={MedicationRequest} /> }

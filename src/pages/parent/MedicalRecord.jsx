@@ -16,10 +16,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { useNavigate } from 'react-router-dom'
 
 const MedicalRecord = () => {
   const queryClient = useQueryClient()
-
+  const navigate = useNavigate()
   const { selectedStudent } = useStudent()
   const rowBlue = 'flex justify-between flex-col md:flex-row bg-[#DAEAF7] px-6 py-3 rounded-xl'
   const rowWhite = 'flex justify-between flex-col md:flex-row px-6 py-3'
@@ -152,7 +153,7 @@ const MedicalRecord = () => {
             {formatDate(event.eventTime)}
           </p>
         </div>
-        <div className="col-span-9">
+        <div onClick={() => navigate(`/parent/medical-record/${event.id}`)} className="col-span-9 cursor-pointer">
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-2 pl-5">
               <p className="font-medium transition-colors duration-300 group-hover:text-gray-800">{event.problem}</p>
@@ -169,229 +170,275 @@ const MedicalRecord = () => {
     )
   }
 
+  const renderHealthEvents = () => {
+    if (healthEventsLoading) {
+      return (
+        <div className="py-8 text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+          <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
+        </div>
+      )
+    }
+
+    if (healthEventsError) {
+      return (
+        <div className="py-8 text-center">
+          <p className="text-red-600">Có lỗi xảy ra khi tải dữ liệu</p>
+        </div>
+      )
+    }
+
+    if (!healthEvents || healthEvents.length === 0) {
+      return (
+        <div className="py-8 text-center">
+          <p className="text-gray-500">Không có thông tin tai nạn y tế</p>
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {healthEvents
+          .sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
+          .map((event, index) => renderHealthEventItem(event, index))}
+      </>
+    )
+  }
+
+  const renderBasicHealthInfo = () => {
+    if (healthProfileLoading) {
+      return (
+        <div className="py-4 text-center">
+          <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        </div>
+      )
+    }
+    if (healthProfileError) {
+      return (
+        <div className="py-4 text-center">
+          <p className="text-sm text-red-600">Không thể tải thông tin sức khỏe</p>
+        </div>
+      )
+    }
+    return (
+      <>
+        <div className={rowBlue}>
+          <p className="w-fit font-bold">Chiều cao</p>
+          <p className="w-fit">{healthProfile?.height ? `${healthProfile.height} (cm)` : 'Chưa cập nhật'}</p>
+        </div>
+        <div className={rowWhite}>
+          <p className="w-fit font-bold">Cân nặng</p>
+          <p className="w-fit">{healthProfile?.weight ? `${healthProfile.weight} (kg)` : 'Chưa cập nhật'}</p>
+        </div>
+        <div className={rowBlue}>
+          <p className="w-fit font-bold">Nhóm máu</p>
+          <p className="w-fit">{healthProfile?.bloodType || 'Chưa cập nhật'}</p>
+        </div>
+      </>
+    )
+  }
+
+  const renderVisionInfo = () => {
+    if (healthProfileLoading) {
+      return (
+        <div className="py-4 text-center">
+          <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        </div>
+      )
+    }
+    if (healthProfileError) {
+      return (
+        <div className="py-4 text-center">
+          <p className="text-sm text-red-600">Không thể tải thông tin thị lực</p>
+        </div>
+      )
+    }
+    return (
+      <>
+        <div className={rowBlue}>
+          <p className="w-fit font-bold">Mắt phải không kính</p>
+          <p className="w-fit">{healthProfile?.visionRight ? `${healthProfile.visionRight}` : 'Chưa cập nhật'}</p>
+        </div>
+        <div className={rowWhite}>
+          <p className="w-fit font-bold">Mắt trái không kính</p>
+          <p className="w-fit">{healthProfile?.visionLeft ? `${healthProfile.visionLeft}` : 'Chưa cập nhật'}</p>
+        </div>
+      </>
+    )
+  }
+
+  const renderOtherInfo = () => {
+    if (healthProfileLoading) {
+      return (
+        <div className="py-4 text-center">
+          <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
+        </div>
+      )
+    }
+    if (healthProfileError) {
+      return (
+        <div className="py-4 text-center">
+          <p className="text-sm text-red-600">Không thể tải thông tin khác</p>
+        </div>
+      )
+    }
+    return (
+      <>
+        <div className={rowBlue}>
+          <p className="w-fit font-bold">Bệnh nền</p>
+          <p className="w-fit">{healthProfile?.underlyingDiseases || 'Không'}</p>
+        </div>
+        <div className={rowWhite}>
+          <p className="w-fit font-bold">Dị ứng</p>
+          <p className="w-fit">{healthProfile?.allergies || 'Không'}</p>
+        </div>
+      </>
+    )
+  }
+
+  const renderUpdateDialog = () => (
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger asChild>
+        <button
+          onClick={handleOpenDialog}
+          disabled={healthProfileLoading}
+          className="w-full rounded-xl bg-[#023E73] py-2 text-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:border-1 hover:shadow-lg hover:shadow-gray-300"
+        >
+          Cập nhập thông tin
+        </button>
+      </DialogTrigger>
+      <DialogContent className="border-blue-200 bg-[#DAEAF7] shadow-lg">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-[#023E73]">Cập nhật thông tin sức khoẻ cơ bản</DialogTitle>
+          <DialogDescription className="text-blue-900">
+            Chỉnh sửa và lưu thông tin sức khoẻ cho học sinh.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="height" className="text-[#023E73]">
+              Chiều cao (cm)
+            </Label>
+            <Input
+              id="height"
+              name="height"
+              value={form.height}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="weight" className="text-[#023E73]">
+              Cân nặng (kg)
+            </Label>
+            <Input
+              id="weight"
+              name="weight"
+              value={form.weight}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="bloodType" className="text-[#023E73]">
+              Nhóm máu
+            </Label>
+            <Input
+              id="bloodType"
+              name="bloodType"
+              value={form.bloodType}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="visionLeft" className="text-[#023E73]">
+              Mắt trái không kính
+            </Label>
+            <Input
+              id="visionLeft"
+              name="visionLeft"
+              value={form.visionLeft}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="visionRight" className="text-[#023E73]">
+              Mắt phải không kính
+            </Label>
+            <Input
+              id="visionRight"
+              name="visionRight"
+              value={form.visionRight}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="underlyingDiseases" className="text-[#023E73]">
+              Bệnh nền
+            </Label>
+            <Input
+              id="underlyingDiseases"
+              name="underlyingDiseases"
+              value={form.underlyingDiseases}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="allergies" className="text-[#023E73]">
+              Dị ứng
+            </Label>
+            <Input
+              id="allergies"
+              name="allergies"
+              value={form.allergies}
+              onChange={handleFormChange}
+              className="border-blue-200 bg-white focus:border-[#023E73]"
+            />
+          </div>
+          {error && <div className="text-sm text-red-600">{error}</div>}
+          <DialogFooter>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-[#023E73] font-semibold text-white hover:bg-[#01294d]"
+            >
+              {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+            </Button>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="border-blue-200 text-[#023E73]">
+                Hủy
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+
   return (
     <div className="flex flex-col justify-between gap-4 md:flex-row md:gap-30">
       <div className="md:w-1/2">
         <div className="mb-6">
           <h1 className={header}>Thông tin sức khoẻ cơ bản</h1>
-          {healthProfileLoading ? (
-            <div className="py-4 text-center">
-              <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            </div>
-          ) : healthProfileError ? (
-            <div className="py-4 text-center">
-              <p className="text-sm text-red-600">Không thể tải thông tin sức khỏe</p>
-            </div>
-          ) : (
-            <>
-              <div className={rowBlue}>
-                <p className="w-fit font-bold">Chiều cao</p>
-                <p className="w-fit">{healthProfile?.height ? `${healthProfile.height} (cm)` : 'Chưa cập nhật'}</p>
-              </div>
-              <div className={rowWhite}>
-                <p className="w-fit font-bold">Cân nặng</p>
-                <p className="w-fit">{healthProfile?.weight ? `${healthProfile.weight} (kg)` : 'Chưa cập nhật'}</p>
-              </div>
-              <div className={rowBlue}>
-                <p className="w-fit font-bold">Nhóm máu</p>
-                <p className="w-fit">{healthProfile?.bloodType || 'Chưa cập nhật'}</p>
-              </div>
-            </>
-          )}
+          {renderBasicHealthInfo()}
         </div>
         <div className="mb-6">
           <h1 className={header}>Thị lực</h1>
-          {healthProfileLoading ? (
-            <div className="py-4 text-center">
-              <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            </div>
-          ) : healthProfileError ? (
-            <div className="py-4 text-center">
-              <p className="text-sm text-red-600">Không thể tải thông tin thị lực</p>
-            </div>
-          ) : (
-            <>
-              <div className={rowBlue}>
-                <p className="w-fit font-bold">Mắt phải không kính</p>
-                <p className="w-fit">{healthProfile?.visionRight ? `${healthProfile.visionRight}` : 'Chưa cập nhật'}</p>
-              </div>
-              <div className={rowWhite}>
-                <p className="w-fit font-bold">Mắt trái không kính</p>
-                <p className="w-fit">{healthProfile?.visionLeft ? `${healthProfile.visionLeft}` : 'Chưa cập nhật'}</p>
-              </div>
-            </>
-          )}
+          {renderVisionInfo()}
         </div>
         <div className="mb-6">
           <h1 className={header}>Khác</h1>
-          {healthProfileLoading ? (
-            <div className="py-4 text-center">
-              <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            </div>
-          ) : healthProfileError ? (
-            <div className="py-4 text-center">
-              <p className="text-sm text-red-600">Không thể tải thông tin khác</p>
-            </div>
-          ) : (
-            <>
-              <div className={rowBlue}>
-                <p className="w-fit font-bold">Bệnh nền</p>
-                <p className="w-fit">{healthProfile?.underlyingDiseases || 'Không'}</p>
-              </div>
-              <div className={rowWhite}>
-                <p className="w-fit font-bold">Dị ứng</p>
-                <p className="w-fit">{healthProfile?.allergies || 'Không'}</p>
-              </div>
-            </>
-          )}
+          {renderOtherInfo()}
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <button
-              onClick={handleOpenDialog}
-              disabled={healthProfileLoading}
-              className="w-full rounded-xl bg-[#023E73] py-2 text-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:border-1 hover:shadow-lg hover:shadow-gray-300"
-            >
-              Cập nhập thông tin
-            </button>
-          </DialogTrigger>
-          <DialogContent className="border-blue-200 bg-[#DAEAF7] shadow-lg">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-[#023E73]">
-                Cập nhật thông tin sức khoẻ cơ bản
-              </DialogTitle>
-              <DialogDescription className="text-blue-900">
-                Chỉnh sửa và lưu thông tin sức khoẻ cho học sinh.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="height" className="text-[#023E73]">
-                  Chiều cao (cm)
-                </Label>
-                <Input
-                  id="height"
-                  name="height"
-                  value={form.height}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="weight" className="text-[#023E73]">
-                  Cân nặng (kg)
-                </Label>
-                <Input
-                  id="weight"
-                  name="weight"
-                  value={form.weight}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="bloodType" className="text-[#023E73]">
-                  Nhóm máu
-                </Label>
-                <Input
-                  id="bloodType"
-                  name="bloodType"
-                  value={form.bloodType}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="visionLeft" className="text-[#023E73]">
-                  Mắt trái không kính
-                </Label>
-                <Input
-                  id="visionLeft"
-                  name="visionLeft"
-                  value={form.visionLeft}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="visionRight" className="text-[#023E73]">
-                  Mắt phải không kính
-                </Label>
-                <Input
-                  id="visionRight"
-                  name="visionRight"
-                  value={form.visionRight}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="underlyingDiseases" className="text-[#023E73]">
-                  Bệnh nền
-                </Label>
-                <Input
-                  id="underlyingDiseases"
-                  name="underlyingDiseases"
-                  value={form.underlyingDiseases}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="allergies" className="text-[#023E73]">
-                  Dị ứng
-                </Label>
-                <Input
-                  id="allergies"
-                  name="allergies"
-                  value={form.allergies}
-                  onChange={handleFormChange}
-                  className="border-blue-200 bg-white focus:border-[#023E73]"
-                />
-              </div>
-              {error && <div className="text-sm text-red-600">{error}</div>}
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-[#023E73] font-semibold text-white hover:bg-[#01294d]"
-                >
-                  {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
-                </Button>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline" className="border-blue-200 text-[#023E73]">
-                    Hủy
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {renderUpdateDialog()}
       </div>
       <div className="md:w-1/2">
         <h1 className={header}>Thông tin tai nạn y tế</h1>
-        <div className="space-y-3">
-          {healthEventsLoading ? (
-            <div className="py-8 text-center">
-              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600">Đang tải dữ liệu...</p>
-            </div>
-          ) : healthEventsError ? (
-            <div className="py-8 text-center">
-              <p className="text-red-600">Có lỗi xảy ra khi tải dữ liệu</p>
-            </div>
-          ) : healthEvents && healthEvents.length > 0 ? (
-            <>
-              {healthEvents
-                .sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
-                .map((event, index) => renderHealthEventItem(event, index))}
-            </>
-          ) : (
-            <div className="py-8 text-center">
-              <p className="text-gray-500">Không có thông tin tai nạn y tế</p>
-            </div>
-          )}
-        </div>
+        <div className="space-y-3">{renderHealthEvents()}</div>
       </div>
     </div>
   )

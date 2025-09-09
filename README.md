@@ -338,3 +338,55 @@ src/
 ## License
 
 See LICENSE.md for details.
+
+## Preview
+
+Login as PARENT role:
+
+![p1](images/parent-1.png)
+
+![p2](images/parent-2.png)
+
+![p3](images/parent-3.png)
+
+![p4](images/parent-4.png)
+
+![p5](images/parent-5.png)
+
+![p6](images/parent-6.png)
+
+![p7](images/parent-7.png)
+
+Login as NURSE role:
+
+![n1](images/nurse-1.png)
+
+![n2](images/nurse-2.png)
+
+![n9](images/nurse-9.png)
+
+![n6](images/nurse-6.png)
+
+![n7](images/nurse-7.png)
+
+![n8](images/nurse-8.png)
+
+![n3](images/nurse-3.png)
+
+![n10](images/nurse-10.png)
+
+![n11](images/nurse-11.png)
+
+![n12](images/nurse-12.png)
+
+![n4](images/nurse-4.png)
+
+![n13](images/nurse-13.png)
+
+![n14](images/nurse-14.png)
+
+![n15](images/nurse-15.png)
+
+Login as MANAGER role: plus homepage
+
+![m1](images/manager-1.png)

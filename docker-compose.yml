@@ -1,0 +1,51 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - medischool-network
+
+  backend:
+    build:
+      context: https://github.com/ngxtm/MediSchool-BE.git#main
+      dockerfile: Dockerfile
+    expose:
+      - "8080"
+    environment:
+      # Database - Supabase
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?prepareThreshold=0
+      - SPRING_DATASOURCE_USERNAME=${DB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASS}
+      # Supabase Auth
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - SUPABASE_API_KEY=${SUPABASE_API_KEY}
+      - SUPABASE_API_KEY_ADMIN=${SUPABASE_API_KEY_ADMIN}
+      # Email
+      - SPRING_MAIL_USERNAME=${MAIL_USER}
+      - SPRING_MAIL_PASSWORD=${MAIL_PASS}
+      # App config
+      - APP_FRONTEND_URL=https://medischool.ngxtm.site
+      # Production settings
+      - SWAGGER_ENABLED=false
+      - SHOW_SQL=false
+      - LOG_LEVEL=INFO
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    restart: unless-stopped
+    networks:
+      - medischool-network
+
+networks:
+  medischool-network:
+    driver: bridge

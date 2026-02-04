@@ -19,13 +19,19 @@ export const AuthContextProvider = ({ children }) => {
         return { success: false, error }
       }
 
+      // Store session with access_token from backend custom token
+      const sessionData = {
+        ...data.session,
+        access_token: data.token // Use backend custom token for API calls
+      }
+
       if (rememberMe) {
         const projectRef = supabase.supabaseUrl.split('https://')[1].split('.')[0]
-        localStorage.setItem(`sb-${projectRef}-auth-token`, JSON.stringify(data.session))
+        localStorage.setItem(`sb-${projectRef}-auth-token`, JSON.stringify(sessionData))
       } else {
-        sessionStorage.setItem('tempSession', JSON.stringify(data.session))
+        sessionStorage.setItem('tempSession', JSON.stringify(sessionData))
       }
-      setSession(data.session)
+      setSession(sessionData)
       return { success: true, data }
     } catch (error) {
       console.error('Error in signInWithEmail: ', error)
